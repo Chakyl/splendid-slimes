@@ -17,5 +17,6 @@
     "minecraft:rabbit",
     "minecraft:sheep"
   ],
-  "favorite_entity": "minecraft:cow"
+  "favorite_entity": "minecraft:cow",
+  "traits": ["explosive"]
 }

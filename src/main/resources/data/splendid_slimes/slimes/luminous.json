@@ -11,6 +11,7 @@
     { "item": "minecraft:smooth_quartz" }
   ],
   "favorite_food": { "item": "minecraft:quartz_block" },
+  "traits": ["photosynthesizing"],
   "negative_emit_effects": [
     {
       "effect": "minecraft:glowing",

@@ -17,6 +17,7 @@
     "minecraft:creeper"
   ],
   "favorite_entity": "minecraft:enderman",
+  "traits": ["feral"],
   "positive_emit_effects": [
     {
       "effect": "minecraft:regeneration",

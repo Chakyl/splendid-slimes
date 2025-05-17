@@ -13,6 +13,8 @@
     "minecraft:tropical_fish"
   ],
   "favorite_entity": "minecraft:tropical_fish",
+  "traits": ["aquatic", "spiky"],
+  "emit_effect_particle": "minecraft:splash",
   "positive_emit_effects": [
     {
       "effect": "minecraft:water_breathing",

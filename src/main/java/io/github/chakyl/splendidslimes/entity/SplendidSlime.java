@@ -5,9 +5,11 @@ import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.registry.ModElements;
+import io.github.chakyl.splendidslimes.util.SlimeData;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -24,7 +26,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -47,6 +48,7 @@ public class SplendidSlime extends SlimeEntityBase {
     public static final EntityDataAccessor<Integer> HAPPINESS = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<String> TARGET_ENTITY = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Integer> PARTICLE_ANIMATION_TICK = SynchedEntityData.defineId(SplendidSlime.class, EntityDataSerializers.INT);
     public static final String SLIME = "slime";
     public static final String ID = "id";
     public static final String DATA = "data";
@@ -60,6 +62,8 @@ public class SplendidSlime extends SlimeEntityBase {
     public ItemEntity itemTarget = null;
     boolean tarred;
     private final EntityType<SlimeEntityBase> entityType;
+    private final int effectRadius = 6;
+    private final int particleAnimationTime = 2;
 
     public SplendidSlime(EntityType<SlimeEntityBase> entityType, Level level) {
         super(entityType, level);
@@ -71,7 +75,7 @@ public class SplendidSlime extends SlimeEntityBase {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new SlimeFloatGoal(this));
-        if (this.getHappiness() < FURIOUS_THRESHOLD) {
+        if (this.getHappiness() < FURIOUS_THRESHOLD || hasTrait("feral")) {
             this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (p_289461_) -> {
                 return Math.abs(p_289461_.getY() - this.getY()) <= 4.0D;
             }));
@@ -99,16 +103,16 @@ public class SplendidSlime extends SlimeEntityBase {
                     if (happiness <= UNHAPPY_THRESHOLD) {
                         Double chance = 1 - (((happiness + 1.0) / UNHAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(effectRadius));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyNegativeEffects(this, entity);
                             }
-                            executeSlimeCommands(this,true, false);
+                            executeSlimeCommands(this, true, false);
                         }
                     } else if (happiness >= HAPPY_THRESHOLD) {
                         double chance = 1 - (((happiness + 1.0) / HAPPY_THRESHOLD));
                         if (this.random.nextFloat() <= chance) {
-                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(6));
+                            List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(effectRadius));
                             for (LivingEntity entity : nearbyEntities) {
                                 applyPositiveEffects(this, entity);
                             }
@@ -119,9 +123,36 @@ public class SplendidSlime extends SlimeEntityBase {
             }
             if (this.tickCount % 600 == 0) {
                 if (happiness > MAX_HAPPINESS) setHappiness(MAX_HAPPINESS - 1);
-                else if (happiness > 0) setHappiness(happiness - 1);
+                else if (happiness > 0) addHappiness(-1);
                 else setHappiness(0);
             }
+
+            int particleAnimationTick = getParticleAnimationTick();
+            int animationTime = effectRadius * particleAnimationTime;
+            if (particleAnimationTick > -1 && particleAnimationTick < animationTime) {
+                this.level().broadcastEntityEvent(this, (byte) 3);
+                if (particleAnimationTick + 1 >= animationTime) this.setParticleAnimationTick(-1);
+                else this.setParticleAnimationTick(particleAnimationTick + 1);
+            }
+        }
+    }
+
+    @Override
+    public void handleEntityEvent(byte event) {
+        if (event == 3) {
+            SimpleParticleType particle = this.getSlime().get().emitEffectParticle();
+            int ringPoints = 32;
+            int tickCount = getParticleAnimationTick();
+            for (int i = 0; i < ringPoints; i++) {
+                double radius = ((double) 1 / particleAnimationTime) * (double) tickCount;
+                double angle = 2 * Math.PI * i / ringPoints;
+                double x = this.getRandomX(0.8) + radius * Math.cos(angle);
+                double y = this.getRandomY() + 0.5;
+                double z = this.getRandomZ(0.8) + radius * Math.sin(angle);
+                this.level().addParticle(particle, true, x, y, z, 0.0D, 0.0D, 0.0D);
+            }
+        } else {
+            super.handleEntityEvent(event);
         }
     }
 
@@ -170,10 +201,12 @@ public class SplendidSlime extends SlimeEntityBase {
 
         if (!getSlime().isBound()) return false;
         SlimeBreed slime = getSlime().get();
-        if (pickUpItem == ModElements.Items.PLORT.get() && pStack.hasTag()) {
+        if (pickUpItem == ModElements.Items.PLORT.get() && pStack.hasTag() && !hasTrait("largoless")) {
             CompoundTag plortTag = pStack.getTagElement("plort");
             if (plortTag != null && plortTag.contains("id")) {
                 String id = plortTag.get("id").toString();
+                DynamicHolder<SlimeBreed> newSlime = SlimeData.getSlimeData(id);
+                if (newSlime.isBound() && newSlime.get().traits().contains("largoless")) return false;
                 return !id.contains(this.getSlimeBreed()) && !(!this.getSlimeSecondaryBreed().isEmpty() && id.contains(this.getSlimeSecondaryBreed()));
             }
         }
@@ -264,6 +297,11 @@ public class SplendidSlime extends SlimeEntityBase {
         return this.entityData.get(HAPPINESS);
     }
 
+    public void addHappiness(int data) {
+        if (hasTrait("moody")) this.setHappiness(this.getHappiness() + (data * 2));
+        else this.setHappiness(this.getHappiness() + data);
+    }
+
     public void setHappiness(int data) {
         this.entityData.set(HAPPINESS, data);
     }
@@ -284,7 +322,27 @@ public class SplendidSlime extends SlimeEntityBase {
         this.entityData.set(EATING_COOLDOWN, data);
     }
 
+    public int getParticleAnimationTick() {
+        return this.entityData.get(PARTICLE_ANIMATION_TICK);
+    }
+
+    public void setParticleAnimationTick(int data) {
+        this.entityData.set(PARTICLE_ANIMATION_TICK, data);
+    }
+
     private boolean hasTrait(String trait) {
+        DynamicHolder<SlimeBreed> slime = getSlime();
+        DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
+        if (slime.isBound()) {
+            List<String> traits = slime.get().traits();
+            if (traits.contains(trait)) {
+                return true;
+            }
+            if (secondarySlime.isBound()) {
+                List<String> secondarySlimeTraits = secondarySlime.get().traits();
+                return secondarySlimeTraits.contains(trait);
+            }
+        }
         return false;
     }
 
@@ -305,7 +363,7 @@ public class SplendidSlime extends SlimeEntityBase {
     }
 
     public void playerTouch(Player pEntity) {
-        if (this.isDealsDamage() && this.getHappiness() <= FURIOUS_THRESHOLD) {
+        if (this.isDealsDamage() && (this.getHappiness() <= FURIOUS_THRESHOLD || hasTrait("spiky") || hasTrait("feral"))) {
             applyNegativeEffects(this, pEntity);
             super.playerTouch(pEntity);
         }
@@ -335,7 +393,7 @@ public class SplendidSlime extends SlimeEntityBase {
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
                 double d2 = this.random.nextGaussian() * 0.02D;
-                this.getServer().getLevel(this.level().dimension()).sendParticles(ParticleTypes.NOTE, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 1, d0, d1, d2,0.2);
+                this.getServer().getLevel(this.level().dimension()).sendParticles(ParticleTypes.NOTE, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 1, d0, d1, d2, 0.2);
             }
         }
         int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeBreed(), this.getSlimeBreed())).size();
@@ -344,7 +402,7 @@ public class SplendidSlime extends SlimeEntityBase {
         if (nearbyFriends > 7) happinessIncrease -= 50;
         this.heal(2);
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
-        setHappiness(happiness + happinessIncrease);
+        addHappiness(happinessIncrease);
         setEatingCooldown(SLIME_STARVING_COOLDOWN);
     }
 
@@ -416,7 +474,7 @@ public class SplendidSlime extends SlimeEntityBase {
                         slime.setNoAi(flag);
                         slime.setInvulnerable(this.isInvulnerable());
                         slime.setSize(size - 1, true);
-                        slime.setHappiness(this.getHappiness() - 100);
+                        slime.addHappiness(-100);
                         slime.setEatingCooldown(this.getEatingCooldown());
                         slime.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
                         this.level().addFreshEntity(slime);
@@ -445,6 +503,7 @@ public class SplendidSlime extends SlimeEntityBase {
         this.entityData.define(HAPPINESS, 500);
         this.entityData.define(EATING_COOLDOWN, 0);
         this.entityData.define(TARGET_ENTITY, "");
+        this.entityData.define(PARTICLE_ANIMATION_TICK, 0);
     }
 
     @Override
@@ -453,6 +512,7 @@ public class SplendidSlime extends SlimeEntityBase {
         setEatingCooldown(nbt.getInt("EatingCooldown"));
         setHappiness(nbt.getInt("Happiness"));
         setTargetEntity(nbt.getString("TargetEntity"));
+        setParticleAnimationTick(nbt.getInt("ParticleAnimationTick"));
     }
 
     @Override
@@ -461,6 +521,7 @@ public class SplendidSlime extends SlimeEntityBase {
         nbt.putInt("EatingCooldown", getEatingCooldown());
         nbt.putInt("Happiness", getHappiness());
         nbt.putString("TargetEntity", getTargetEntity());
+        nbt.putInt("ParticleAnimationTick", getParticleAnimationTick());
     }
 
     @Override
@@ -534,6 +595,7 @@ public class SplendidSlime extends SlimeEntityBase {
         public void start() {
             if (this.slime.hasTrait("foodporting")) {
                 this.slime.setPos(targetItem.getX(), targetItem.getY(), targetItem.getZ());
+                this.slime.playSound(SoundEvents.SHULKER_TELEPORT, 1.0F, 1.0F);
             }
             super.start();
         }
@@ -596,6 +658,7 @@ public class SplendidSlime extends SlimeEntityBase {
         public void start() {
             if (((SplendidSlime) this.mob).hasTrait("foodporting")) {
                 this.mob.setPos(target.getX(), target.getY(), target.getZ());
+                this.mob.playSound(SoundEvents.SHULKER_TELEPORT, 1.0F, 1.0F);
             }
             this.mob.setTarget(this.target);
             super.start();
@@ -670,7 +733,7 @@ public class SplendidSlime extends SlimeEntityBase {
         }
 
         public boolean canUse() {
-            return (this.slime.isInWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeMoveControl;
+            return this.slime.getNavigation().canFloat() && (this.slime.isInWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeMoveControl;
         }
 
         public boolean requiresUpdateEveryTick() {
@@ -678,15 +741,20 @@ public class SplendidSlime extends SlimeEntityBase {
         }
 
         public void tick() {
-            if (this.slime.getRandom().nextFloat() < 0.8F) {
-                this.slime.getJumpControl().jump();
-            }
+            if (this.slime.getNavigation().canFloat()) {
+                if (this.slime.getRandom().nextFloat() < 0.8F) {
+                    this.slime.getJumpControl().jump();
+                }
 
-            MoveControl movecontrol = this.slime.getMoveControl();
-            if (movecontrol instanceof SlimeMoveControl slime$slimemovecontrol) {
-                slime$slimemovecontrol.setWantedMovement(1.2D);
+                MoveControl movecontrol = this.slime.getMoveControl();
+                if (movecontrol instanceof SlimeMoveControl slime$slimemovecontrol) {
+                    slime$slimemovecontrol.setWantedMovement(1.2D);
+                }
+                if (slime.tickCount % 40 == 0 && slime.hasTrait("aquatic")) {
+                    SplendidSlimes.LOGGER.info("CAN FLOAT??");
+                    this.slime.getNavigation().setCanFloat(false);
+                }
             }
-
         }
     }
 

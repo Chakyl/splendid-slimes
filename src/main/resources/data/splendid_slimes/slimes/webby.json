@@ -6,6 +6,7 @@
   "diet": "diet.splendid_slimes.webby",
   "foods": [{ "tag": "forge:vegetables" }],
   "favorite_food": { "item": "minecraft:beetroot" },
+  "traits": ["feral"],
   "negative_emit_effects": [
     {
       "effect": "minecraft:slowness",

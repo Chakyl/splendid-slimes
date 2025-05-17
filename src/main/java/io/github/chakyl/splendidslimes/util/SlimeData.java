@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.util;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import net.minecraft.nbt.CompoundTag;
@@ -25,10 +26,11 @@ public class SlimeData {
     }
 
     public static DynamicHolder<SlimeBreed> getSlimeData(String breed) {
-        if (breed.isEmpty()) {
+        String resolvedBreed = breed.replace("\"", "");
+        if (resolvedBreed.isEmpty()) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
-        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(breed));
+        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(resolvedBreed));
     }
 
     public static String parseCommand(String command) {

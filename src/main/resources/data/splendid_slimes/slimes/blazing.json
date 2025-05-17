@@ -5,5 +5,6 @@
   "color": "#c96c03",
   "diet": "diet.splendid_slimes.blazing",
   "foods": [{ "tag": "forge:cooked_meat" }],
-  "favorite_food": { "item": "minecraft:cooked_porkchop" }
+  "favorite_food": { "item": "minecraft:cooked_porkchop" },
+  "traits": ["flaming"]
 }

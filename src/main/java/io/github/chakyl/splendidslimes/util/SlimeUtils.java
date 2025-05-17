@@ -23,7 +23,12 @@ public class SlimeUtils {
         return new MobEffectInstance(effect.getEffect(), effect.getDuration(), effect.getAmplifier());
     }
 
-    public static void applyEffects(LivingEntity entity, List<MobEffectInstance> effects) {
+    public static void renderParticles(SlimeBreed breed, SplendidSlime slime) {
+
+    }
+
+    public static void applyEffects(SlimeBreed breed, SplendidSlime slime, LivingEntity entity, List<MobEffectInstance> effects) {
+        slime.setParticleAnimationTick(0);
         for (MobEffectInstance effect : effects) {
             if (effect != null && entity != null) entity.addEffect(copyEffect(effect));
         }
@@ -32,18 +37,17 @@ public class SlimeUtils {
     public static void applyNegativeEffects(SplendidSlime splendidSlime, LivingEntity entity) {
         DynamicHolder<SlimeBreed> slime = splendidSlime.getSlime();
         DynamicHolder<SlimeBreed> secondarySlime = splendidSlime.getSecondarySlime();
-        if (slime.isBound()) {
-            if (!(splendidSlime.hasSameBreed(entity))) {
-                List<MobEffectInstance> effects = slime.get().negativeEmitEffects();
-                if (secondarySlime.isBound()) {
-                    List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().negativeEmitEffects();
-                    if (!secondarySlimeEffects.isEmpty()) {
-                        applyEffects(entity, secondarySlimeEffects);
-                    }
+        if (!slime.isBound()) return;
+        if (!(splendidSlime.hasSameBreed(entity))) {
+            List<MobEffectInstance> effects = slime.get().negativeEmitEffects();
+            if (secondarySlime.isBound()) {
+                List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().negativeEmitEffects();
+                if (!secondarySlimeEffects.isEmpty()) {
+                    applyEffects(secondarySlime.get(), splendidSlime, entity, secondarySlimeEffects);
                 }
-                if (!effects.isEmpty()) {
-                    applyEffects(entity, effects);
-                }
+            }
+            if (!effects.isEmpty()) {
+                applyEffects(slime.get(), splendidSlime, entity, effects);
             }
         }
     }
@@ -51,17 +55,16 @@ public class SlimeUtils {
     public static void applyPositiveEffects(SplendidSlime splendidSlime, LivingEntity entity) {
         DynamicHolder<SlimeBreed> slime = splendidSlime.getSlime();
         DynamicHolder<SlimeBreed> secondarySlime = splendidSlime.getSecondarySlime();
-        if (slime.isBound()) {
-            List<MobEffectInstance> effects = slime.get().positiveEmitEffects();
-            if (secondarySlime.isBound()) {
-                List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().positiveEmitEffects();
-                if (!secondarySlimeEffects.isEmpty()) {
-                    applyEffects(entity, secondarySlimeEffects);
-                }
+        if (!slime.isBound()) return;
+        List<MobEffectInstance> effects = slime.get().positiveEmitEffects();
+        if (secondarySlime.isBound()) {
+            List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().positiveEmitEffects();
+            if (!secondarySlimeEffects.isEmpty()) {
+                applyEffects(secondarySlime.get(), splendidSlime, entity, secondarySlimeEffects);
             }
-            if (!effects.isEmpty()) {
-                applyEffects(entity, effects);
-            }
+        }
+        if (!effects.isEmpty()) {
+            applyEffects(slime.get(), splendidSlime, entity, effects);
         }
     }
 

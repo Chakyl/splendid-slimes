@@ -12,6 +12,8 @@
     { "item": "minecraft:chorus_fruit" }
   ],
   "favorite_food": { "item": "minecraft:chorus_flower" },
+  "traits": ["foodporting"],
+  "emit_effect_particle": "minecraft:end_rod",
   "negative_emit_effects": [
     {
       "effect": "minecraft:levitation",
