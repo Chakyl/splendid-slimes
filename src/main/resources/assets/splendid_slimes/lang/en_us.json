@@ -142,6 +142,10 @@
   "trait.splendid_slimes.spiky.info": "Slime will hurt players they touch.",
   "trait.splendid_slimes.weeping.name": "Weeping",
   "trait.splendid_slimes.weeping.info": "Slime periodically cries, filling the area with water. If there isn't enough space for its tears it will get sadder.",
+  "trait.splendid_slimes.dominant.name": "Dominant",
+  "trait.splendid_slimes.dominant.info": "Slimes of this breed will only ever eat from its diet when turned into a largo.",
+  "trait.splendid_slimes.recessive.name": "Recessive",
+  "trait.splendid_slimes.recessive.info": "Slimes of this breed will never eat from its diet when turned into a largo.",
 
   "splendid_slimes.advancement.obtain_corral.description": "Use Corral Blocks to keep Slimes contained",
   "splendid_slimes.advancement.obtain_corral.title": "Herding Slimes",

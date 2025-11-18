@@ -85,7 +85,7 @@ public class SlimeVac extends Item {
 
             for (Entity entity : entities) {
                 Vec3 motVec = player.position().subtract(entity.position()).scale(0.25D);
-                entity.push(motVec.x, motVec.y, motVec.z);
+                entity.push(motVec.x, motVec.y + 0.2, motVec.z);
             }
 
             return InteractionResultHolder.pass(handStack);

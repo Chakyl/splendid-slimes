@@ -48,8 +48,8 @@ public class ModElements {
 
     private static final BlockBehaviour.StatePredicate ALWAYS_FALSE = (state, world, pos) -> false;
 
-    static RegistryObject<EntityType<SlimeEntityBase>> slimeEntity = R.entity("splendid_slime", () -> EntityType.Builder.<SlimeEntityBase>of(SplendidSlime::new, MobCategory.MONSTER).build("splendid_slime"));
-    static RegistryObject<EntityType<SlimeEntityBase>> tarrEntity = R.entity("tarr", () -> EntityType.Builder.<SlimeEntityBase>of(Tarr::new, MobCategory.MONSTER).build("tarr"));
+    static RegistryObject<EntityType<SlimeEntityBase>> slimeEntity = R.entity("splendid_slime", () -> EntityType.Builder.<SlimeEntityBase>of(SplendidSlime::new, MobCategory.CREATURE).sized(2.0f, 2.0f).build("splendid_slime"));
+    static RegistryObject<EntityType<SlimeEntityBase>> tarrEntity = R.entity("tarr", () -> EntityType.Builder.<SlimeEntityBase>of(Tarr::new, MobCategory.MONSTER).sized(2.0f, 2.0f).build("tarr"));
 
     static BlockBehaviour.Properties defaultBehavior = BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK);
 

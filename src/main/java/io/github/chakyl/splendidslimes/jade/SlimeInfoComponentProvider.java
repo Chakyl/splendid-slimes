@@ -36,11 +36,19 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         boolean isLargo = entityAccessor.getServerData().contains("SecondaryBreed") && !entityAccessor.getServerData().getString("SecondaryBreed").isEmpty();
         if (entityAccessor.getServerData().contains("Breed")) {
             DynamicHolder<SlimeBreed> slime = getSlimeData(entityAccessor.getServerData().getString("Breed"));
+            SlimeBreed primaryBreed = slime.get();
             if (slime.isBound()) {
-                if (!isLargo) {
-                    tooltip.add(Component.translatable("entity.splendid_slimes.diet", slime.get().diet()));
+                if (!isLargo || primaryBreed.traits().contains("dominant")) {
+                    tooltip.add(Component.translatable("entity.splendid_slimes.diet", primaryBreed.diet()));
                 } else {
-                    tooltip.add(Component.translatable("entity.splendid_slimes.largo_diet", slime.get().diet(), getSlimeData(entityAccessor.getServerData().getString("SecondaryBreed")).get().diet()));
+                    SlimeBreed secondaryBreed = getSlimeData(entityAccessor.getServerData().getString("SecondaryBreed")).get();
+                    if (secondaryBreed.traits().contains("recessive")) {
+                        tooltip.add(Component.translatable("entity.splendid_slimes.diet", primaryBreed.diet()));
+                    } else if (primaryBreed.traits().contains("recessive") || secondaryBreed.traits().contains("dominant")) {
+                        tooltip.add(Component.translatable("entity.splendid_slimes.diet", secondaryBreed.diet()));
+                    } else {
+                        tooltip.add(Component.translatable("entity.splendid_slimes.largo_diet", primaryBreed.diet(), secondaryBreed.diet()));
+                    }
                 }
             }
             if (entityAccessor.getServerData().contains("EatingCooldown")) {
@@ -90,7 +98,8 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         data.putInt("Happiness", slime.getEntityData().get(SplendidSlime.HAPPINESS));
         data.putInt("EatingCooldown", slime.getEntityData().get(SplendidSlime.EATING_COOLDOWN));
         data.putBoolean("Tamed", slime.getEntityData().get(SplendidSlime.TAMED));
-        if (((SplendidSlime) accessor.getEntity()).getTamed()) data.putUUID("Owner", Objects.requireNonNull(slime.getEntityData().get(SplendidSlime.OWNER_UUID).orElse(null)));
+        if (((SplendidSlime) accessor.getEntity()).getTamed())
+            data.putUUID("Owner", Objects.requireNonNull(slime.getEntityData().get(SplendidSlime.OWNER_UUID).orElse(null)));
     }
 
     @Override

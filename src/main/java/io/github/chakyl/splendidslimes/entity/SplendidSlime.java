@@ -2,9 +2,7 @@ package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
-import io.github.chakyl.splendidslimes.item.SlimeVac;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.util.SlimeData;
 import io.github.chakyl.splendidslimes.util.SlimeUtils;
@@ -256,6 +254,20 @@ public class SplendidSlime extends SlimeEntityBase {
         return this.checkFoods(food, slime.foods());
     }
 
+    public List<Object> getSlimeFoods(SlimeBreed slime) {
+        if (!this.isLargo() || slime.traits().contains("dominant")) return slime.foods();
+        DynamicHolder<SlimeBreed> secondaryBreed = getSecondarySlime();
+        if (secondaryBreed.isBound()) {
+            if (secondaryBreed.get().traits().contains("recessive")) return slime.foods();
+            else if (slime.traits().contains("recessive") || secondaryBreed.get().traits().contains("dominant")) return secondaryBreed.get().foods();
+
+        List<Object> combined = new ArrayList<>(slime.foods());
+            combined.addAll(secondaryBreed.get().foods());
+            return combined;
+        }
+        return slime.foods();
+    }
+
     public boolean wantsToPickUp(ItemStack pStack) {
         Item pickUpItem = pStack.getItem();
         if (notHungry() && pickUpItem != ModElements.Items.PLORT.get()) return false;
@@ -271,14 +283,7 @@ public class SplendidSlime extends SlimeEntityBase {
                 return !id.contains(this.getSlimeBreed()) && !(!this.getSlimeSecondaryBreed().isEmpty() && id.contains(this.getSlimeSecondaryBreed()));
             }
         }
-        if (pStack == slime.favoriteFood()) return true;
-        if (checkFoods(pStack, slime.foods())) return true;
-        if (getSecondarySlime().isBound()) {
-            SlimeBreed secondarySlime = getSecondarySlime().get();
-            if (pStack == secondarySlime.favoriteFood()) return true;
-            return checkFoods(pStack, secondarySlime.foods());
-        }
-        return false;
+        return checkFoods(pStack, getSlimeFoods(slime));
     }
 
     public boolean isOwnerOnline() {
