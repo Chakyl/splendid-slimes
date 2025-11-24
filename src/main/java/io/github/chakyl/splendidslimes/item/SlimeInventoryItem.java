@@ -2,11 +2,13 @@ package io.github.chakyl.splendidslimes.item;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.tabs.ITabFiller;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
@@ -33,10 +36,26 @@ public class SlimeInventoryItem extends Item implements ITabFiller {
     public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
         DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, SLIME);
         Component slimeDiet;
+        List<String> traits = new ArrayList<>();
         if (!slime.isBound()) {
             slimeDiet = Component.translatable("diet.splendid_slimes.default_diet");
-        } else slimeDiet = slime.get().diet();
-        list.add(Component.translatable("entity.splendid_slimes.diet", slimeDiet).withStyle(ChatFormatting.GRAY));
+        } else {
+            slimeDiet = slime.get().diet();
+            traits = slime.get().traits();
+        }
+        if (!traits.isEmpty()) {
+            if (Screen.hasShiftDown()) {
+                for (String trait : traits) {
+                    list.add(Component.translatable("trait.splendid_slimes." + trait + ".name").withStyle(ChatFormatting.GRAY));
+                    list.add(Component.translatable("trait.splendid_slimes." + trait + ".info").withStyle(ChatFormatting.DARK_GRAY));
+                }
+            } else {
+                list.add(Component.translatable("entity.splendid_slimes.diet", slimeDiet).withStyle(ChatFormatting.GRAY));
+                list.add(Component.translatable("item.splendid_slimes.slime_item.tooltip_prompt"));
+            }
+        } else {
+            list.add(Component.translatable("entity.splendid_slimes.diet", slimeDiet).withStyle(ChatFormatting.GRAY));
+        }
     }
 
     @Override

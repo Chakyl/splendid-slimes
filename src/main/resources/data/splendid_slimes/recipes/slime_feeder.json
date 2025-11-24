@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "aaa",
+    "ipi",
+    "iii"
+  ],
+  "key": {
+    "p": {
+      "item": "splendid_slimes:plort"
+    },
+    "a": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "splendid_slimes:slime_feeder"
+  },
+  "show_notification": true
+}

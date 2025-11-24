@@ -60,6 +60,7 @@
   "item.splendid_slimes.plort": "%s Plort",
   "item.splendid_slimes.slime_heart": "%s Slime Heart",
   "item.splendid_slimes.slime_item": "%s Slime",
+  "item.splendid_slimes.slime_item.tooltip_prompt": "§8Hold [§7Shift§8] to view traits",
   "item.splendid_slimes.spawn_egg_splendid_slime": "%s Slime Spawn Egg",
   "item.splendid_slimes.spawn_egg_tarr": "Tarr Spawn Egg",
   "item.splendid_slimes.slime_vac": "Slime Vac",
@@ -146,6 +147,10 @@
   "trait.splendid_slimes.dominant.info": "Slimes of this breed will only ever eat from its diet when turned into a largo.",
   "trait.splendid_slimes.recessive.name": "Recessive",
   "trait.splendid_slimes.recessive.info": "Slimes of this breed will never eat from its diet when turned into a largo.",
+  "trait.splendid_slimes.friendly.name": "Friendly",
+  "trait.splendid_slimes.friendly.info": "Slime will follow nearby players.",
+  "trait.splendid_slimes.diverse.name": "Diverse",
+  "trait.splendid_slimes.diverse.info": "Slime will get upset if it's not in close proximity to 3 unique breeds that aren't its own.",
 
   "splendid_slimes.advancement.obtain_corral.description": "Use Corral Blocks to keep Slimes contained",
   "splendid_slimes.advancement.obtain_corral.title": "Herding Slimes",
@@ -165,5 +170,5 @@
   "jei.splendid_slimes.category.slime_info.diet": "Diet",
   "jei.splendid_slimes.plort_rippit.chance": "Chance: %s",
   "jei.splendid_slimes.category.slime_traits": "Slime Traits",
-  "jei.splendid_slimes.category.slime_traits.none": "Slime has noraits"
+  "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits"
 }

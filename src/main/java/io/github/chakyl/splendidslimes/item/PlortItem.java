@@ -5,6 +5,7 @@ import dev.shadowsoffire.placebo.tabs.ITabFiller;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
+import java.awt.*;
 import java.util.List;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
@@ -30,6 +32,11 @@ public class PlortItem extends Item implements ITabFiller {
     @Override
     public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
         list.add(Component.translatable("info.splendid_slimes.plort").withStyle(ChatFormatting.GRAY));
+        if (Minecraft.getInstance().options.keyShift.isDown()) {
+            list.add(Component.literal("hahaha"));
+        } else {
+            list.add(Component.literal("pewpew"));
+        }
     }
 
     @Override

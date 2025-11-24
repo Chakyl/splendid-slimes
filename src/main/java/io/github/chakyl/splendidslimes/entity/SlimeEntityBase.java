@@ -53,7 +53,7 @@ public class SlimeEntityBase extends Slime {
         Vec3i vec3i = this.getPickupReach();
 
         if (!this.level().isClientSide && this.canPickUpLoot() && this.isAlive() && !this.dead) {
-            for(ItemEntity itementity : this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
+            for (ItemEntity itementity : this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double) vec3i.getX(), (double) vec3i.getY(), (double) vec3i.getZ()))) {
                 if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay() && this.wantsToPickUp(itementity.getItem())) {
                     this.pickUpItem(itementity);
                 }

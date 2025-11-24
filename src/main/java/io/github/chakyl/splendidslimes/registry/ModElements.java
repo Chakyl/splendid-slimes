@@ -19,6 +19,7 @@ import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
 import io.github.chakyl.splendidslimes.util.SlimeLootModifier;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -48,8 +49,8 @@ public class ModElements {
 
     private static final BlockBehaviour.StatePredicate ALWAYS_FALSE = (state, world, pos) -> false;
 
-    static RegistryObject<EntityType<SlimeEntityBase>> slimeEntity = R.entity("splendid_slime", () -> EntityType.Builder.<SlimeEntityBase>of(SplendidSlime::new, MobCategory.CREATURE).sized(2.0f, 2.0f).build("splendid_slime"));
-    static RegistryObject<EntityType<SlimeEntityBase>> tarrEntity = R.entity("tarr", () -> EntityType.Builder.<SlimeEntityBase>of(Tarr::new, MobCategory.MONSTER).sized(2.0f, 2.0f).build("tarr"));
+    static RegistryObject<EntityType<SlimeEntityBase>> slimeEntity = R.entity("splendid_slime", () -> EntityType.Builder.<SlimeEntityBase>of(SplendidSlime::new, MobCategory.CREATURE).sized(1.3f, 2.0f).build("splendid_slime"));
+    static RegistryObject<EntityType<SlimeEntityBase>> tarrEntity = R.entity("tarr", () -> EntityType.Builder.<SlimeEntityBase>of(Tarr::new, MobCategory.MONSTER).sized(1.3f, 2.0f).build("tarr"));
 
     static BlockBehaviour.Properties defaultBehavior = BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK);
 
@@ -121,6 +122,13 @@ public class ModElements {
         }
     }
 
+    public static class Particles {
+        public static final RegistryObject<SimpleParticleType> VAC_SUCK = R.particle("vac_suck", () -> new SimpleParticleType(false));
+        private static void bootstrap() {
+
+        }
+    }
+
     public static class Recipes {
         public static final RegistryObject<RecipeSerializer<PlortPressingRecipe>> PLORT_PRESSING_SERIALIZER = R.recipeSerializer("plort_pressing", PlortPressingRecipe.Serializer::new);
         public static final RegistryObject<RecipeSerializer<PlortRippingRecipe>> PLORT_RIPPING_SERIALIZER = R.recipeSerializer("plort_ripping", PlortRippingRecipe.Serializer::new);
@@ -146,6 +154,7 @@ public class ModElements {
         Items.bootstrap();
         Entities.bootstrap();
         Menus.bootstrap();
+        Particles.bootstrap();
         Recipes.bootstrap();
         Tabs.bootstrap();
     }

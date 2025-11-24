@@ -1,14 +1,19 @@
 package io.github.chakyl.splendidslimes.item;
 
+import com.mojang.blaze3d.shaders.Effect;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.item.ItemProjectile.ItemProjectileEntity;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.tag.SplendidSlimesItemTags;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
@@ -20,17 +25,23 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SlimeVac extends Item {
     public static final String NBT_MODE = "Mode";
     private static final int RANGE = 10;
     private static final double ANGLE = Math.cos(Math.PI / 4F);//Pre-calc cosine for speed
+
+    private UUID jammedLargo = null;
 
     public SlimeVac(Properties pProperties) {
         super(pProperties);
@@ -64,11 +75,73 @@ public class SlimeVac extends Item {
         list.add(Component.translatable("info.splendid_slimes.slime_vac.mode", getMode(pStack).name()));
     }
 
+    private void suckParticles(Level level, Player player) {
+        if (!level.isClientSide) {
+            Vec3 startPos = player.getEyePosition().add(0f, -0.2f, -0.5f);
+            Vec3 lookDirection = player.getViewVector(1.0F);
+
+            Vec3 endPos = startPos.add(lookDirection.x * RANGE, lookDirection.y * RANGE, lookDirection.z * RANGE);
+
+            HitResult rayTraceResult = level.clip(new ClipContext(startPos, endPos, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+
+            if (rayTraceResult instanceof BlockHitResult blockHit) {
+                endPos = blockHit.getLocation();
+            }
+
+            for (int i = 0; i < RANGE * 2; i++) {
+                double t = (double) i / RANGE * 2;
+                double x = startPos.x + (endPos.x - startPos.x) * t;
+                double y = startPos.y + (endPos.y - startPos.y) * t;
+                double z = startPos.z + (endPos.z - startPos.z) * t;
+                ((ServerLevel) level).sendParticles(ParticleTypes.END_ROD, x, y, z, 1, 0, 0, 0, 0.01);
+            }
+        }
+    }
+
+    private SplendidSlime getJammedLargo(Level level, Player player) {
+        Class entityClass = SplendidSlime.class;
+        ArrayList<Entity> entities = (ArrayList<Entity>) level.getEntitiesOfClass(entityClass, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(2), EntitySelector.ENTITY_STILL_ALIVE);
+        if (entities.isEmpty()) {
+            this.jammedLargo = null;
+            return null;
+        }
+        for (Entity entity : entities) {
+            if (entity.getUUID().equals(this.jammedLargo)) return (SplendidSlime) entity;
+        }
+        return null;
+    }
+
+    private void moveLargo(Level level, Player player) {
+        SplendidSlime largo = this.getJammedLargo(level, player);
+        if (largo != null) {
+            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1, true, false));
+            Vec3 target3 = new Vec3(player.getX(), player.getY() + player.getBbHeight() / 2, player.getZ())
+                    .add(player.getLookAngle().scale(RANGE)).add(0, 0.5, 0);
+
+
+            Vec3 entityVector = new Vec3(largo.getX(), largo.getY() + largo.getBbHeight() / 2, largo.getZ());
+            Vec3 finalVector = target3.subtract(entityVector);
+
+            if (finalVector.length() > 1) {
+                finalVector = finalVector.normalize();
+            }
+
+            largo.setDeltaMovement(finalVector.scale(0.3333333F));
+                Vec3 motVec = player.position().subtract(largo.position()).scale(0.5D);
+            largo.push(motVec.x, motVec.y + 0.2, motVec.z);
+        }
+    }
+
     // References: Crossroads Vacuum, Create Potato Cannon
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack handStack = player.getItemInHand(hand);
+        if (this.jammedLargo != null) {
+            moveLargo(level, player);
+            return InteractionResultHolder.pass(handStack);
+        }
         if (player.isCrouching()) {
+//            suckParticles(level, player);
             Class entityClass = SplendidSlime.class;
             if (getMode(handStack) == VacMode.ITEM) entityClass = ItemEntity.class;
             ArrayList<Entity> entities = (ArrayList<Entity>) level.getEntitiesOfClass(entityClass, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(RANGE), EntitySelector.ENTITY_STILL_ALIVE);
@@ -84,8 +157,15 @@ public class SlimeVac extends Item {
             });
 
             for (Entity entity : entities) {
-                Vec3 motVec = player.position().subtract(entity.position()).scale(0.25D);
-                entity.push(motVec.x, motVec.y + 0.2, motVec.z);
+                if (entity.getClass().equals(entityClass) && entity.distanceTo(player) < 2.0f) {
+                    if (this.jammedLargo == null && ((SplendidSlime) entity).isLargo()) {
+                        this.jammedLargo = entity.getUUID();
+                        entity.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.8F);
+                    }
+                } else {
+                    Vec3 motVec = player.position().subtract(entity.position()).scale(0.25D);
+                    entity.push(motVec.x, motVec.y + 0.2, motVec.z);
+                }
             }
 
             return InteractionResultHolder.pass(handStack);
@@ -139,6 +219,24 @@ public class SlimeVac extends Item {
                 return InteractionResultHolder.pass(handStack);
             }
             return InteractionResultHolder.pass(handStack);
+        }
+    }
+
+    private void leftClick(Player player) {
+        if (!player.level().isClientSide && this.jammedLargo != null) {
+            SplendidSlime largo = this.getJammedLargo(player.level(), player);
+            Vec3 lookVec = player.getLookAngle();
+            Vec3 motion = lookVec.normalize()
+                    .scale(2)
+                    .scale(1.5f);
+            Vec3 splitMotion = motion;
+            Vec3 barrelPos = getShootLocVec(player, player.getUsedItemHand() == InteractionHand.MAIN_HAND,
+                    new Vec3(.45f, -0.5f, 1.0f));
+            largo.setPos(barrelPos.x, barrelPos.y, barrelPos.z);
+            largo.setDeltaMovement(splitMotion);
+
+            largo.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
+            this.jammedLargo = null;
         }
     }
 
