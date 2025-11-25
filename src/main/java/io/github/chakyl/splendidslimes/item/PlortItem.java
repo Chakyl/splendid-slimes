@@ -30,16 +30,6 @@ public class PlortItem extends Item implements ITabFiller {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable("info.splendid_slimes.plort").withStyle(ChatFormatting.GRAY));
-        if (Minecraft.getInstance().options.keyShift.isDown()) {
-            list.add(Component.literal("hahaha"));
-        } else {
-            list.add(Component.literal("pewpew"));
-        }
-    }
-
-    @Override
     public void fillItemCategory(CreativeModeTab tab, CreativeModeTab.Output output) {
         SlimeBreedRegistry.INSTANCE.getKeys().stream().sorted().forEach(key -> {
             ItemStack s = new ItemStack(this);

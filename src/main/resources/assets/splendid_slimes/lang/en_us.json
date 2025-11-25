@@ -54,6 +54,15 @@
   "info.splendid_slimes.slime_vac.mode": "Mode: %s",
   "info.splendid_slimes.slime_vac.mode_set": "Changed mode to %s",
 
+  "info.splendid_slimes.slime_inspector": "Checks if there are living conditions making a Slime unhappy",
+  "info.splendid_slimes.slime_inspector.suffocating": "This Slime is suffocating in slime!!",
+  "info.splendid_slimes.slime_inspector.crowded": "This Slime has %s nearby Slimes with the same breed! It's a bit crowded...",
+  "info.splendid_slimes.slime_inspector.aquatic_failure": "This Aquatic Slime is stuck on land...",
+  "info.splendid_slimes.slime_inspector.diverse_failure": "This Slime needs some different breeds near it!",
+  "info.splendid_slimes.slime_inspector.all_good": "Your Slime is squelching around happily!",
+  "info.splendid_slimes.slime_inspector.not_happy": "Your Slime is not very happy with its living conditions...",
+
+
   "item.splendid_slimes.default_plort": "Any",
   "item.splendid_slimes.default_heart": "Any",
   "item.splendid_slimes.default_slime_item": "Any",
@@ -66,6 +75,7 @@
   "item.splendid_slimes.slime_vac": "Slime Vac",
   "item.splendid_slimes.rocket_pod": "Rocket Pod",
   "item.splendid_slimes.slime_candy": "Slime Candy",
+  "item.splendid_slimes.slime_inspector": "Slime Inspector",
 
   "itemGroup.splendid_slimes": "Splendid Slimes",
 

@@ -98,6 +98,12 @@ public class SlimeVac extends Item {
         }
     }
 
+    public static boolean playerCanPickupSlime(Player player) {
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        if (!stack.is(ModElements.Items.SLIME_VAC.get())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
+        return getMode(stack) != VacMode.ITEM;
+    }
+
     private SplendidSlime getJammedLargo(Level level, Player player) {
         Class entityClass = SplendidSlime.class;
         ArrayList<Entity> entities = (ArrayList<Entity>) level.getEntitiesOfClass(entityClass, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(2), EntitySelector.ENTITY_STILL_ALIVE);
@@ -157,7 +163,7 @@ public class SlimeVac extends Item {
             });
 
             for (Entity entity : entities) {
-                if (entity.getClass().equals(entityClass) && entity.distanceTo(player) < 2.0f) {
+                if (entity instanceof SplendidSlime && entity.distanceTo(player) < 2.0f) {
                     if (this.jammedLargo == null && ((SplendidSlime) entity).isLargo()) {
                         this.jammedLargo = entity.getUUID();
                         entity.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.8F);

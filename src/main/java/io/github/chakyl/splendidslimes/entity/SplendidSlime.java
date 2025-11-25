@@ -2,9 +2,11 @@ package io.github.chakyl.splendidslimes.entity;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
+import io.github.chakyl.splendidslimes.item.SlimeInspector;
+import io.github.chakyl.splendidslimes.item.SlimeVac;
 import io.github.chakyl.splendidslimes.registry.ModElements;
+import io.github.chakyl.splendidslimes.util.SlimeComfortUtils;
 import io.github.chakyl.splendidslimes.util.SlimeData;
 import io.github.chakyl.splendidslimes.util.SlimeUtils;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -152,7 +154,7 @@ public class SplendidSlime extends SlimeEntityBase {
                 }
                 if (happiness > MAX_HAPPINESS) setHappiness(MAX_HAPPINESS - 1);
                 else if (happiness > 0) {
-                    if (this.hasTrait("aquatic") && !this.isInWater()) {
+                    if (SlimeComfortUtils.aquaticTraitCheck(this)) {
                         addHappiness(-10);
                     }
                     if (this.getEatingCooldown() == 0) addHappiness(-5);
@@ -490,7 +492,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void playerTouch(Player pEntity) {
         if (pEntity.isHolding(ModElements.Items.SLIME_VAC.get()) && pEntity.isCrouching()) {
-            if (this.getSlimeSecondaryBreed().isEmpty()) {
+            if (SlimeVac.playerCanPickupSlime(pEntity) && this.getSlimeSecondaryBreed().isEmpty()) {
                 this.pickupSlime(pEntity);
             }
         }
@@ -571,31 +573,19 @@ public class SplendidSlime extends SlimeEntityBase {
                 this.getServer().getLevel(this.level().dimension()).sendParticles(ParticleTypes.NOTE, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), 1, d0, d1, d2, 0.2);
             }
         }
-        int nearbyFriends = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) || Objects.equals(e.getSlimeSecondaryBreed(), this.getSlimeSecondaryBreed())).size();
+        int nearbyFriends = SlimeComfortUtils.getNearbyFriends(this).size();
         if (nearbyFriends >= 3) happinessIncrease += 15;
         if (nearbyFriends > 5) happinessIncrease += 15;
-        if (nearbyFriends > 8) {
-            happinessIncrease -= 120;
+        if (SlimeComfortUtils.slimeIsSuffocated(this) || nearbyFriends > 8) {
             displayAngerParticles = true;
+            happinessIncrease -= 120;
 
         }
-        if (this.hasTrait("diverse")) {
-            List<String> breeds = new ArrayList<>();
-            List<SplendidSlime> nearbyDifferent = this.level().getEntitiesOfClass(SplendidSlime.class, this.getBoundingBox().inflate(7), e -> !Objects.equals(e.getSlimeBreed(), this.getSlimeBreed()) && !Objects.equals(e.getSlimeSecondaryBreed(), this.getSlimeSecondaryBreed()));
-            for (SplendidSlime slime : nearbyDifferent) {
-                if (!breeds.contains(slime.getSlimeBreed())) {
-                    breeds.add(slime.getSlimeBreed());
-                }
-                if (!breeds.contains(slime.getSlimeSecondaryBreed())) {
-                    breeds.add(slime.getSlimeSecondaryBreed());
-                }
-                if (breeds.size() >= 3) break;
-            }
-            if (breeds.size() < 3) {
-                addHappiness(-40);
-            }
+        if (SlimeComfortUtils.diverseTraitCheck(this)) {
+            displayAngerParticles = true;
+            addHappiness(-40);
         }
-        if (this.hasTrait("photosynthesizing") && !this.level().canSeeSkyFromBelowWater(this.getOnPos())) {
+        if (SlimeComfortUtils.photosynthesizingTraitCheck(this)) {
             displayAngerParticles = true;
             addHappiness(-40);
         }
@@ -700,12 +690,17 @@ public class SplendidSlime extends SlimeEntityBase {
 
     @Override
     protected InteractionResult mobInteract(Player pPlayer, InteractionHand pHand) {
-        if (!pPlayer.getMainHandItem().isEmpty() && this.hasTrait("handy")) {
-            ItemStack itemstack = pPlayer.getMainHandItem();
-            ItemStack itemstack1 = this.equipItemIfPossible(itemstack.copy());
-            if (!itemstack1.isEmpty()) {
-                itemstack.shrink(itemstack1.getCount());
+        ItemStack itemstack = pPlayer.getMainHandItem();
+        if (!itemstack.isEmpty()) {
+            if (itemstack.getItem() instanceof SlimeInspector slimeInspector) {
+                slimeInspector.runInspection(pPlayer, this);
                 return InteractionResult.SUCCESS;
+            } else if (this.hasTrait("handy")){
+                ItemStack itemstack1 = this.equipItemIfPossible(itemstack.copy());
+                if (!itemstack1.isEmpty()) {
+                    itemstack.shrink(itemstack1.getCount());
+                    return InteractionResult.SUCCESS;
+                }
             }
         }
         return InteractionResult.FAIL;
@@ -901,7 +896,7 @@ public class SplendidSlime extends SlimeEntityBase {
             List<EntityType<? extends LivingEntity>> hostileToMobs = getHostileToMobs();
             if (edibleMobs == null && hostileToMobs == null) return;
             List<EntityType<? extends LivingEntity>> finalHostileToMobs = hostileToMobs;
-            List<LivingEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(LivingEntity.class, this.mob.getBoundingBox().inflate(10), e -> (!notHungry() && edibleMobs.contains(e.getType())) || finalHostileToMobs.contains(e.getType()) || (hasTrait("feral") && e.getType() == EntityType.PLAYER) || (hasTrait("friendly") && e.getType() == EntityType.PLAYER)  || (((SplendidSlime) this.mob).getHappiness() < FURIOUS_THRESHOLD && e.getType() == EntityType.PLAYER));
+            List<LivingEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(LivingEntity.class, this.mob.getBoundingBox().inflate(10), e -> (!notHungry() && edibleMobs.contains(e.getType())) || finalHostileToMobs.contains(e.getType()) || (hasTrait("feral") && e.getType() == EntityType.PLAYER) || (hasTrait("friendly") && e.getType() == EntityType.PLAYER) || (((SplendidSlime) this.mob).getHappiness() < FURIOUS_THRESHOLD && e.getType() == EntityType.PLAYER));
             if (!nearbyEntities.isEmpty()) {
                 LivingEntity targetEntity = nearbyEntities.get(0);
                 for (LivingEntity potentialTarget : nearbyEntities) {
