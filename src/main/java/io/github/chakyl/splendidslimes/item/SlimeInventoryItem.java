@@ -2,13 +2,14 @@ package io.github.chakyl.splendidslimes.item;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.tabs.ITabFiller;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.client.renderer.SlimeItemModelRenderer;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,9 +18,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
@@ -56,6 +59,18 @@ public class SlimeInventoryItem extends Item implements ITabFiller {
         } else {
             list.add(Component.translatable("entity.splendid_slimes.diet", slimeDiet).withStyle(ChatFormatting.GRAY));
         }
+    }
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions(){
+            SlimeItemModelRenderer dmisr = new SlimeItemModelRenderer();
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return this.dmisr;
+            }
+        });
+
     }
 
     @Override
@@ -98,7 +113,13 @@ public class SlimeInventoryItem extends Item implements ITabFiller {
         }
         return null;
     }
-
+    public static DynamicHolder<SlimeBreed> getStoredSlime(ItemStack stack) {
+        CompoundTag tag = stack.getTagElement(SLIME);
+        if (stack.isEmpty() || tag == null || !tag.contains(ID)) {
+            return SlimeBreedRegistry.INSTANCE.emptyHolder();
+        }
+        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(tag.getString(ID)));
+    }
     public static int getData(ItemStack stack) {
         CompoundTag tag = stack.getTagElement(SLIME);
         return stack.isEmpty() || tag == null ? 0 : tag.getInt(DATA);

@@ -31,7 +31,7 @@ public class SlimeTraitsCategory implements IRecipeCategory<TraitRecipe> {
 
     public SlimeTraitsCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 208, 111);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_ITEM.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_CANDY.get()));
         this.name = Component.translatable("jei.splendid_slimes.category.slime_traits");
     }
 

@@ -177,7 +177,9 @@
   "splendid_slimes.advancement.root.description": "Ranching slimes for resources!",
   "splendid_slimes.advancement.root.title": "Splendid Slimes",
   "jei.splendid_slimes.category.slime_info": "Slime Info",
+  "jei.splendid_slimes.category.slime_incubating": "Slime Incubating",
   "jei.splendid_slimes.category.slime_info.diet": "Diet",
+  "jei.splendid_slimes.category.slime_incubation.incubation_time": "%ss incubation time",
   "jei.splendid_slimes.plort_rippit.chance": "Chance: %s",
   "jei.splendid_slimes.category.slime_traits": "Slime Traits",
   "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits"

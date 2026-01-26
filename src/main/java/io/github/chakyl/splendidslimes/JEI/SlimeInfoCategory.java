@@ -32,7 +32,7 @@ public class SlimeInfoCategory implements IRecipeCategory<PlortRecipe> {
 
     public SlimeInfoCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 232, 111);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_ITEM.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_VAC.get()));
         this.name = Component.translatable("jei.splendid_slimes.category.slime_info");
     }
 

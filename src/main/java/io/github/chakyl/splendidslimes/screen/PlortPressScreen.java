@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class PlortPressScreen extends AbstractContainerScreen<PlortPressMenu> {
     public static final ResourceLocation TEXTURE = new ResourceLocation(SplendidSlimes.MODID, "textures/gui/plort_press.png");
+
     public PlortPressScreen(PlortPressMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
     }
@@ -18,8 +19,6 @@ public class PlortPressScreen extends AbstractContainerScreen<PlortPressMenu> {
     @Override
     protected void init() {
         super.init();
-        this.inventoryLabelY = 10000;
-        this.titleLabelY = 10000;
     }
 
     @Override
@@ -36,7 +35,7 @@ public class PlortPressScreen extends AbstractContainerScreen<PlortPressMenu> {
     }
 
     private void renderProgressArrow(GuiGraphics guiGraphics, int x, int y) {
-        if(menu.isCrafting()) {
+        if (menu.isCrafting()) {
             guiGraphics.blit(TEXTURE, x + 82, y + 25, 176, 0, 12, menu.getScaledProgress());
         }
     }

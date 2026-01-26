@@ -14,6 +14,7 @@ import dev.shadowsoffire.placebo.codec.CodecProvider;
 import dev.shadowsoffire.placebo.json.ItemAdapter;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.item.PlortItem;
+import io.github.chakyl.splendidslimes.item.SlimeHeartItem;
 import io.github.chakyl.splendidslimes.item.SlimeInventoryItem;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.util.SlimeData;
@@ -97,6 +98,12 @@ public record SlimeBreed(String breed, MutableComponent name,
     public ItemStack getSlimeItem() {
         ItemStack stack = new ItemStack(ModElements.Items.SLIME_ITEM.get());
         SlimeInventoryItem.setStoredSlime(stack, this);
+        return stack;
+    }
+
+    public ItemStack getHeart() {
+        ItemStack stack = new ItemStack(ModElements.Items.SLIME_HEART.get());
+        SlimeHeartItem.setStoredPlort(stack, this);
         return stack;
     }
 

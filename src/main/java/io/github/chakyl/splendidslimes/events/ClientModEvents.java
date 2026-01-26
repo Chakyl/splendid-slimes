@@ -58,7 +58,7 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void mrl(ModelEvent.RegisterAdditional e) {
-        e.register(new ResourceLocation(SplendidSlimes.MODID, "item/data_model_base"));
+        e.register(new ResourceLocation(SplendidSlimes.MODID, "item/slime_item"));
     }
 
     @SubscribeEvent
@@ -115,14 +115,6 @@ public class ClientModEvents {
             return color;
         }, ModElements.Items.SLIME_HEART.get());
 
-        e.register((stack, tint) -> {
-            DynamicHolder<SlimeBreed> slime = getSlimeData(stack, "slime");
-            int color = 0xFFFFFF;
-            if (slime.isBound()) {
-                color = slime.get().getColor();
-            }
-            return color;
-        }, ModElements.Items.SLIME_ITEM.get());
     }
 
 }

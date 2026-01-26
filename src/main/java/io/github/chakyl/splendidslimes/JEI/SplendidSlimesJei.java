@@ -43,6 +43,7 @@ public class SplendidSlimesJei implements IModPlugin {
         reg.addRecipeCategories(new PlortPressingCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new SlimeInfoCategory(reg.getJeiHelpers().getGuiHelper()));
         reg.addRecipeCategories(new SlimeTraitsCategory(reg.getJeiHelpers().getGuiHelper()));
+        reg.addRecipeCategories(new SlimeIncubatingCategory(reg.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -54,10 +55,13 @@ public class SplendidSlimesJei implements IModPlugin {
         List<PlortPressingRecipe> pressingRecipes = recipeManager.getAllRecipesFor(PlortPressingRecipe.Type.INSTANCE);
         registration.addRecipes(PlortPressingCategory.TYPE, pressingRecipes);
         List<PlortRecipe> breedRecipes = new ArrayList<>();
+        List<SlimeRecipe> incubateRecipes = new ArrayList<>();
         for (SlimeBreed breed : SlimeBreedRegistry.INSTANCE.getValues()) {
             breedRecipes.add(new PlortRecipe(breed));
+            incubateRecipes.add(new SlimeRecipe(breed));
         }
         registration.addRecipes(SlimeInfoCategory.TYPE, breedRecipes);
+        registration.addRecipes(SlimeIncubatingCategory.TYPE, incubateRecipes);
         List<TraitRecipe> traitRecipes = new ArrayList<>();
         for (SlimeBreed breed : SlimeBreedRegistry.INSTANCE.getValues()) {
             int traitCount = breed.traits().size();
@@ -73,6 +77,7 @@ public class SplendidSlimesJei implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration reg) {
         reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()), PlortRippingCategory.TYPE);
         reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.PLORT_PRESS.get()), PlortPressingCategory.TYPE);
+        reg.addRecipeCatalyst(new ItemStack(ModElements.Blocks.SLIME_INCUBATOR.get()), SlimeIncubatingCategory.TYPE);
     }
 
     @Override
