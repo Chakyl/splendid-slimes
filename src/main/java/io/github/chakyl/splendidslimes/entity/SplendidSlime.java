@@ -288,7 +288,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public boolean isOwnerOnline() {
         if (!this.getTamed()) return true;
-        return (this.level().getPlayerByUUID(this.getOwnerUUID()) != null);
+        return (this.getServer().getPlayerList().getPlayer(this.getOwnerUUID()) != null);
     }
 
     public ItemStack getSlimePlort() {

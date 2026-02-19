@@ -48,18 +48,16 @@ public class SlimyConfig {
         incubationTime = cfg.getInt("Slime Incubation Time", "machines", 6000, 1, Integer.MAX_VALUE, "Time it takes for Splendid Slimes to incubate in Slime Incubator");
         plortPressingTime = cfg.getInt("Plort Pressing Time", "machines", 1200, 20, Integer.MAX_VALUE - 10, "Time it takes to craft items in a Plort Press");
 
-        slimeSpawnerTime = cfg.getInt("Slime Spawner Time", "spawner", 6000, 20, Integer.MAX_VALUE, "Time it takes for Slime Spawners to be able to dispense Slimes again");
-
         if (cfg.hasChanged()) cfg.save();
     }
 
     static record ConfigMessage(int slimeStarvingTime, int slimeMaxHappiness, int slimeHappyThreshold,
                                 int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,
                                 boolean slimeOwnerOfflineCheck,
-                                boolean enableTarrs, int incubationTime, int plortPressingTime, int slimeSpawnerTime) {
+                                boolean enableTarrs, int incubationTime, int plortPressingTime) {
 
         public ConfigMessage() {
-            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.slimeOwnerOfflineCheck, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime, SlimyConfig.slimeSpawnerTime);
+            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.slimeOwnerOfflineCheck, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
         }
 
         public static class Provider implements MessageProvider<ConfigMessage> {
@@ -81,12 +79,11 @@ public class SlimyConfig {
                 buf.writeBoolean(msg.enableTarrs);
                 buf.writeInt(msg.incubationTime);
                 buf.writeInt(msg.plortPressingTime);
-                buf.writeInt(msg.slimeSpawnerTime);
             }
 
             @Override
             public ConfigMessage read(FriendlyByteBuf buf) {
-                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readBoolean(), buf.readInt(), buf.readInt(), buf.readInt());
+                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readBoolean(), buf.readInt(), buf.readInt());
             }
 
             @Override
@@ -102,7 +99,6 @@ public class SlimyConfig {
                     SlimyConfig.enableTarrs = msg.slimeOwnerOfflineCheck;
                     SlimyConfig.incubationTime = msg.incubationTime;
                     SlimyConfig.plortPressingTime = msg.plortPressingTime;
-                    SlimyConfig.slimeSpawnerTime = msg.slimeSpawnerTime;
                 }, ctx);
             }
 

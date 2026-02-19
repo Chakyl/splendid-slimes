@@ -68,6 +68,6 @@ public class SlimeIncubatingCategory implements IRecipeCategory<SlimeRecipe> {
 
     @Override
     public void draw(SlimeRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("jei.splendid_slimes.category.slime_incubation.incubation_time", SlimyConfig.incubationTime / 20)), 20, 28, 0xFF4b3658, false);
+        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("jei.splendid_slimes.category.slime_incubation.incubation_time", SlimyConfig.incubationTime / 20)), 4, 28, 0xFF4b3658, false);
     }
 }
