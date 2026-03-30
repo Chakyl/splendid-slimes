@@ -635,35 +635,37 @@ public class SplendidSlime extends SlimeEntityBase {
 
     }
 
+    public void handlePickup(ItemStack item, ItemEntity itemEntity) {
+        boolean atePlort = false;
+        if (this.getHappiness() > FURIOUS_THRESHOLD && item.getItem() == ModElements.Items.PLORT.get() && item.hasTag()) {
+            CompoundTag plortTag = item.getTagElement("plort");
+            if (plortTag != null && plortTag.contains("id")) {
+                atePlort = true;
+                if (this.getSlimeSecondaryBreed().isEmpty()) {
+                    if (this.getSize() < 4) {
+                        this.moveTo(this.getOnPos().above().getCenter());
+                        this.setJumping(false);
+                        this.setSize(this.getSize() + 1, false);
+                    }
+                    this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
+                    this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
+                    DynamicHolder<SlimeBreed> secondaryBreed = this.getSecondarySlime();
+                    if (secondaryBreed.isBound())
+                        applyEffects(this, this, secondaryBreed.get().innateEffects(), false);
+                } else {
+                    causeChaos();
+                }
+            }
+        }
+        if (!atePlort) handleFeed(this.isFavoriteFood(item.getItem()), item);
+        item.setCount(item.getCount() - 1);
+        if (itemEntity != null) itemEntity.setItem(item);
+    }
     @Override
     protected void pickUpItem(ItemEntity itemEntity) {
         ItemStack item = itemEntity.getItem();
-        boolean atePlort = false;
         if (wantsToPickUp(item)) {
-            if (this.getHappiness() > FURIOUS_THRESHOLD && item.getItem() == ModElements.Items.PLORT.get() && item.hasTag()) {
-                CompoundTag plortTag = item.getTagElement("plort");
-                if (plortTag != null && plortTag.contains("id")) {
-                    atePlort = true;
-                    if (this.getSlimeSecondaryBreed().isEmpty()) {
-                        if (this.getSize() < 4) {
-                            this.moveTo(this.getOnPos().above().getCenter());
-                            this.setJumping(false);
-                            this.setSize(this.getSize() + 1, false);
-                        }
-                        ;
-                        this.playSound(SoundEvents.AMETHYST_BLOCK_STEP, 1.0F, 0.9F);
-                        this.setSlimeSecondaryBreed(plortTag.get("id").toString().replace("\"", ""));
-                        DynamicHolder<SlimeBreed> secondaryBreed = this.getSecondarySlime();
-                        if (secondaryBreed.isBound())
-                            applyEffects(this, this, secondaryBreed.get().innateEffects(), false);
-                    } else {
-                        causeChaos();
-                    }
-                }
-            }
-            if (!atePlort) handleFeed(this.isFavoriteFood(item.getItem()), item);
-            item.setCount(item.getCount() - 1);
-            itemEntity.setItem(item);
+            this.handlePickup(item, itemEntity);
         }
     }
 

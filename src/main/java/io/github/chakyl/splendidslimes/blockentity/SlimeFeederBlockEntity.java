@@ -52,7 +52,7 @@ public class SlimeFeederBlockEntity extends RandomizableContainerBlockEntity imp
                         if (slime.wantsToPickUp(slotItem)) {
                             boolean isPrimary = slime.isPrimaryFood(slotItem);
                             if (!handlePicky || !(slime.getLastAte() == 0 && isPrimary || slime.getLastAte() == 1 && !isPrimary)) {
-                                slime.handleFeed(slime.isFavoriteFood(slotItem.getItem()), slotItem);
+                                slime.handlePickup(slotItem, null);
                                 slotItem.shrink(1);
                                 break;
                             }
