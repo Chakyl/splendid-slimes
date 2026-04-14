@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.item;
 
 import com.mojang.blaze3d.shaders.Effect;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.item.ItemProjectile.ItemProjectileEntity;
 import io.github.chakyl.splendidslimes.registry.ModElements;
@@ -49,6 +50,8 @@ public class SlimeVac extends Item {
 
     public static VacMode getMode(ItemStack stack) {
         if (stack.hasTag()) {
+            String stringMode = stack.getOrCreateTag().getString(NBT_MODE);
+            if (stringMode.isEmpty()) return VacMode.BOTH;
             return VacMode.valueOf(stack.getOrCreateTag().getString(NBT_MODE));
         }
         return VacMode.BOTH;
