@@ -55,7 +55,7 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
                 SplendidSlime spawnedSlime = (SplendidSlime) ModElements.Entities.SPLENDID_SLIME.get().create(level);
                 spawnedSlime.setSlimeBreed(slimeType);
                 spawnedSlime.setSize(2, true);
-                spawnedSlime.setEatingCooldown(SplendidSlime.SLIME_STARVING_COOLDOWN / 2);
+                spawnedSlime.setHunger(SplendidSlime.SLIME_MAX_HUNGER / 2);
                 spawnedSlime.push(d3, d4, d5);
                 spawnedSlime.moveTo(d0, d1, d2, level.random.nextFloat() * 360.0F, 0.0F);
                 level.addFreshEntity(spawnedSlime);

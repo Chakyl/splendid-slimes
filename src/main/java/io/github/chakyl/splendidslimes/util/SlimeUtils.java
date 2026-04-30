@@ -111,7 +111,7 @@ public class SlimeUtils {
     }
 
     public static void handleHungryTraits(SplendidSlime splendidSlime) {
-        double chance = 1 - (((splendidSlime.getEatingCooldown() + 1.0) / SplendidSlime.SLIME_HUNGRY_THRESHOLD));
+        double chance = 1 - (((splendidSlime.getHunger() + 1.0) / SplendidSlime.SLIME_HUNGRY_THRESHOLD));
         if (splendidSlime.getRandom().nextFloat() <= chance) {
             if (splendidSlime.hasTrait("explosive")) {
                 splendidSlime.level().explode(splendidSlime, splendidSlime.getX(), splendidSlime.getY(), splendidSlime.getZ(), splendidSlime.hasTrait("flaming") ? 3f : 4f, splendidSlime.hasTrait("flaming"), Level.ExplosionInteraction.NONE);
@@ -144,5 +144,17 @@ public class SlimeUtils {
         }
         slime.playSound(SoundEvents.GHAST_SCREAM, 0.6F, (float) Math.random());
         return false;
+    }
+
+    public static boolean compareDay(int day, int checkedDay, int amount) {
+        return day < checkedDay || day - checkedDay >= amount;
+    }
+    public static int getDayOffset(int day, int checkedDay) {
+        if (day < checkedDay ) return 1;
+        return day - checkedDay;
+    }
+
+    public static int getDay(Level level) {
+        return (int) (Math.floor((double) level.dayTime() / 24000) + 1);
     }
 }

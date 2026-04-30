@@ -82,13 +82,13 @@ public record SlimeBreed(String breed, MutableComponent name,
                          List<MobEffectInstance> negativeEmitEffects,
                          List<String> positiveCommands,
                          List<String> negativeCommands,
-                         List<String> attackCommands) implements CodecProvider<SlimeBreed> {
+                         List<String> attackCommands, RavenousFoods ravenousFoods) implements CodecProvider<SlimeBreed> {
 
     public static final Codec<SlimeBreed> CODEC = new SlimeBreedCodec();
-    public static final List<String> POSSIBLE_TRAITS = Arrays.asList("aquatic", "defiant", "dominant", "recessive", "explosive", "feral", "flaming", "floating", "foodporting", "friendly", "diverse", "handy", "inverse", "largoless", "moody", "nuclear", "picky", "photosynthesizing", "putrid", "spiky", "weeping");
+    public static final List<String> POSSIBLE_TRAITS = Arrays.asList("aquatic", "defiant", "dominant", "recessive", "explosive", "feral", "flaming", "floating", "foodporting", "friendly", "diverse", "handy", "inverse", "largoless", "moody", "nuclear", "picky", "pompous", "photosynthesizing", "putrid", "ravenous", "spiky", "weeping");
 
     public SlimeBreed(SlimeBreed other) {
-        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.traits, other.innateEffects, other.emitEffectParticle, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands);
+        this(other.breed, other.name, other.hat, other.hatScale, other.hatXOffset, other.hatYOffset, other.hatZOffset, other.particle, other.diet, other.foods, other.favoriteFood, other.entities, other.favoriteEntity, other.hostileToEntities, other.traits, other.innateEffects, other.emitEffectParticle, other.positiveEmitEffects, other.negativeEmitEffects, other.positiveCommands, other.negativeCommands, other.attackCommands, other.ravenousFoods);
     }
 
     public int getColor() {
@@ -208,6 +208,16 @@ public record SlimeBreed(String breed, MutableComponent name,
             for (String command : input.attackCommands) {
                 attackCommands.add(command);
             }
+
+            JsonArray ravenousFoods = new JsonArray();
+            for (RavenousFood ravenousFood : input.ravenousFoods) {
+                JsonObject foodObj = new JsonObject();
+                JsonElement item = ItemAdapter.ITEM_READER.toJsonTree(ravenousFood.getFood());
+                foodObj.add("item", item);
+                foodObj.addProperty("hunger_amount", ravenousFood.getHungerAmount());
+                ravenousFoods.add(foodObj);
+            }
+            obj.add("ravenous_foods", ravenousFoods);
             return DataResult.success(JsonOps.INSTANCE.convertTo(ops, obj));
         }
 
@@ -253,7 +263,7 @@ public record SlimeBreed(String breed, MutableComponent name,
             if (obj.has("foods")) {
                 JsonArray parsedFood = GsonHelper.getAsJsonArray(obj, "foods");
                 for (JsonElement e : parsedFood) {
-                    if (e.getAsJsonObject().has("item"))
+                    if (e.getAsJsonObject().has("food"))
                         foods.add(ItemAdapter.ITEM_READER.fromJson(e.getAsJsonObject(), ItemStack.class));
                     else if (e.getAsJsonObject().has("tag"))
                         foods.add(TagKey.create(Registries.ITEM, new ResourceLocation(e.getAsJsonObject().get("tag").getAsString())));
@@ -332,7 +342,19 @@ public record SlimeBreed(String breed, MutableComponent name,
                     attackCommands.add(SlimeData.parseCommand(String.valueOf(json)));
                 }
             }
-            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, hostileToEntitites, traits, innateEffects, emitEffectParticleType, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands, attackCommands), input));
+            RavenousFoods ravenousFoods = new RavenousFoods();
+            if (obj.has("ravenous_foods")) {
+                for (JsonElement json : GsonHelper.getAsJsonArray(obj, "ravenous_foods")) {
+                    if (json.getAsJsonObject().has("food")) {
+                        ItemStack ravenItem = ItemAdapter.ITEM_READER.fromJson(json.getAsJsonObject().getAsJsonObject("food"), ItemStack.class);
+                        int food = 0;
+                        if (json.getAsJsonObject().has("hunger_amount"))
+                            food = GsonHelper.getAsInt(json.getAsJsonObject(), "hunger_amount");
+                        ravenousFoods.add(new RavenousFood(ravenItem, food));
+                    }
+                }
+            }
+            return DataResult.success(Pair.of(new SlimeBreed(breed, name, hat, hatScale, hatXOffset, hatYOffset, hatZOffset, particle, diet, foods, favoriteFood, entities, favoriteEntity, hostileToEntitites, traits, innateEffects, emitEffectParticleType, positiveEmitEffects, negativeEmitEffects, positiveCommands, negativeCommands, attackCommands, ravenousFoods), input));
         }
 
     }

@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class SlimyConfig {
 
-    public static int slimeStarvingTime;
+    public static int slimeHungerAmount;
     public static int slimeMaxHappiness;
 
     public static int slimeHappyThreshold;
@@ -33,7 +33,7 @@ public class SlimyConfig {
         Configuration cfg = new Configuration(SplendidSlimes.MODID);
         cfg.setTitle("꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦ Splendid Slimes Config! ꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷");
         cfg.setComment("All entries in this config file are synced from server to client.");
-        slimeStarvingTime = cfg.getInt("Slime Starving time", "slimes", 24000, 20, Integer.MAX_VALUE, "How long it takes for Splendid Slimes to start starving, in ticks. Slimes can eat halfway through this duration");
+        slimeHungerAmount = cfg.getInt("Slime Hunger Amount", "slimes", 24000, 20, Integer.MAX_VALUE, "How much a full slime's hunger will equate to");
 
         slimeMaxHappiness = cfg.getInt("Slime Max Happiness", "slimes", 1000, 3, Integer.MAX_VALUE - 500, "Maximum happiness value for a Splendid Slime.");
         slimeHappyThreshold = cfg.getInt("Slime Happy Threshold", "slimes", 600, 0, Integer.MAX_VALUE, "Minimum amount of happiness a Splendid Slime can have before being considered 'Happy'.");
@@ -51,13 +51,13 @@ public class SlimyConfig {
         if (cfg.hasChanged()) cfg.save();
     }
 
-    static record ConfigMessage(int slimeStarvingTime, int slimeMaxHappiness, int slimeHappyThreshold,
+    static record ConfigMessage(int slimeHungerAmount, int slimeMaxHappiness, int slimeHappyThreshold,
                                 int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,
                                 boolean slimeOwnerOfflineCheck,
                                 boolean enableTarrs, int incubationTime, int plortPressingTime) {
 
         public ConfigMessage() {
-            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.slimeOwnerOfflineCheck, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
+            this(SlimyConfig.slimeHungerAmount, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.slimeOwnerOfflineCheck, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
         }
 
         public static class Provider implements MessageProvider<ConfigMessage> {
@@ -69,7 +69,7 @@ public class SlimyConfig {
 
             @Override
             public void write(ConfigMessage msg, FriendlyByteBuf buf) {
-                buf.writeInt(msg.slimeStarvingTime);
+                buf.writeInt(msg.slimeHungerAmount);
                 buf.writeInt(msg.slimeMaxHappiness);
                 buf.writeInt(msg.slimeHappyThreshold);
                 buf.writeInt(msg.slimeUnhappyThreshold);
@@ -89,7 +89,7 @@ public class SlimyConfig {
             @Override
             public void handle(ConfigMessage msg, Supplier<Context> ctx) {
                 MessageHelper.handlePacket(() -> {
-                    SlimyConfig.slimeStarvingTime = msg.slimeStarvingTime;
+                    SlimyConfig.slimeHungerAmount = msg.slimeHungerAmount;
                     SlimyConfig.slimeMaxHappiness = msg.slimeMaxHappiness;
                     SlimyConfig.slimeHappyThreshold = msg.slimeHappyThreshold;
                     SlimyConfig.slimeUnhappyThreshold = msg.slimeUnhappyThreshold;

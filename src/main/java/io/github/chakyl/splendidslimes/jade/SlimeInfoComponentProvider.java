@@ -51,10 +51,10 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                     }
                 }
             }
-            if (entityAccessor.getServerData().contains("EatingCooldown")) {
-                int eatingCooldown = entityAccessor.getServerData().getInt("EatingCooldown");
-                int maxEatingCooldown = SlimyConfig.slimeStarvingTime;
-                int hunger = (int) Math.round(((double) eatingCooldown / maxEatingCooldown) * 10.0);
+            if (entityAccessor.getServerData().contains("Hunger")) {
+                int eatingCooldown = entityAccessor.getServerData().getInt("Hunger");
+                int maxHunger = SlimyConfig.slimeHungerAmount;
+                int hunger = (int) Math.round(((double) eatingCooldown / maxHunger) * 10.0);
                 IElementHelper elements = IElementHelper.get();
                 ItemStack plort = ModElements.Items.PLORT.get().getDefaultInstance();
                 plort.getOrCreateTagElement("plort").putString("id", entityAccessor.getServerData().getString("Breed"));
@@ -96,7 +96,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         data.putString("Breed", slime.getEntityData().get(SplendidSlime.BREED));
         data.putString("SecondaryBreed", slime.getEntityData().get(SplendidSlime.SECONDARY_BREED));
         data.putInt("Happiness", slime.getEntityData().get(SplendidSlime.HAPPINESS));
-        data.putInt("EatingCooldown", slime.getEntityData().get(SplendidSlime.EATING_COOLDOWN));
+        data.putInt("Hunger", slime.getEntityData().get(SplendidSlime.HUNGER));
         data.putBoolean("Tamed", slime.getEntityData().get(SplendidSlime.TAMED));
         if (((SplendidSlime) accessor.getEntity()).getTamed())
             data.putUUID("Owner", Objects.requireNonNull(slime.getEntityData().get(SplendidSlime.OWNER_UUID).orElse(null)));

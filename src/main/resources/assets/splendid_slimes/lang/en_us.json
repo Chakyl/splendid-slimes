@@ -161,6 +161,10 @@
   "trait.splendid_slimes.friendly.info": "Slime will follow nearby players.",
   "trait.splendid_slimes.diverse.name": "Diverse",
   "trait.splendid_slimes.diverse.info": "Slime will get upset if it's not in close proximity to 3 unique breeds that aren't its own.",
+  "trait.splendid_slimes.pompous.name": "Pompous",
+  "trait.splendid_slimes.pompous.info": "Slime's favorite food no longer makes it drop double",
+  "trait.splendid_slimes.ravenous.name": "Ravenous",
+  "trait.splendid_slimes.ravenous.info": "Will only drop plorts when its hunger bar is full. Each food in its diet feeds a different amount.",
 
   "splendid_slimes.advancement.obtain_corral.description": "Use Corral Blocks to keep Slimes contained",
   "splendid_slimes.advancement.obtain_corral.title": "Herding Slimes",
@@ -182,5 +186,7 @@
   "jei.splendid_slimes.category.slime_incubation.incubation_time": "%ss incubation time",
   "jei.splendid_slimes.plort_rippit.chance": "Chance: %s",
   "jei.splendid_slimes.category.slime_traits": "Slime Traits",
-  "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits"
+  "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits",
+  "block.splendid_slimes.slime_incubator.progress": "Progress: %s",
+  "block.splendid_slimes.slime_incubator.breed_unset": "Use a Slime Heart to incubate"
 }

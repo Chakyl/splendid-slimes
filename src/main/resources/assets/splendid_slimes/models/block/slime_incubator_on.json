@@ -1,4 +1,6 @@
 {
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
 	"parent": "block/block",
 	"render_type": "minecraft:translucent",
 	"textures": {
@@ -39,13 +41,13 @@
 		{
 			"name": "slime",
 			"from": [2, 12, 2],
-			"to": [14, 20, 14],
+			"to": [14, 28, 14],
 			"rotation": {"angle": 0, "axis": "y", "origin": [11, 12, 10]},
 			"faces": {
-				"north": {"uv": [6, 0, 12, 4], "texture": "#4"},
-				"east": {"uv": [6, 4, 12, 8], "texture": "#4"},
-				"south": {"uv": [6, 8, 12, 12], "texture": "#4"},
-				"west": {"uv": [0, 12, 6, 16], "texture": "#4"},
+				"north": {"uv": [6, 0, 12, 8], "texture": "#4"},
+				"east": {"uv": [6, 4, 12, 12], "texture": "#4"},
+				"south": {"uv": [6, 4, 12, 12], "texture": "#4"},
+				"west": {"uv": [0, 8, 6, 16], "texture": "#4"},
 				"up": {"uv": [6, 6, 0, 0], "texture": "#4"},
 				"down": {"uv": [6, 6, 0, 12], "texture": "#4"}
 			}
@@ -81,7 +83,7 @@
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, 225, 0],
+			"rotation": [0, -135, 0],
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"ground": {
@@ -89,7 +91,7 @@
 			"scale": [0.25, 0.25, 0.25]
 		},
 		"gui": {
-			"rotation": [30, 225, 0],
+			"rotation": [30, -135, 0],
 			"translation": [0, -2.25, 0],
 			"scale": [0.45, 0.45, 0.45]
 		},
