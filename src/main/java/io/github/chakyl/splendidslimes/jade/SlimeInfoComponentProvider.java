@@ -6,12 +6,13 @@ import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.common.UsernameCache;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -68,7 +69,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
             if (entityAccessor.getServerData().contains("Tamed")) {
                 tamed = entityAccessor.getServerData().getBoolean("Tamed");
             }
-            if (tamed && entityAccessor.getServerData().contains("Happiness")) {
+            if (entityAccessor.getServerData().contains("Happiness")) {
                 int happiness = entityAccessor.getServerData().getInt("Happiness");
                 Component happinessComponent;
                 if (happiness >= SplendidSlime.HAPPY_THRESHOLD) {
@@ -81,11 +82,19 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                     happinessComponent = Component.translatable("entity.splendid_slimes.neutral");
                 }
                 tooltip.add(happinessComponent);
-            } else {
-                tooltip.add(Component.translatable("entity.splendid_slimes.wild").withStyle(ChatFormatting.RED));
+            }
+            if (!tamed) {
+                tooltip.append(Component.literal(" | "));
+                tooltip.append(Component.translatable("entity.splendid_slimes.wild").withStyle(ChatFormatting.RED));
             }
             if (tamed && entityAccessor.getPlayer().isCrouching()) {
-                tooltip.add(Component.translatable("entity.splendid_slimes.owner", UsernameCache.getLastKnownUsername(entityAccessor.getServerData().getUUID("Owner"))));
+                PlayerInfo info = Minecraft.getInstance().getConnection().getPlayerInfo(entityAccessor.getServerData().getUUID("owner"));
+                if (info != null) {
+                    String name = info.getProfile().getName();
+                    tooltip.add(Component.translatable("jade.splendid_slimes.owner", name));
+                } else {
+                    tooltip.add(Component.translatable("jade.splendid_slimes.owner", "Unknown"));
+                }
             }
         }
     }

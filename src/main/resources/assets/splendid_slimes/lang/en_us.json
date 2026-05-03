@@ -187,6 +187,6 @@
   "jei.splendid_slimes.plort_rippit.chance": "Chance: %s",
   "jei.splendid_slimes.category.slime_traits": "Slime Traits",
   "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits",
-  "block.splendid_slimes.slime_incubator.progress": "Progress: %s",
+  "block.splendid_slimes.slime_incubator.progress": "Time Left: %s",
   "block.splendid_slimes.slime_incubator.breed_unset": "Use a Slime Heart to incubate"
 }

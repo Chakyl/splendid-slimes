@@ -2,9 +2,7 @@ package io.github.chakyl.splendidslimes.jade;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
-import io.github.chakyl.splendidslimes.blockentity.SlimeSpawnerBlockEntity;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -37,8 +35,20 @@ public enum SlimeIncubatorInfoComponentProvider implements IBlockComponentProvid
         } else {
             tooltip.add(Component.translatable("block.splendid_slimes.slime_incubator.breed_unset"));
         }
-        if (accessor.getServerData().contains("progress")) {
-            tooltip.add(Component.translatable("block.splendid_slimes.slime_incubator.progress", Mth.floor(((float) accessor.getServerData().getInt("progress") / SlimyConfig.incubationTime) * 100) + "%"));
+        if (accessor.getServerData().contains("progress") && accessor.getServerData().getInt("progress") > 0) {
+            int totalSeconds = SlimyConfig.incubationTime / 20;
+            int currentSeconds = accessor.getServerData().getInt("progress") / 20;
+            int remainingSeconds = totalSeconds - currentSeconds;
+
+            if (remainingSeconds > 0) {
+                int minutes = remainingSeconds / 60;
+                remainingSeconds %= 60;
+
+                String formattedTime = String.format("%d:%02d", minutes, remainingSeconds);
+                tooltip.add(Component.translatable("block.splendid_slimes.slime_incubator.progress", formattedTime));
+            } else {
+                tooltip.add(Component.translatable("block.splendid_slimes.slime_incubator.progress", "0:00 Seconds"));
+            }
         }
     }
 
