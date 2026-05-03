@@ -636,12 +636,13 @@ public class SplendidSlime extends SlimeEntityBase {
         ItemStack dropOne = getSlimePlort();
         int size = this.getSize();
         if (size >= 2) {
-            if (isFavorite) dropOne.setCount(2);
+            boolean dropTwo = isFavorite && !hasTrait("pompous");
+            if (dropTwo) dropOne.setCount(2);
             this.spawnAtLocation(dropOne);
             if (!this.getSlimeSecondaryBreed().isEmpty()) {
-                ItemStack dropTwo = this.getSlimePlort(true);
-                if (isFavorite) dropTwo.setCount(2);
-                this.spawnAtLocation(dropTwo);
+                ItemStack secondaryDrop = this.getSlimePlort(true);
+                if (dropTwo) secondaryDrop.setCount(2);
+                this.spawnAtLocation(secondaryDrop);
                 if (size == 2) {
                     this.moveTo(this.getOnPos().above().getCenter());
                     this.setJumping(false);

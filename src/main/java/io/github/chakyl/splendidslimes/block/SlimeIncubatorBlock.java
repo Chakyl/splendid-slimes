@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.block;
 
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
+import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
 import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
@@ -60,20 +61,12 @@ public class SlimeIncubatorBlock extends HorizontalDirectionalBlock implements T
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeIncubatorBlockEntity && ((SlimeIncubatorBlockEntity) entity).getProgress() == 0) {
+            if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeIncubatorBlockEntity slimeIncubatorBlockEntity && slimeIncubatorBlockEntity.getProgress() == 0) {
                 ItemStack heldItem = pPlayer.getItemInHand(pHand);
-                if (heldItem.getItem() == ModElements.Items.SLIME_HEART.get() && heldItem.hasTag()) {
-                    CompoundTag plortTag = heldItem.getTagElement("slime");
-                    if (plortTag != null && plortTag.contains("id")){
-                        if (!pPlayer.isCreative()) heldItem.shrink(1);
-
-                        BlockState newState = pState.setValue(WORKING, true);
-                        pLevel.setBlock(pPos, newState, 2);
-
-                        pLevel.playSound(pPlayer, pPos, SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                        ((SlimeIncubatorBlockEntity) entity).setSlimeType(plortTag.get("id").toString().replace("\"", ""));
-                        return InteractionResult.CONSUME;
-                    }
+                if (slimeIncubatorBlockEntity.insertItem(heldItem)) {
+                    if (!pPlayer.isCreative()) heldItem.shrink(1);
+                    pLevel.playSound(pPlayer, pPos, SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    return InteractionResult.CONSUME;
                 }
             }
             return InteractionResult.FAIL;

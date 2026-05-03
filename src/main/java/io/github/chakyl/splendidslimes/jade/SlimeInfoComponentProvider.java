@@ -88,12 +88,12 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                 tooltip.append(Component.translatable("entity.splendid_slimes.wild").withStyle(ChatFormatting.RED));
             }
             if (tamed && entityAccessor.getPlayer().isCrouching()) {
-                PlayerInfo info = Minecraft.getInstance().getConnection().getPlayerInfo(entityAccessor.getServerData().getUUID("owner"));
+                PlayerInfo info = Minecraft.getInstance().getConnection().getPlayerInfo(entityAccessor.getServerData().getUUID("Owner"));
                 if (info != null) {
                     String name = info.getProfile().getName();
-                    tooltip.add(Component.translatable("jade.splendid_slimes.owner", name));
+                    tooltip.add(Component.translatable("entity.splendid_slimes.owner", name));
                 } else {
-                    tooltip.add(Component.translatable("jade.splendid_slimes.owner", "Unknown"));
+                    tooltip.add(Component.translatable("entity.splendid_slimes.owner", "Unknown"));
                 }
             }
         }

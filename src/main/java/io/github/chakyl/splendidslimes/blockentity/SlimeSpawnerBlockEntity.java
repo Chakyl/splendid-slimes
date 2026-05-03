@@ -29,6 +29,7 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
+        if (level.hasNeighborSignal(pos)) return;
         if (!slimeType.isEmpty()) {
             BlockPos facingPos = pos.relative(state.getValue(DispenserBlock.FACING));
             if (level.getGameTime() % 4 == 0 && dispensedSlimes == 0 && !level.getBlockState(facingPos).isSolid() && isNearPlayer(level, pos)) {

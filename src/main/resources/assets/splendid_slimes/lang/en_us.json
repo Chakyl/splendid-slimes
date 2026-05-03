@@ -9,6 +9,8 @@
   "block.splendid_slimes.slime_spawner.breed": "Breed: %s Slime",
   "block.splendid_slimes.slime_spawner.breed_unset": "Use a Slime Spawn Egg to set the Slime Breed.",
   "block.splendid_slimes.slime_spawner.slime_count": "Spawns %s Slimes",
+  "block.splendid_slimes.slime_incubator.progress": "Time Left: %s",
+  "block.splendid_slimes.slime_incubator.breed_unset": "Use a Slime Heart to incubate",
 
   "config.jade.plugin_splendid_slimes.splendid_slime": "jade slime",
   "key.categories.splendid_slimes": "Splendid Slimes",
@@ -162,9 +164,13 @@
   "trait.splendid_slimes.diverse.name": "Diverse",
   "trait.splendid_slimes.diverse.info": "Slime will get upset if it's not in close proximity to 3 unique breeds that aren't its own.",
   "trait.splendid_slimes.pompous.name": "Pompous",
-  "trait.splendid_slimes.pompous.info": "Slime's favorite food no longer makes it drop double",
+  "trait.splendid_slimes.pompous.info": "Slime's favorite food no longer makes it drop double.",
   "trait.splendid_slimes.ravenous.name": "Ravenous",
   "trait.splendid_slimes.ravenous.info": "Will only drop plorts when its hunger bar is full. Each food in its diet feeds a different amount.",
+  "trait.splendid_slimes.wormhole.name": "Wormhole",
+  "trait.splendid_slimes.wormhole.info": "Slime will occasionally teleport nearby entities to itself when upset.",
+  "trait.splendid_slimes.necromancer.name": "Necromancer",
+  "trait.splendid_slimes.necromancer.info": "Slime summon slimy zombies when attacking. Always attacks nearby villagers.",
 
   "splendid_slimes.advancement.obtain_corral.description": "Use Corral Blocks to keep Slimes contained",
   "splendid_slimes.advancement.obtain_corral.title": "Herding Slimes",
@@ -186,7 +192,5 @@
   "jei.splendid_slimes.category.slime_incubation.incubation_time": "%ss incubation time",
   "jei.splendid_slimes.plort_rippit.chance": "Chance: %s",
   "jei.splendid_slimes.category.slime_traits": "Slime Traits",
-  "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits",
-  "block.splendid_slimes.slime_incubator.progress": "Time Left: %s",
-  "block.splendid_slimes.slime_incubator.breed_unset": "Use a Slime Heart to incubate"
+  "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits"
 }
