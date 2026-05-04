@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -144,7 +145,7 @@ public class SplendidSlime extends SlimeEntityBase {
                 }
             }
             if (this.tickCount % (SLIME_EFFECT_COOLDOWN * 4) == 0 && this.hasTrait("weeping")) {
-                if (!SlimeUtils.cry(this, this.level())) {
+                if (!cry(this, this.level())) {
                     addHappiness(-50);
                 }
             }
@@ -202,27 +203,32 @@ public class SplendidSlime extends SlimeEntityBase {
         }
     }
 
-    public InteractionResult pickupSlime(Player player) {
+    public InteractionResult pickupSlime(Player player, boolean isLargo) {
         this.revive();
         if (level().isClientSide) {
             this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
             return InteractionResult.SUCCESS;
         }
-
         CompoundTag slimeItemTags = new CompoundTag();
         CompoundTag slimeTags = new CompoundTag();
         this.save(slimeTags);
         slimeItemTags.put("entity", slimeTags);
         CompoundTag id = new CompoundTag();
         id.putString("id", this.getSlimeBreed());
-        this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         slimeItemTags.put("slime", id);
-
+        if (isLargo) {
+            ItemStack handStack = player.getItemInHand(InteractionHand.MAIN_HAND);
+            CompoundTag slimeTag = new CompoundTag();
+            slimeTag.put("entity", slimeItemTags.getCompound("entity"));
+            slimeTag.put("slime", slimeItemTags.getCompound("slime"));
+            handStack.getOrCreateTag().put("largo", slimeTag);
+        }
         ItemStack slimeItem = new ItemStack(ModElements.Items.SLIME_ITEM.get());
         slimeItem.setTag(slimeItemTags);
+        this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         this.discard();
 
-        if (!player.getInventory().add(slimeItem)) {
+        if (!isLargo && !player.getInventory().add(slimeItem)) {
             ItemEntity itemEntity = new ItemEntity(this.level(), this.getX(), this.getY() + 0.5, this.getZ(), slimeItem);
             itemEntity.setPickUpDelay(0);
             itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().multiply(0, 1, 0));
@@ -285,7 +291,7 @@ public class SplendidSlime extends SlimeEntityBase {
             CompoundTag plortTag = pStack.getTagElement("plort");
             if (plortTag != null && plortTag.contains("id")) {
                 String id = plortTag.get("id").toString();
-                if (SlimeData.plortIsFromLargoless(id)) return false;
+                if (plortIsFromLargoless(id)) return false;
                 return !id.contains(this.getSlimeBreed()) && !(!this.getSlimeSecondaryBreed().isEmpty() && id.contains(this.getSlimeSecondaryBreed()));
             }
         }
@@ -516,8 +522,13 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void playerTouch(Player pEntity) {
         if (pEntity.isHolding(ModElements.Items.SLIME_VAC.get()) && pEntity.isCrouching()) {
-            if (SlimeVac.playerCanPickupSlime(pEntity) && this.getSlimeSecondaryBreed().isEmpty()) {
-                this.pickupSlime(pEntity);
+            if (SlimeVac.playerCanPickupSlime(pEntity)) {
+                boolean isLargo = !this.getSlimeSecondaryBreed().isEmpty();
+                if (isLargo && !SlimeVac.hasLargo(pEntity)) {
+                    this.pickupSlime(pEntity, true);
+                } else if (!isLargo) {
+                    this.pickupSlime(pEntity, false);
+                }
             }
         }
         if (this.isDealsDamage() && (this.getHappiness() <= FURIOUS_THRESHOLD || this.hasTrait("spiky") || this.hasTrait("feral"))) {
@@ -615,12 +626,18 @@ public class SplendidSlime extends SlimeEntityBase {
         this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
         addHappiness(happinessIncrease);
         if (hasTrait("ravenous")) {
+            boolean foundFood = false;
             for (RavenousFood ravenousFood : this.getSlime().get().ravenousFoods()) {
                 if (food.getItem().getDefaultInstance().is(ravenousFood.getFood().getItem())) {
                     setHunger(this.getHunger() + ravenousFood.getHungerAmount());
                     setDayLastAte(getDay(this.level()));
+                    foundFood = true;
                     break;
                 }
+            }
+            if (!foundFood) {
+                setHunger(this.getHunger() + Mth.floor((float) SlimyConfig.slimeHungerAmount / 4));
+                setDayLastAte(getDay(this.level()));
             }
         } else {
             setDayLastAte(getDay(this.level()));
@@ -785,8 +802,11 @@ public class SplendidSlime extends SlimeEntityBase {
                 if (victimSize > 0) victimSize--;
                 SlimeEntityBase tarr = ModElements.Entities.TARR.get().create(this.level());
                 tarr.setCustomName(component);
+                tarr.setSlimeBreed(this.getSlimeBreed());
+                tarr.setSlimeSecondaryBreed(this.getSlimeSecondaryBreed());
                 tarr.setInvulnerable(this.isInvulnerable());
                 tarr.setSize(victimSize + 1, true);
+                if (SlimyConfig.enableForgivingTarrs) tarr.setPersistenceRequired();
                 tarr.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
                 this.level().addFreshEntity(tarr);
             }

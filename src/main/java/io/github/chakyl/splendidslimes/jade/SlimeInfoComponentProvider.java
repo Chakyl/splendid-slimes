@@ -4,6 +4,7 @@ import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.entity.Tarr;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

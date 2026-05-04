@@ -1,6 +1,6 @@
 package io.github.chakyl.splendidslimes.entity;
 
-import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -63,7 +63,29 @@ public class Tarr extends SlimeEntityBase {
     }
 
     @Override
-    public void remove(Entity.RemovalReason pReason) {
+    public void remove(RemovalReason pReason) {
+        if (!this.level().isClientSide && this.isDeadOrDying()) {
+            if (SlimyConfig.enableForgivingTarrs) {
+                Component component = this.getCustomName();
+                boolean flag = this.isNoAi();
+                SlimeEntityBase slime = ModElements.Entities.SPLENDID_SLIME.get().create(this.level());
+                if (slime != null) {
+                    if (this.isPersistenceRequired()) {
+                        slime.setPersistenceRequired();
+                    }
+                    String secondaryBreed = this.getSlimeSecondaryBreed();
+                    slime.setSlimeBreed(this.getSlimeBreed());
+                    if (!secondaryBreed.isEmpty()) slime.setSlimeSecondaryBreed(secondaryBreed);
+                    slime.setCustomName(component);
+                    slime.setNoAi(flag);
+                    slime.setInvulnerable(this.isInvulnerable());
+                    slime.setSize(1, true);
+                    slime.setPersistenceRequired();
+                    slime.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
+                    this.level().addFreshEntity(slime);
+                }
+            }
+        }
         this.setRemoved(pReason);
         this.invalidateCaps();
         this.brain.clearMemories();

@@ -35,45 +35,5 @@ public class ServerForgeEvents {
                 }
             }
         }
-
-//        private static final Map<UUID, SlimeEntityBase> TRACKED_LARGOS = new HashMap<>();
-//
-//        @SubscribeEvent
-//        public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-//            if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide) return;
-//
-//            ServerPlayer player = (ServerPlayer) event.player;
-//            ItemStack stack = player.getMainHandItem();
-//            UUID uuid = player.getUUID();
-//
-//            if (stack.hasTag() && stack.getTag().getBoolean("RenderChicken")) {
-//                SlimeEntityBase largo = TRACKED_LARGOS.get(uuid);
-//
-//                if (largo == null || !largo.isAlive()) {
-//                    largo = ModElements.Entities.SPLENDID_SLIME.get().create(player.level());
-//                    if (largo != null) {
-//                        largo.setNoAi(true);
-//                        largo.setInvulnerable(true);
-//                        largo.setPersistenceRequired();
-//                        player.level().addFreshEntity(largo);
-//                        TRACKED_LARGOS.put(uuid, largo);
-//                    }
-//                }
-//
-//                if (largo != null) {
-//                    Vec3 look = player.getLookAngle();
-//                    double x = player.getX() + look.x * 2.0;
-//                    double y = player.getEyeY() + look.y * 2.0 - (largo.getBbHeight() / 2.0);
-//                    double z = player.getZ() + look.z * 2.0;
-//
-//                    largo.moveTo(x, y, z, player.getYRot() + 180f, player.getXRot());
-//                }
-//            } else {
-//                SlimeEntityBase largo = TRACKED_LARGOS.remove(uuid);
-//                if (largo != null) {
-//                    largo.discard();
-//                }
-//            }
-//        }
     }
 }
