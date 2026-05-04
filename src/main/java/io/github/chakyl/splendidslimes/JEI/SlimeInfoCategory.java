@@ -17,7 +17,6 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 
 public class SlimeInfoCategory implements IRecipeCategory<PlortRecipe> {
@@ -61,17 +60,18 @@ public class SlimeInfoCategory implements IRecipeCategory<PlortRecipe> {
         int row = 0;
         for (int i = 0; i < recipe.inputs.size() && i < 9; i++) {
             if (i % 3 == 0) row++;
-            builder.addSlot(RecipeIngredientRole.INPUT, 193 + ((i - (row * 3)) * 18), 41 + ((18 * (i / 3)) )).addIngredients(recipe.inputs.get(i));
+            builder.addSlot(RecipeIngredientRole.INPUT, 193 + ((i - (row * 3)) * 18), 41 + ((18 * (i / 3)))).addIngredients(recipe.inputs.get(i));
         }
         builder.addSlot(RecipeIngredientRole.OUTPUT, 205, 84).addIngredient(VanillaTypes.ITEM_STACK, recipe.output);
     }
 
     @Override
     public void draw(PlortRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        String slimeId = recipe.slime.getTagElement("slime").getString("id").replace("splendid_slimes:", ".");
+        String[] slimeId = recipe.slime.getTagElement("slime").getString("id").split(":");
+        String translationKey = slimeId[0] + "." + slimeId[1];
         IRecipeCategory.super.draw(recipe, recipeSlotsView, guiGraphics, mouseX, mouseY);
-        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("slime.splendid_slimes" + slimeId)), 32, 15, 0xFF4b3658, false);
-        guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(Component.translatable("slime.splendid_slimes" + slimeId + ".info").getString()), 15, 38, 107, 0xFF4b3658);
+        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("slime." + translationKey)), 32, 15, 0xFF4b3658, false);
+        guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(Component.translatable("slime." + translationKey + ".info").getString()), 15, 38, 107, 0xFF4b3658);
         guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("jei.splendid_slimes.category.slime_info.diet")), 134, 22, 0xFF4b3658, false);
     }
 }

@@ -32,7 +32,8 @@ public class SlimeFeederBlockEntity extends RandomizableContainerBlockEntity imp
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
-        if (level.getGameTime() % 200 == 0) {
+        if (level.hasNeighborSignal(pos)) return;
+        if (level.getGameTime() % 80 == 0) {
             Boolean hasItems = false;
             for (ItemStack slotItem : contents) {
                 if (!slotItem.isEmpty()) {
@@ -51,9 +52,8 @@ public class SlimeFeederBlockEntity extends RandomizableContainerBlockEntity imp
                     for (ItemStack slotItem : contents) {
                         if (slime.wantsToPickUp(slotItem)) {
                             boolean isPrimary = slime.isPrimaryFood(slotItem);
-                            if (!handlePicky || !(slime.getLastAte() == 0 && isPrimary || slime.getLastAte() == 1 && !isPrimary)) {
+                            if (!handlePicky || !(slime.getPickyLastAte() == 0 && isPrimary || slime.getPickyLastAte() == 1 && !isPrimary)) {
                                 slime.handlePickup(slotItem, null);
-                                slotItem.shrink(1);
                                 break;
                             }
                         }

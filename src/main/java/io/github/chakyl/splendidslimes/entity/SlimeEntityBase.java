@@ -68,7 +68,6 @@ public class SlimeEntityBase extends Slime {
     }
 
     public String getSlimeBreed() {
-        if (this instanceof Tarr) return SplendidSlimes.MODID + ":tarr";
         return this.entityData.get(BREED);
     }
 

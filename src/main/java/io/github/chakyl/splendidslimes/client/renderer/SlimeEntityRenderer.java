@@ -6,6 +6,7 @@ import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
 import io.github.chakyl.splendidslimes.client.model.SlimeHandyLayer;
 import io.github.chakyl.splendidslimes.client.model.SlimeHatLayer;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
+import io.github.chakyl.splendidslimes.entity.Tarr;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -58,7 +59,7 @@ public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntit
     @Override
     public ResourceLocation getTextureLocation(SlimeEntityBase slimeEntityBase) {
         String path = slimeEntityBase.getSlimeBreed().replace(":", ":textures/entity/slime/") + ".png";
-
+        if (slimeEntityBase instanceof Tarr) path = "splendid_slimes:textures/entity/slime/tarr.png";
         if (!cache.containsKey(path)) {
             cache.put(path, new ResourceLocation(path));
         }

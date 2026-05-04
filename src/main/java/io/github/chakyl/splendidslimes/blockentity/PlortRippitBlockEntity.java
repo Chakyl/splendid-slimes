@@ -41,6 +41,7 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
+        if (level.hasNeighborSignal(pos)) return;
         if (!this.inventory.getStackInSlot(0).isEmpty() && hasRecipe()) {
             if (this.progress == 0 && !state.getValue(WORKING)) {
                 BlockState newState = state.setValue(WORKING, true);

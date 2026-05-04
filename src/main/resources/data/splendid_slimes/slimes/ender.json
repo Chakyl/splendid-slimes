@@ -6,7 +6,7 @@
   "diet": "diet.splendid_slimes.ender",
   "foods": [{ "tag": "forge:gems" }],
   "favorite_food": { "item": "minecraft:amethyst_shard" },
-  "traits": ["foodporting"],
+  "traits": ["foodporting", "wormhole"],
   "negative_commands": [
     "tp @e[distance=..8] @e[limit=1,sort=nearest]",
     "playsound minecraft:entity.enderman.teleport block @a[distance=..10]"

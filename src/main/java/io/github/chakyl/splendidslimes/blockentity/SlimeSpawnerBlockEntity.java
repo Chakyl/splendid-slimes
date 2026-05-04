@@ -29,6 +29,7 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
+        if (level.hasNeighborSignal(pos)) return;
         if (!slimeType.isEmpty()) {
             BlockPos facingPos = pos.relative(state.getValue(DispenserBlock.FACING));
             if (level.getGameTime() % 4 == 0 && dispensedSlimes == 0 && !level.getBlockState(facingPos).isSolid() && isNearPlayer(level, pos)) {
@@ -55,7 +56,7 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
                 SplendidSlime spawnedSlime = (SplendidSlime) ModElements.Entities.SPLENDID_SLIME.get().create(level);
                 spawnedSlime.setSlimeBreed(slimeType);
                 spawnedSlime.setSize(2, true);
-                spawnedSlime.setEatingCooldown(SplendidSlime.SLIME_STARVING_COOLDOWN / 2);
+                spawnedSlime.setHunger(SplendidSlime.SLIME_MAX_HUNGER / 2);
                 spawnedSlime.push(d3, d4, d5);
                 spawnedSlime.moveTo(d0, d1, d2, level.random.nextFloat() * 360.0F, 0.0F);
                 level.addFreshEntity(spawnedSlime);

@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class SlimyConfig {
 
-    public static int slimeStarvingTime;
+    public static int slimeHungerAmount;
     public static int slimeMaxHappiness;
 
     public static int slimeHappyThreshold;
@@ -23,6 +23,7 @@ public class SlimyConfig {
     public static boolean slimeOwnerOfflineCheck;
 
     public static boolean enableTarrs;
+    public static boolean enableForgivingTarrs;
 
     public static int incubationTime;
     public static int plortPressingTime;
@@ -33,7 +34,7 @@ public class SlimyConfig {
         Configuration cfg = new Configuration(SplendidSlimes.MODID);
         cfg.setTitle("꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦ Splendid Slimes Config! ꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷");
         cfg.setComment("All entries in this config file are synced from server to client.");
-        slimeStarvingTime = cfg.getInt("Slime Starving time", "slimes", 24000, 20, Integer.MAX_VALUE, "How long it takes for Splendid Slimes to start starving, in ticks. Slimes can eat halfway through this duration");
+        slimeHungerAmount = cfg.getInt("Slime Hunger Amount", "slimes", 24000, 20, Integer.MAX_VALUE, "How much a full slime's hunger will equate to");
 
         slimeMaxHappiness = cfg.getInt("Slime Max Happiness", "slimes", 1000, 3, Integer.MAX_VALUE - 500, "Maximum happiness value for a Splendid Slime.");
         slimeHappyThreshold = cfg.getInt("Slime Happy Threshold", "slimes", 600, 0, Integer.MAX_VALUE, "Minimum amount of happiness a Splendid Slime can have before being considered 'Happy'.");
@@ -44,6 +45,7 @@ public class SlimyConfig {
         slimeOwnerOfflineCheck = cfg.getBoolean("Slime Owner Offline Check", "slimes", true, "When true, Slimes will not get hungry or perform effects when their owner is offline. This can help prevent disasters on Multiplayer servers and has no effect in single player.");
 
         enableTarrs = cfg.getBoolean("Enable Tarrs", "slimes", true, "If true, Largo Slimes will turn into Tarrs after eating a 3rd Plort instead of just dying.");
+        enableForgivingTarrs = cfg.getBoolean("Enable Forgiving Tarrs", "slimes", false, "If true, Tarrs will be persistent and turn back into previous slime when killed");
 
         incubationTime = cfg.getInt("Slime Incubation Time", "machines", 6000, 1, Integer.MAX_VALUE, "Time it takes for Splendid Slimes to incubate in Slime Incubator");
         plortPressingTime = cfg.getInt("Plort Pressing Time", "machines", 1200, 20, Integer.MAX_VALUE - 10, "Time it takes to craft items in a Plort Press");
@@ -51,13 +53,13 @@ public class SlimyConfig {
         if (cfg.hasChanged()) cfg.save();
     }
 
-    static record ConfigMessage(int slimeStarvingTime, int slimeMaxHappiness, int slimeHappyThreshold,
+    static record ConfigMessage(int slimeHungerAmount, int slimeMaxHappiness, int slimeHappyThreshold,
                                 int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,
-                                boolean slimeOwnerOfflineCheck,
-                                boolean enableTarrs, int incubationTime, int plortPressingTime) {
+                                boolean slimeOwnerOfflineCheck, boolean enableTarrs, boolean enableForgivingTarrs,
+                                int incubationTime, int plortPressingTime) {
 
         public ConfigMessage() {
-            this(SlimyConfig.slimeStarvingTime, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.slimeOwnerOfflineCheck, SlimyConfig.enableTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
+            this(SlimyConfig.slimeHungerAmount, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.slimeOwnerOfflineCheck, SlimyConfig.enableTarrs, SlimyConfig.enableForgivingTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
         }
 
         public static class Provider implements MessageProvider<ConfigMessage> {
@@ -69,7 +71,7 @@ public class SlimyConfig {
 
             @Override
             public void write(ConfigMessage msg, FriendlyByteBuf buf) {
-                buf.writeInt(msg.slimeStarvingTime);
+                buf.writeInt(msg.slimeHungerAmount);
                 buf.writeInt(msg.slimeMaxHappiness);
                 buf.writeInt(msg.slimeHappyThreshold);
                 buf.writeInt(msg.slimeUnhappyThreshold);
@@ -77,26 +79,28 @@ public class SlimyConfig {
                 buf.writeInt(msg.slimeEffectCooldown);
                 buf.writeBoolean(msg.slimeOwnerOfflineCheck);
                 buf.writeBoolean(msg.enableTarrs);
+                buf.writeBoolean(msg.enableForgivingTarrs);
                 buf.writeInt(msg.incubationTime);
                 buf.writeInt(msg.plortPressingTime);
             }
 
             @Override
             public ConfigMessage read(FriendlyByteBuf buf) {
-                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readBoolean(), buf.readInt(), buf.readInt());
+                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readInt(), buf.readInt());
             }
 
             @Override
             public void handle(ConfigMessage msg, Supplier<Context> ctx) {
                 MessageHelper.handlePacket(() -> {
-                    SlimyConfig.slimeStarvingTime = msg.slimeStarvingTime;
+                    SlimyConfig.slimeHungerAmount = msg.slimeHungerAmount;
                     SlimyConfig.slimeMaxHappiness = msg.slimeMaxHappiness;
                     SlimyConfig.slimeHappyThreshold = msg.slimeHappyThreshold;
                     SlimyConfig.slimeUnhappyThreshold = msg.slimeUnhappyThreshold;
                     SlimyConfig.slimeFuriousThreshold = msg.slimeFuriousThreshold;
                     SlimyConfig.slimeEffectCooldown = msg.slimeEffectCooldown;
                     SlimyConfig.slimeOwnerOfflineCheck = msg.slimeOwnerOfflineCheck;
-                    SlimyConfig.enableTarrs = msg.slimeOwnerOfflineCheck;
+                    SlimyConfig.enableTarrs = msg.enableTarrs;
+                    SlimyConfig.enableForgivingTarrs = msg.enableForgivingTarrs;
                     SlimyConfig.incubationTime = msg.incubationTime;
                     SlimyConfig.plortPressingTime = msg.plortPressingTime;
                 }, ctx);

@@ -2,6 +2,7 @@ package io.github.chakyl.splendidslimes.events;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
+import io.github.chakyl.splendidslimes.blockentity.renderer.SlimeIncubatorBlockEntityRenderer;
 import io.github.chakyl.splendidslimes.client.Keybindings;
 import io.github.chakyl.splendidslimes.client.model.HatModel;
 import io.github.chakyl.splendidslimes.client.model.PlortModel;
@@ -50,7 +51,10 @@ public class ClientModEvents {
         });
 
     }
-
+    @SubscribeEvent
+    public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(ModElements.BlockEntities.SLIME_INCUBATOR.get(), SlimeIncubatorBlockEntityRenderer::new);
+    }
     @SubscribeEvent
     public static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(Keybindings.INSTANCE.slimeVacModeKey);

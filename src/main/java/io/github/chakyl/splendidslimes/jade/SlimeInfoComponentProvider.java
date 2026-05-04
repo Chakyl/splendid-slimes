@@ -4,14 +4,16 @@ import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.entity.Tarr;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.common.UsernameCache;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -51,10 +53,10 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                     }
                 }
             }
-            if (entityAccessor.getServerData().contains("EatingCooldown")) {
-                int eatingCooldown = entityAccessor.getServerData().getInt("EatingCooldown");
-                int maxEatingCooldown = SlimyConfig.slimeStarvingTime;
-                int hunger = (int) Math.round(((double) eatingCooldown / maxEatingCooldown) * 10.0);
+            if (entityAccessor.getServerData().contains("Hunger")) {
+                int eatingCooldown = entityAccessor.getServerData().getInt("Hunger");
+                int maxHunger = SlimyConfig.slimeHungerAmount;
+                int hunger = (int) Math.round(((double) eatingCooldown / maxHunger) * 10.0);
                 IElementHelper elements = IElementHelper.get();
                 ItemStack plort = ModElements.Items.PLORT.get().getDefaultInstance();
                 plort.getOrCreateTagElement("plort").putString("id", entityAccessor.getServerData().getString("Breed"));
@@ -68,7 +70,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
             if (entityAccessor.getServerData().contains("Tamed")) {
                 tamed = entityAccessor.getServerData().getBoolean("Tamed");
             }
-            if (tamed && entityAccessor.getServerData().contains("Happiness")) {
+            if (entityAccessor.getServerData().contains("Happiness")) {
                 int happiness = entityAccessor.getServerData().getInt("Happiness");
                 Component happinessComponent;
                 if (happiness >= SplendidSlime.HAPPY_THRESHOLD) {
@@ -81,11 +83,19 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                     happinessComponent = Component.translatable("entity.splendid_slimes.neutral");
                 }
                 tooltip.add(happinessComponent);
-            } else {
-                tooltip.add(Component.translatable("entity.splendid_slimes.wild").withStyle(ChatFormatting.RED));
+            }
+            if (!tamed) {
+                tooltip.append(Component.literal(" | "));
+                tooltip.append(Component.translatable("entity.splendid_slimes.wild").withStyle(ChatFormatting.RED));
             }
             if (tamed && entityAccessor.getPlayer().isCrouching()) {
-                tooltip.add(Component.translatable("entity.splendid_slimes.owner", UsernameCache.getLastKnownUsername(entityAccessor.getServerData().getUUID("Owner"))));
+                PlayerInfo info = Minecraft.getInstance().getConnection().getPlayerInfo(entityAccessor.getServerData().getUUID("Owner"));
+                if (info != null) {
+                    String name = info.getProfile().getName();
+                    tooltip.add(Component.translatable("entity.splendid_slimes.owner", name));
+                } else {
+                    tooltip.add(Component.translatable("entity.splendid_slimes.owner", "Unknown"));
+                }
             }
         }
     }
@@ -96,7 +106,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         data.putString("Breed", slime.getEntityData().get(SplendidSlime.BREED));
         data.putString("SecondaryBreed", slime.getEntityData().get(SplendidSlime.SECONDARY_BREED));
         data.putInt("Happiness", slime.getEntityData().get(SplendidSlime.HAPPINESS));
-        data.putInt("EatingCooldown", slime.getEntityData().get(SplendidSlime.EATING_COOLDOWN));
+        data.putInt("Hunger", slime.getEntityData().get(SplendidSlime.HUNGER));
         data.putBoolean("Tamed", slime.getEntityData().get(SplendidSlime.TAMED));
         if (((SplendidSlime) accessor.getEntity()).getTamed())
             data.putUUID("Owner", Objects.requireNonNull(slime.getEntityData().get(SplendidSlime.OWNER_UUID).orElse(null)));

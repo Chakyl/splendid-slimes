@@ -2,15 +2,30 @@
   "breed": "bony",
   "name": "slime.splendid_slimes.bony",
   "color": "#e8e5d2",
-  "particle": { "item": "minecraft:bone" },
+  "particle": {
+    "item": "minecraft:bone"
+  },
   "diet": "diet.splendid_slimes.bony",
   "foods": [
-    { "item": "minecraft:milk_bucket" },
-    { "tag": "forge:raw_meat" },
-    { "tag": "forge:cooked_meat" },
-    { "tag": "splendid_slimes:animal_spawn_eggs" }
+    {
+      "item": "minecraft:milk_bucket"
+    },
+    {
+      "tag": "forge:raw_meat"
+    },
+    {
+      "tag": "forge:cooked_meat"
+    },
+    {
+      "tag": "splendid_slimes:animal_spawn_eggs"
+    }
   ],
-  "favorite_food": { "item": "minecraft:milk_bucket" },
+  "traits": [
+    "ravenous"
+  ],
+  "favorite_food": {
+    "item": "minecraft:milk_bucket"
+  },
   "entities": [
     "minecraft:chicken",
     "minecraft:cow",
@@ -18,5 +33,19 @@
     "minecraft:rabbit",
     "minecraft:sheep"
   ],
-  "favorite_entity": "minecraft:sheep"
+  "favorite_entity": "minecraft:sheep",
+  "ravenous_foods": [
+    {
+      "food": {
+        "item": "minecraft:milk_bucket"
+      },
+      "hunger_amount": 500
+    },
+    {
+      "food": {
+        "item": "minecraft:chicken"
+      },
+      "hunger_amount": 200
+    }
+  ]
 }

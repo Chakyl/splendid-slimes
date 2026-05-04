@@ -85,6 +85,7 @@ public class PlortPressBlockEntity extends BlockEntity implements TickingBlockEn
 
     @Override
     public void serverTick(Level level, BlockPos pos, BlockState state) {
+        if (level.hasNeighborSignal(pos)) return;
         if (level.getGameTime() % 10 == 0) {
             if (hasRecipe()) {
                 if (progress == 0) {
