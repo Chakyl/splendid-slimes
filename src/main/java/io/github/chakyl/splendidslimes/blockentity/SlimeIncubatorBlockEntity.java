@@ -52,6 +52,8 @@ public class SlimeIncubatorBlockEntity extends BlockEntity implements TickingBlo
                 BlockState newState = state.setValue(WORKING, false);
                 level.setBlockAndUpdate(pos, newState);
                 this.slimeType = "";
+                ItemStack stack = this.inventory.getStackInSlot(0);
+                if (!stack.isEmpty()) stack.shrink(1);
                 this.setChanged();
             } else {
                 this.progress++;

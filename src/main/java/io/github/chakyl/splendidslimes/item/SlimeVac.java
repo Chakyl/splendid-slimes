@@ -71,7 +71,8 @@ public class SlimeVac extends Item {
 
     @Override
     public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable("info.splendid_slimes.slime_vac").withStyle(ChatFormatting.GRAY));
+        list.add(Component.translatable("info.splendid_slimes.slime_vac.shoot").withStyle(ChatFormatting.GRAY));
+        list.add(Component.translatable("info.splendid_slimes.slime_vac.suck").withStyle(ChatFormatting.GRAY));
         list.add(Component.translatable("info.splendid_slimes.slime_vac.mode", getMode(pStack).name()));
     }
 
@@ -107,6 +108,10 @@ public class SlimeVac extends Item {
     public static void removeLargoTag(Player player) {
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (!stack.is(ModElements.Items.SLIME_VAC.get())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
+        removeLargoTag(stack);
+    }
+
+    public static void removeLargoTag(ItemStack stack) {
         if (!stack.is(ModElements.Items.SLIME_VAC.get())) return;
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("largo")) {
@@ -131,14 +136,15 @@ public class SlimeVac extends Item {
         ItemStack handStack = player.getItemInHand(hand);
 
         boolean hasLargo = hasLargo(player);
+        VacMode vacMode = getMode(handStack);
         if (player.isCrouching()) {
             if (hasLargo) return InteractionResultHolder.pass(handStack);
 //            suckParticles(level, player);
             Class entityClass = SplendidSlime.class;
-            if (getMode(handStack) == VacMode.ITEM) entityClass = ItemEntity.class;
+            if (vacMode == VacMode.ITEM) entityClass = ItemEntity.class;
             ArrayList<Entity> entities = (ArrayList<Entity>) level.getEntitiesOfClass(entityClass, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(RANGE), EntitySelector.ENTITY_STILL_ALIVE);
 
-            if (getMode(handStack) == VacMode.BOTH) {
+            if (vacMode == VacMode.BOTH) {
                 entities.addAll(level.getEntitiesOfClass(ItemEntity.class, new AABB(player.getX(), player.getY(), player.getZ(), player.getX(), player.getY(), player.getZ()).inflate(RANGE), EntitySelector.ENTITY_STILL_ALIVE));
             }
             Vec3 look = player.getLookAngle().scale(RANGE);
@@ -167,8 +173,10 @@ public class SlimeVac extends Item {
                 inverseHand = InteractionHand.MAIN_HAND;
             }
 
-            ItemStack itemStackToLaunch = findFireableItem(player);
-
+            ItemStack itemStackToLaunch = findFireableItem(player, vacMode);
+            if (itemStackToLaunch.isEmpty()) {
+                itemStackToLaunch = player.getItemInHand(inverseHand);
+            }
             boolean slimeFired = false;
             if (hasLargo || itemStackToLaunch != ItemStack.EMPTY && itemStackToLaunch.is(SplendidSlimesItemTags.SLIME_VAC_FIREABLE)) {
                 Entity projectile;
@@ -223,20 +231,19 @@ public class SlimeVac extends Item {
         }
     }
 
-    public ItemStack findFireableItem(Player player) {
+    public ItemStack findFireableItem(Player player, VacMode vacMode) {
         ItemStack fireable = ItemStack.EMPTY;
 
         for (int i = 0; i < 9; i++) {
             ItemStack stack = player.getInventory().getItem(i);
 
             if (stack.isEmpty()) continue;
-            if (stack.is(ModElements.Items.SLIME_ITEM.get())) {
-                return stack;
-            }
-            if (fireable.isEmpty() && stack.is(SplendidSlimesItemTags.SLIME_VAC_FIREABLE)) fireable = stack;
+            if (stack.is(ModElements.Items.SLIME_ITEM.get()) && (vacMode == VacMode.SLIME || vacMode == VacMode.BOTH)) return stack;
+            if (!stack.is(ModElements.Items.SLIME_ITEM.get()) && fireable.isEmpty() && (vacMode == VacMode.ITEM || vacMode == VacMode.BOTH) && stack.is(SplendidSlimesItemTags.SLIME_VAC_FIREABLE)) fireable = stack;
         }
         return fireable;
     }
+
     public static Vec3 getShootLocVec(Player player, boolean mainHand, Vec3 rightHandForward) {
         Vec3 start = player.position()
                 .add(0, player.getEyeHeight(), 0);

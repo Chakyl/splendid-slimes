@@ -52,8 +52,9 @@
 
   "info.splendid_slimes.plort": "Dropped from fed slimes",
   "info.splendid_slimes.slime_heart": "Place in Slime Incubator to grow!",
-  "info.splendid_slimes.slime_vac": "Shoots item in opposite hand. Use while sneaking to suck up Slimes/Items.",
-  "info.splendid_slimes.slime_vac.mode": "Mode: %s",
+  "info.splendid_slimes.slime_vac.shoot": "§dRight Click§7 Shoots Slimes and items from hotbar/offhand",
+  "info.splendid_slimes.slime_vac.suck": "§dShift + Right Click§7 Sucks up Slimes and items",
+  "info.splendid_slimes.slime_vac.mode": "Filter mode: %s",
   "info.splendid_slimes.slime_vac.mode_set": "Changed mode to %s",
 
   "info.splendid_slimes.slime_inspector": "Checks if there are living conditions making a Slime unhappy",

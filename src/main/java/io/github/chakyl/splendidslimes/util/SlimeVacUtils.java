@@ -2,16 +2,21 @@ package io.github.chakyl.splendidslimes.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.item.SlimeInventoryItem;
 import io.github.chakyl.splendidslimes.item.SlimeVac;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
@@ -24,6 +29,28 @@ public class SlimeVacUtils {
         Entity entity = SlimeInventoryItem.getSlimeFromItem(slime.getCompound("entity"), slime.getCompound("slime"), player.level());
 
         return entity;
+    }
+
+    public static Entity getVacSlimeFromItem(Level level, ItemStack stack) {
+        if (!(stack.getItem() instanceof SlimeVac)) return null;
+        CompoundTag slime = stack.getTag().getCompound("largo");
+        if (slime.isEmpty()) return null;
+        Entity entity = SlimeInventoryItem.getSlimeFromItem(slime.getCompound("entity"), slime.getCompound("slime"), level);
+        return entity;
+    }
+
+    public static void dropLargo(Level level, Player player, ItemStack stack) {
+        Entity entity = getVacSlimeFromItem(level, stack);
+        if (entity instanceof SlimeEntityBase) {
+            BlockPos targetPos = player.getOnPos();
+            while (!level.getBlockState(targetPos).isAir() && targetPos.getY() < level.getMaxBuildHeight()) {
+                targetPos = targetPos.above();
+            }
+            entity.moveTo(targetPos.getX() + 0.5D, targetPos.getY(), targetPos.getZ() + 0.5D, 0.0F, 0.0F);
+            entity.setDeltaMovement(new Vec3(0.0f, 0.0f, 0.0f));
+            level.addFreshEntity(entity);
+            entity.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
+        }
     }
 
     @SuppressWarnings("resource")
