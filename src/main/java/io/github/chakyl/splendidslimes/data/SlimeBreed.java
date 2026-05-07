@@ -263,7 +263,7 @@ public record SlimeBreed(String breed, MutableComponent name,
             if (obj.has("foods")) {
                 JsonArray parsedFood = GsonHelper.getAsJsonArray(obj, "foods");
                 for (JsonElement e : parsedFood) {
-                    if (e.getAsJsonObject().has("food"))
+                    if (e.getAsJsonObject().has("item"))
                         foods.add(ItemAdapter.ITEM_READER.fromJson(e.getAsJsonObject(), ItemStack.class));
                     else if (e.getAsJsonObject().has("tag"))
                         foods.add(TagKey.create(Registries.ITEM, new ResourceLocation(e.getAsJsonObject().get("tag").getAsString())));

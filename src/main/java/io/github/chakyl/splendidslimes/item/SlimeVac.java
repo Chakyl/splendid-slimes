@@ -1,5 +1,6 @@
 package io.github.chakyl.splendidslimes.item;
 
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.item.ItemProjectile.ItemProjectileEntity;
@@ -174,7 +175,7 @@ public class SlimeVac extends Item {
             }
 
             ItemStack itemStackToLaunch = findFireableItem(player, vacMode);
-            if (itemStackToLaunch.isEmpty()) {
+            if (!player.getItemInHand(inverseHand).isEmpty()) {
                 itemStackToLaunch = player.getItemInHand(inverseHand);
             }
             boolean slimeFired = false;
