@@ -430,7 +430,10 @@ public class SplendidSlime extends SlimeEntityBase {
         this.entityData.set(PICKY_LAST_ATE, data);
     }
 
-    // This is for day tracking
+    /**
+     * dayLastAte = When the slime ate last
+     * dayLastDigested = When the slime's hunger ticked down
+     */
     public int getDayLastAte() {
         return this.entityData.get(DAY_LAST_ATE);
     }
@@ -792,6 +795,8 @@ public class SplendidSlime extends SlimeEntityBase {
                         slime.setTamed(this.getTamed());
                         slime.setHappiness(this.getHappiness() - 100);
                         slime.setHunger(this.getHunger());
+                        slime.setDayLastAte(this.getDayLastAte());
+                        slime.setDayLastDigested(this.getDayLastDigested());
                         slime.moveTo(this.getX(), this.getY() + (double) 0.5F, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
                         this.level().addFreshEntity(slime);
                     }
