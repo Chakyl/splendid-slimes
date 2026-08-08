@@ -27,6 +27,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 @EventBusSubscriber(bus = Bus.FORGE, value = Dist.CLIENT, modid = SplendidSlimes.MODID)
 public class SlimeItemModelRenderer extends BlockEntityWithoutLevelRenderer {
 
@@ -35,7 +37,7 @@ public class SlimeItemModelRenderer extends BlockEntityWithoutLevelRenderer {
     }
 
     private static final MultiBufferSource.BufferSource GHOST_ENTITY_BUF = MultiBufferSource.immediate(new BufferBuilder(256));
-    private static final ResourceLocation DATA_MODEL_BASE = new ResourceLocation(SplendidSlimes.MODID, "item/slime_item");
+    private static final ResourceLocation DATA_MODEL_BASE = loc("item/slime_item");
 
     @Override
     @SuppressWarnings("deprecation")

@@ -9,8 +9,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class PlortPressScreen extends AbstractContainerScreen<PlortPressMenu> {
-    public static final ResourceLocation TEXTURE = new ResourceLocation(SplendidSlimes.MODID, "textures/gui/plort_press.png");
+    public static final ResourceLocation TEXTURE = loc("textures/gui/plort_press.png");
 
     public PlortPressScreen(PlortPressMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

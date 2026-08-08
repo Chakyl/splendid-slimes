@@ -53,7 +53,7 @@ public class SlimeSpawnEggItem extends ForgeSpawnEggItem implements ITabFiller {
         if (stack.isEmpty() || tag == null || !tag.contains(ID)) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
-        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(tag.getString(ID)));
+        return SlimeBreedRegistry.INSTANCE.holder(ResourceLocation.parse(tag.getString(ID)));
     }
 
     public static void setStoredSlime(ItemStack stack, ResourceLocation slime) {

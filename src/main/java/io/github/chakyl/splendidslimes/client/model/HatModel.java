@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
 public class HatModel implements BakedModel {
@@ -42,7 +43,7 @@ public class HatModel implements BakedModel {
     public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
         DynamicHolder<SlimeBreed> slime = getSlimeData(stack, "slime");
         if (slime.isBound()) {
-            return Minecraft.getInstance().getModelManager().getModel(new ResourceLocation(SplendidSlimes.MODID, "item/hat/" + slime.getId().getPath()));
+            return Minecraft.getInstance().getModelManager().getModel(loc("item/hat/" + slime.getId().getPath()));
         }
         return original;
     }

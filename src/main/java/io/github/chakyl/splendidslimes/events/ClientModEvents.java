@@ -30,6 +30,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.Set;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
 @EventBusSubscriber(bus = Bus.MOD, value = Dist.CLIENT, modid = SplendidSlimes.MODID)
@@ -51,10 +52,12 @@ public class ClientModEvents {
         });
 
     }
+
     @SubscribeEvent
     public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModElements.BlockEntities.SLIME_INCUBATOR.get(), SlimeIncubatorBlockEntityRenderer::new);
     }
+
     @SubscribeEvent
     public static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(Keybindings.INSTANCE.slimeVacModeKey);
@@ -62,7 +65,7 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void mrl(ModelEvent.RegisterAdditional e) {
-        e.register(new ResourceLocation(SplendidSlimes.MODID, "item/slime_item"));
+        e.register(loc("item/slime_item"));
     }
 
     @SubscribeEvent
@@ -76,13 +79,13 @@ public class ClientModEvents {
                 .keySet();
         for (ResourceLocation s : locs) {
             String path = s.getPath().substring("models/".length(), s.getPath().length() - ".json".length());
-            e.register(new ResourceLocation(SplendidSlimes.MODID, path));
+            e.register(loc(path));
         }
     }
 
     @SubscribeEvent
     public static void replacePlortModel(ModelEvent.ModifyBakingResult e) {
-        ModelResourceLocation key = new ModelResourceLocation(SplendidSlimes.loc("plort"), "inventory");
+        ModelResourceLocation key = new ModelResourceLocation(loc("plort"), "inventory");
         BakedModel oldModel = e.getModels().get(key);
         if (oldModel != null) {
             e.getModels().put(key, new PlortModel(oldModel, e.getModelBakery()));
@@ -95,13 +98,13 @@ public class ClientModEvents {
                 .keySet();
         for (ResourceLocation s : locs) {
             String path = s.getPath().substring("models/".length(), s.getPath().length() - ".json".length());
-            e.register(new ResourceLocation(SplendidSlimes.MODID, path));
+            e.register(loc(path));
         }
     }
 
     @SubscribeEvent
     public static void replaceHatModel(ModelEvent.ModifyBakingResult e) {
-        ModelResourceLocation key = new ModelResourceLocation(SplendidSlimes.loc("hat"), "inventory");
+        ModelResourceLocation key = new ModelResourceLocation(loc("hat"), "inventory");
         BakedModel oldModel = e.getModels().get(key);
         if (oldModel != null) {
             e.getModels().put(key, new HatModel(oldModel, e.getModelBakery()));

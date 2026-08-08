@@ -19,10 +19,12 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class SlimeTraitsCategory implements IRecipeCategory<TraitRecipe> {
 
     public static final RecipeType<TraitRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "slime_traits", TraitRecipe.class);
-    public static final ResourceLocation TEXTURES = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/slime_trait.png");
+    public static final ResourceLocation TEXTURES = loc("textures/jei/slime_trait.png");
 
     private final IDrawable background;
     private final IDrawable icon;

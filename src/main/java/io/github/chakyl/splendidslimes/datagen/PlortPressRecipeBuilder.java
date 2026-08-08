@@ -32,10 +32,10 @@ public class PlortPressRecipeBuilder {
     }
     public void build(Consumer<FinishedRecipe> consumerIn, String save) {
         ResourceLocation resourcelocation = ModElements.Items.SLIME_HEART.getId();
-        if ((new ResourceLocation(save)).equals(resourcelocation)) {
+        if ((ResourceLocation.parse(save)).equals(resourcelocation)) {
             throw new IllegalStateException("Cooking Recipe " + save + " should remove its 'save' argument");
         } else {
-            build(consumerIn, new ResourceLocation(save));
+            build(consumerIn, ResourceLocation.parse(save));
         }
     }
     public void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id) {

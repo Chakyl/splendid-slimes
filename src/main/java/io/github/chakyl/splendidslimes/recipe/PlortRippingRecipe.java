@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class PlortRippingRecipe implements Recipe<SimpleContainer> {
     private final Ingredient ingredient;
     private final ItemStack input;
@@ -91,7 +93,7 @@ public class PlortRippingRecipe implements Recipe<SimpleContainer> {
 
     public static class Serializer implements RecipeSerializer<PlortRippingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(SplendidSlimes.MODID, "plort_ripping");
+        public static final ResourceLocation ID = loc("plort_ripping");
 
         @Override
         public PlortRippingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
@@ -104,6 +106,7 @@ public class PlortRippingRecipe implements Recipe<SimpleContainer> {
                 JsonObject thisJson = resultJson.get(i).getAsJsonObject();
                 itemStackJson.add("item", thisJson.get("item"));
                 itemStackJson.add("count", thisJson.get("count"));
+                if (thisJson.has("nbt")) itemStackJson.add("nbt", thisJson.get("nbt"));
                 results.set(i,ShapedRecipe.itemStackFromJson(itemStackJson));
                 if (thisJson.has("weight")) {
                     weights.add(thisJson.get("weight").getAsInt());

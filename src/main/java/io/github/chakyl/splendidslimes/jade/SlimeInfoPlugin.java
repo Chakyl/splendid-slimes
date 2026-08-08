@@ -12,9 +12,11 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 @WailaPlugin
 public class SlimeInfoPlugin implements IWailaPlugin {
-    public static final ResourceLocation UID = new ResourceLocation(SplendidSlimes.MODID, "splendid_slime");
+    public static final ResourceLocation UID = loc("splendid_slime");
     @Override
     public void register(IWailaCommonRegistration registration) {
         registration.registerEntityDataProvider(SlimeInfoComponentProvider.INSTANCE, SplendidSlime.class);

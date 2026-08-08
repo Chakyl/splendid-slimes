@@ -7,9 +7,11 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class PacketHandler {
     private static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
-            new ResourceLocation(SplendidSlimes.MODID, "main"))
+            loc("main"))
             .serverAcceptedVersions((version) -> true)
             .clientAcceptedVersions((version) -> true)
             .networkProtocolVersion(() -> String.valueOf(1))

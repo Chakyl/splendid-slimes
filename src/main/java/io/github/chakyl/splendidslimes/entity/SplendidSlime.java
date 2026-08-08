@@ -8,8 +8,6 @@ import io.github.chakyl.splendidslimes.item.SlimeInspector;
 import io.github.chakyl.splendidslimes.item.SlimeVac;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.util.SlimeComfortUtils;
-import io.github.chakyl.splendidslimes.util.SlimeData;
-import io.github.chakyl.splendidslimes.util.SlimeUtils;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -218,6 +216,7 @@ public class SplendidSlime extends SlimeEntityBase {
         slimeItemTags.put("slime", id);
         if (isLargo) {
             ItemStack handStack = player.getItemInHand(InteractionHand.MAIN_HAND);
+            if (!handStack.is(ModElements.Items.SLIME_VAC.get())) handStack = player.getItemInHand(InteractionHand.OFF_HAND);
             CompoundTag slimeTag = new CompoundTag();
             slimeTag.put("entity", slimeItemTags.getCompound("entity"));
             slimeTag.put("slime", slimeItemTags.getCompound("slime"));

@@ -14,6 +14,8 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class PlortPressingRecipe implements Recipe<SimpleContainer> {
     private final Ingredient ingredient;
     private final ItemStack input;
@@ -93,7 +95,7 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
 
     public static class Serializer implements RecipeSerializer<PlortPressingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(SplendidSlimes.MODID, "plort_pressing");
+        public static final ResourceLocation ID = loc("plort_pressing");
 
         @Override
         public PlortPressingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {

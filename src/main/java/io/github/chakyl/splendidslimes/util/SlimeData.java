@@ -13,7 +13,7 @@ public class SlimeData {
         if (stack.isEmpty() || tag == null || !tag.contains("id")) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
-        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(tag.getString("id")));
+        return SlimeBreedRegistry.INSTANCE.holder(ResourceLocation.parse(tag.getString("id")));
     }
 
     public static DynamicHolder<SlimeBreed> getSlimeFromEgg(ItemStack stack) {
@@ -21,7 +21,7 @@ public class SlimeData {
         if (stack.isEmpty() || tag == null || !tag.contains("Breed")) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
-        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(tag.getString("Breed")));
+        return SlimeBreedRegistry.INSTANCE.holder(ResourceLocation.parse(tag.getString("Breed")));
     }
 
     public static DynamicHolder<SlimeBreed> getSlimeData(String breed) {
@@ -29,7 +29,7 @@ public class SlimeData {
         if (resolvedBreed.isEmpty()) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
-        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(resolvedBreed));
+        return SlimeBreedRegistry.INSTANCE.holder(ResourceLocation.parse(resolvedBreed));
     }
 
     public static boolean plortIsFromLargoless(String plortTag) {

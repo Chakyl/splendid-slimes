@@ -20,10 +20,12 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class SlimeIncubatingCategory implements IRecipeCategory<SlimeRecipe> {
 
     public static final RecipeType<SlimeRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "slime_incubating", SlimeRecipe.class);
-    public static final ResourceLocation TEXTURES = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/slime_incubating_jei.png");
+    public static final ResourceLocation TEXTURES = loc("textures/jei/slime_incubating_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;

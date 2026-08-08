@@ -1,6 +1,5 @@
 package io.github.chakyl.splendidslimes.item;
 
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.item.ItemProjectile.ItemProjectileEntity;
@@ -131,12 +130,21 @@ public class SlimeVac extends Item {
         return false;
     }
 
+    public static boolean hasLargo(ItemStack handStack) {
+        if (!handStack.is(ModElements.Items.SLIME_VAC.get())) return false;
+        CompoundTag tag = handStack.getTag();
+        if (tag != null && tag.contains("largo")) {
+            return !tag.getCompound("largo").isEmpty();
+        }
+        return false;
+    }
+
     // References: Crossroads Vacuum, Create Potato Cannon
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack handStack = player.getItemInHand(hand);
 
-        boolean hasLargo = hasLargo(player);
+        boolean hasLargo = hasLargo(handStack);
         VacMode vacMode = getMode(handStack);
         if (player.isCrouching()) {
             if (hasLargo) return InteractionResultHolder.pass(handStack);

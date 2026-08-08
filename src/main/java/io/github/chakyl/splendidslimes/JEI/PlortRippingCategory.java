@@ -18,10 +18,12 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe> {
 
     public static final RecipeType<PlortRippingRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "plort_ripping", PlortRippingRecipe.class);
-    public static final ResourceLocation TEXTURES = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/plort_rip_jei.png");
+    public static final ResourceLocation TEXTURES = loc("textures/jei/plort_rip_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;

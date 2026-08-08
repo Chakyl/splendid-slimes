@@ -21,7 +21,6 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
 public class SlimeVacUtils {
-
     public static Entity getVacSlime(Player player) {
         if (!SlimeVac.hasLargo(player)) return null;
         CompoundTag slime = player.getItemInHand(InteractionHand.MAIN_HAND).getTag().getCompound("largo");
@@ -30,6 +29,15 @@ public class SlimeVacUtils {
 
         return entity;
     }
+
+//    public static Entity getVacSlime(Player player, ItemStack stack) {
+//        if (!SlimeVac.hasLargo(player, stack)) return null;
+//        CompoundTag slime = player.getItemInHand(InteractionHand.MAIN_HAND).getTag().getCompound("largo");
+//        if (slime.isEmpty()) return null;
+//        Entity entity = SlimeInventoryItem.getSlimeFromItem(slime.getCompound("entity"), slime.getCompound("slime"), player.level());
+//
+//        return entity;
+//    }
 
     public static Entity getVacSlimeFromItem(Level level, ItemStack stack) {
         if (!(stack.getItem() instanceof SlimeVac)) return null;

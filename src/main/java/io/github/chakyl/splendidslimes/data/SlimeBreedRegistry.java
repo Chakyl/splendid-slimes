@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class SlimeBreedRegistry extends DynamicRegistry<SlimeBreed> {
 
     public static final SlimeBreedRegistry INSTANCE = new SlimeBreedRegistry();
@@ -25,7 +27,7 @@ public class SlimeBreedRegistry extends DynamicRegistry<SlimeBreed> {
 
     @Override
     protected void registerBuiltinCodecs() {
-        this.registerDefaultCodec(new ResourceLocation(SplendidSlimes.MODID, "slime_breeds"), SlimeBreed.CODEC);
+        this.registerDefaultCodec(loc("slime_breeds"), SlimeBreed.CODEC);
     }
 
     @Override

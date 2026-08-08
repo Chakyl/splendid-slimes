@@ -15,10 +15,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecipe> {
 
     public static final RecipeType<PlortPressingRecipe> TYPE = RecipeType.create(SplendidSlimes.MODID, "plort_pressing", PlortPressingRecipe.class);
-    public static final ResourceLocation TEXTURE = new ResourceLocation(SplendidSlimes.MODID, "textures/jei/plort_press_jei.png");
+    public static final ResourceLocation TEXTURE = loc("textures/jei/plort_press_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;

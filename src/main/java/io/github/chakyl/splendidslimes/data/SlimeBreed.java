@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
 import static io.github.chakyl.splendidslimes.util.SlimeBreedRegistration.*;
 
 /**
@@ -139,7 +140,7 @@ public record SlimeBreed(String breed, MutableComponent name,
         @Override
         public <T> DataResult<T> encode(SlimeBreed input, DynamicOps<T> ops, T prefix) {
             JsonObject obj = new JsonObject();
-            ResourceLocation key = new ResourceLocation(SplendidSlimes.MODID, input.breed);
+            ResourceLocation key = loc( input.breed);
             obj.addProperty("breed", input.breed);
             obj.addProperty("name", ((TranslatableContents) input.name.getContents()).getKey());
             obj.add("hat", ItemAdapter.ITEM_READER.toJsonTree(input.hat));
@@ -156,7 +157,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                 if (food.getClass() == ItemStack.class) {
                     JsonElement newStack = ItemAdapter.ITEM_READER.toJsonTree(food);
                     JsonObject foodJson = newStack.getAsJsonObject();
-                    ResourceLocation itemName = new ResourceLocation(foodJson.get("item").getAsString());
+                    ResourceLocation itemName = ResourceLocation.parse(foodJson.get("item").getAsString());
                     if (!"minecraft".equals(itemName.getNamespace()) && !key.getNamespace().equals(itemName.getNamespace())) {
                         foodJson.addProperty("optional", true);
                     }
@@ -266,7 +267,7 @@ public record SlimeBreed(String breed, MutableComponent name,
                     if (e.getAsJsonObject().has("item"))
                         foods.add(ItemAdapter.ITEM_READER.fromJson(e.getAsJsonObject(), ItemStack.class));
                     else if (e.getAsJsonObject().has("tag"))
-                        foods.add(TagKey.create(Registries.ITEM, new ResourceLocation(e.getAsJsonObject().get("tag").getAsString())));
+                        foods.add(TagKey.create(Registries.ITEM, ResourceLocation.parse(e.getAsJsonObject().get("tag").getAsString())));
                 }
             }
             ItemStack favoriteFood = new ItemStack(Items.AIR);
@@ -276,7 +277,7 @@ public record SlimeBreed(String breed, MutableComponent name,
             List<EntityType<? extends LivingEntity>> entities = new ArrayList<>();
             if (obj.has("entities")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "entities")) {
-                    EntityType<? extends LivingEntity> st = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(json.getAsString()));
+                    EntityType<? extends LivingEntity> st = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(json.getAsString()));
                     if (st != EntityType.PIG || "minecraft:pig".equals(json.getAsString())) entities.add(st);
                     // Intentionally ignore invalid entries here, so that modded entities can be added without hard deps.
                 }
@@ -284,14 +285,14 @@ public record SlimeBreed(String breed, MutableComponent name,
             EntityType<? extends LivingEntity> favoriteEntity = null;
             if (obj.has("favorite_entity")) {
                 String favoriteEntityStr = GsonHelper.getAsString(obj, "favorite_entity");
-                favoriteEntity = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(favoriteEntityStr));
+                favoriteEntity = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(favoriteEntityStr));
                 if (favoriteEntity == EntityType.PIG && !"minecraft:pig".equals(favoriteEntityStr))
                     throw new JsonParseException("Slime has invalid favorite entity type " + favoriteEntityStr);
             }
             List<EntityType<? extends LivingEntity>> hostileToEntitites = new ArrayList<>();
             if (obj.has("hostile_to_entities")) {
                 for (JsonElement json : GsonHelper.getAsJsonArray(obj, "hostile_to_entities")) {
-                    EntityType<? extends LivingEntity> st = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(json.getAsString()));
+                    EntityType<? extends LivingEntity> st = (EntityType) ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(json.getAsString()));
                     if (st != EntityType.PIG || "minecraft:pig".equals(json.getAsString())) hostileToEntitites.add(st);
                     // Intentionally ignore invalid entries here, so that modded entities can be added without hard deps.
                 }

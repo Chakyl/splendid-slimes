@@ -114,7 +114,7 @@ public class SlimeEntityBase extends Slime {
         if (type.isEmpty()) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
-        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(type));
+        return SlimeBreedRegistry.INSTANCE.holder(ResourceLocation.parse(type));
     }
 
     public DynamicHolder<SlimeBreed> getSecondarySlime() {
@@ -122,7 +122,7 @@ public class SlimeEntityBase extends Slime {
         if (type.isEmpty()) {
             return SlimeBreedRegistry.INSTANCE.emptyHolder();
         }
-        return SlimeBreedRegistry.INSTANCE.holder(new ResourceLocation(type));
+        return SlimeBreedRegistry.INSTANCE.holder(ResourceLocation.parse(type));
     }
 
     public DynamicHolder<SlimeBreed> getHatSlime() {

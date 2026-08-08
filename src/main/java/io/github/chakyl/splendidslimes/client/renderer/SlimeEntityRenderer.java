@@ -19,9 +19,11 @@ import net.minecraft.util.Mth;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
+
 public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntityModel<SlimeEntityBase>> {
-    public static final ModelLayerLocation SPLENDID_SLIME_BASE = new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "main"), "main");
-    public static final ModelLayerLocation HAT_LAYER = new ModelLayerLocation(new ResourceLocation(SplendidSlimes.MODID, "main"), "main");
+    public static final ModelLayerLocation SPLENDID_SLIME_BASE = new ModelLayerLocation(loc("main"), "main");
+    public static final ModelLayerLocation HAT_LAYER = new ModelLayerLocation(loc("main"), "main");
     private static Map<String, ResourceLocation> cache = new HashMap<>();
 
     public SlimeEntityRenderer(EntityRendererProvider.Context context) {
@@ -61,7 +63,7 @@ public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntit
         String path = slimeEntityBase.getSlimeBreed().replace(":", ":textures/entity/slime/") + ".png";
         if (slimeEntityBase instanceof Tarr) path = "splendid_slimes:textures/entity/slime/tarr.png";
         if (!cache.containsKey(path)) {
-            cache.put(path, new ResourceLocation(path));
+            cache.put(path, ResourceLocation.parse(path));
         }
         return cache.get(path);
     }

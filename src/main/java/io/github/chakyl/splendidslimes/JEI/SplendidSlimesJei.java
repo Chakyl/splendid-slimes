@@ -21,13 +21,14 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeFromEgg;
 
 @JeiPlugin
 public class SplendidSlimesJei implements IModPlugin {
 
-    public static final ResourceLocation UID = new ResourceLocation(SplendidSlimes.MODID, "plugin");
+    public static final ResourceLocation UID = loc("plugin");
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration reg) {
