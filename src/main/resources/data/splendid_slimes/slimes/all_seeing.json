@@ -1,11 +1,13 @@
 {
   "breed": "all_seeing",
-  "name": "slime.splendid_slimes.all_seeing",
+  "name": {
+    "translate": "slime.splendid_slimes.all_seeing"
+  },
   "color": "#65062b",
   "particle": { "item": "minecraft:cobweb" },
-  "diet": "diet.splendid_slimes.all_seeing",
-  "foods": [{ "tag": "forge:vegetables" }],
-  "favorite_food": { "item": "minecraft:golden_carrot" },
+  "diet": {"translate": "diet.splendid_slimes.all_seeing"},
+  "foods": [{ "tag": "c:vegetables" }],
+  "favorite_food": { "id": "minecraft:golden_carrot" },
   "negative_emit_effects": [
     {
       "effect": "minecraft:poison",

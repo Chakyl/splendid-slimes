@@ -1,14 +1,25 @@
 {
   "breed": "ender",
-  "name": "slime.splendid_slimes.ender",
+  "name": {
+    "translate": "slime.splendid_slimes.ender"
+  },
   "color": "#0b4d42",
-  "particle": { "item": "minecraft:ender_pearl" },
-  "diet": "diet.splendid_slimes.ender",
-  "foods": [{ "tag": "forge:gems" }],
-  "favorite_food": { "item": "minecraft:amethyst_shard" },
-  "traits": ["foodporting", "wormhole"],
-  "negative_commands": [
-    "tp @e[distance=..8] @e[limit=1,sort=nearest]",
-    "playsound minecraft:entity.enderman.teleport block @a[distance=..10]"
+  "appearance": {
+    "item_walk_particle": {
+      "id": "minecraft:ender_pearl"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.ender"},
+  "foods": [{ "tag": "c:gems" }],
+  "favorite_food": { "id": "minecraft:amethyst_shard" },
+  "traits": ["foodporting"],
+  "slime_effects": [
+    {
+      "effect_type": "negative",
+      "commands": [
+        "tp @e[distance=..8] @e[limit=1,sort=nearest]",
+        "playsound minecraft:entity.enderman.teleport block @a[distance=..10]"
+      ]
+    }
   ]
 }

@@ -1,0 +1,47 @@
+{
+	"textures": {
+		"0": "splendid_slimes:item/decorator/all_seeing_hat",
+		"particle": "splendid_slimes:item/decorator/all_seeing_hat"
+	},
+	"elements": [
+		{
+			"from": [7.05, 5, 3.75],
+			"to": [9.05, 7, 5.75],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7.05, 5, 3.75]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"east": {"uv": [0, 2, 2, 4], "texture": "#0"},
+				"south": {"uv": [2, 0, 4, 2], "texture": "#0"},
+				"west": {"uv": [2, 2, 4, 4], "texture": "#0"},
+				"up": {"uv": [2, 6, 0, 4], "texture": "#0"},
+				"down": {"uv": [6, 0, 4, 2], "texture": "#0"}
+			}
+		},
+		{
+			"from": [10.15, 2, 3.75],
+			"to": [12.15, 4, 5.75],
+			"rotation": {"angle": 0, "axis": "y", "origin": [10.15, 2, 3.75]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"east": {"uv": [0, 2, 2, 4], "texture": "#0"},
+				"south": {"uv": [2, 0, 4, 2], "texture": "#0"},
+				"west": {"uv": [2, 2, 4, 4], "texture": "#0"},
+				"up": {"uv": [2, 6, 0, 4], "texture": "#0"},
+				"down": {"uv": [6, 0, 4, 2], "texture": "#0"}
+			}
+		},
+		{
+			"from": [3.75, 2, 3.75],
+			"to": [5.75, 4, 5.75],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3.75, 2, 3.75]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#0"},
+				"east": {"uv": [0, 2, 2, 4], "texture": "#0"},
+				"south": {"uv": [2, 0, 4, 2], "texture": "#0"},
+				"west": {"uv": [2, 2, 4, 4], "texture": "#0"},
+				"up": {"uv": [2, 6, 0, 4], "texture": "#0"},
+				"down": {"uv": [6, 0, 4, 2], "texture": "#0"}
+			}
+		}
+	]
+}

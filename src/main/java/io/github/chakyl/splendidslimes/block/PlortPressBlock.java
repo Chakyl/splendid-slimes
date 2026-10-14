@@ -1,13 +1,13 @@
 package io.github.chakyl.splendidslimes.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
+import dev.shadowsoffire.placebo.menu.MenuUtil;
 import io.github.chakyl.splendidslimes.blockentity.PlortPressBlockEntity;
+import io.github.chakyl.splendidslimes.screen.PlortPressMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -22,7 +22,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 
 public class PlortPressBlock extends HorizontalDirectionalBlock implements TickingEntityBlock {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
@@ -32,7 +31,6 @@ public class PlortPressBlock extends HorizontalDirectionalBlock implements Ticki
         super(props);
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
     }
-
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE;
@@ -65,15 +63,21 @@ public class PlortPressBlock extends HorizontalDirectionalBlock implements Ticki
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    public InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult hitResult) {
         if (!pLevel.isClientSide) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if (entity instanceof  PlortPressBlockEntity) {
-                NetworkHooks.openScreen((ServerPlayer) pPlayer, (MenuProvider) entity, pPos);
+            if (entity instanceof PlortPressBlockEntity plortPressBlockEntity) {
+                MenuUtil.openGui(pPlayer, pPos, PlortPressMenu::new);
             } else {
                 throw new IllegalStateException("No Container Provider for Plort Press!");
             }
         }
         return InteractionResult.sidedSuccess(pLevel.isClientSide());
     }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return null;
+    }
+
 }

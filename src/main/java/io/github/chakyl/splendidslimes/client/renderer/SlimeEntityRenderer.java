@@ -1,14 +1,13 @@
 package io.github.chakyl.splendidslimes.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.client.model.SlimeEntityModel;
+import io.github.chakyl.splendidslimes.client.model.SlimeFaceLayer;
 import io.github.chakyl.splendidslimes.client.model.SlimeHandyLayer;
-import io.github.chakyl.splendidslimes.client.model.SlimeHatLayer;
+import io.github.chakyl.splendidslimes.client.model.SlimeDecoratorLayer;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.Tarr;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -23,12 +22,13 @@ import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
 
 public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntityModel<SlimeEntityBase>> {
     public static final ModelLayerLocation SPLENDID_SLIME_BASE = new ModelLayerLocation(loc("main"), "main");
-    public static final ModelLayerLocation HAT_LAYER = new ModelLayerLocation(loc("main"), "main");
+    public static final ModelLayerLocation SLIME_FACE_LAYER = new ModelLayerLocation(loc("slime_face"), "main");
     private static Map<String, ResourceLocation> cache = new HashMap<>();
 
     public SlimeEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new SlimeEntityModel<>(context.bakeLayer(SPLENDID_SLIME_BASE)), 0.25F);
-        addLayer(new SlimeHatLayer<>(this));
+        addLayer(new SlimeFaceLayer<>(this, context.bakeLayer(SLIME_FACE_LAYER)));
+        addLayer(new SlimeDecoratorLayer<>(this));
         addLayer(new SlimeHandyLayer<>(this, context.getItemInHandRenderer()));
     }
 
@@ -38,14 +38,14 @@ public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntit
     }
 
     @Override
-    protected RenderType getRenderType(SlimeEntityBase p_230496_1_, boolean p_230496_2_, boolean p_230496_3_, boolean p_230496_4_) {
-        ResourceLocation resourcelocation = this.getTextureLocation(p_230496_1_);
-        if (p_230496_3_) {
+    protected RenderType getRenderType(SlimeEntityBase slimeEntityBase, boolean bodyVisible, boolean translucent, boolean glowing) {
+        ResourceLocation resourcelocation = this.getTextureLocation(slimeEntityBase);
+        if (translucent) {
             return RenderType.itemEntityTranslucentCull(resourcelocation);
-        } else if (p_230496_2_) {
+        } else if (bodyVisible) {
             return RenderType.entityTranslucent(resourcelocation);
         } else {
-            return p_230496_4_ ? RenderType.outline(resourcelocation) : null;
+            return glowing ? RenderType.outline(resourcelocation) : null;
         }
     }
 
@@ -60,7 +60,7 @@ public class SlimeEntityRenderer extends MobRenderer<SlimeEntityBase, SlimeEntit
 
     @Override
     public ResourceLocation getTextureLocation(SlimeEntityBase slimeEntityBase) {
-        String path = slimeEntityBase.getSlimeBreed().replace(":", ":textures/entity/slime/") + ".png";
+        String path = slimeEntityBase.getSlimeBreed().replace(":", ":textures/entity/slime/") + "/base.png";
         if (slimeEntityBase instanceof Tarr) path = "splendid_slimes:textures/entity/slime/tarr.png";
         if (!cache.containsKey(path)) {
             cache.put(path, ResourceLocation.parse(path));

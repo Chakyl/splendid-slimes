@@ -1,15 +1,21 @@
 {
   "breed": "boomcat",
-  "name": "slime.splendid_slimes.boomcat",
+  "name": {
+    "translate": "slime.splendid_slimes.boomcat"
+  },
   "color": "#8a8a8a",
-  "particle": { "item": "minecraft:gunpowder" },
-  "diet": "diet.splendid_slimes.boomcat",
+  "appearance": {
+    "item_walk_particle": {
+      "id": "minecraft:gunpowder"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.boomcat"},
   "foods": [
-    { "tag": "forge:raw_meat" },
-    { "tag": "forge:cooked_meat" },
+    { "tag": "c:raw_meat" },
+    { "tag": "c:cooked_meat" },
     { "tag": "splendid_slimes:animal_spawn_eggs" }
   ],
-  "favorite_food": { "item": "minecraft:cooked_beef" },
+  "favorite_food": { "id": "minecraft:cooked_beef" },
   "entities": [
     "minecraft:chicken",
     "minecraft:cow",

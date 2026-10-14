@@ -1,16 +1,27 @@
 {
   "breed": "webby",
-  "name": "slime.splendid_slimes.webby",
+  "name": {
+    "translate": "slime.splendid_slimes.webby"
+  },
   "color": "#bebfd2",
-  "particle": { "item": "minecraft:cobweb" },
-  "diet": "diet.splendid_slimes.webby",
-  "foods": [{ "tag": "forge:vegetables" }],
-  "favorite_food": { "item": "minecraft:beetroot" },
-  "negative_emit_effects": [
+  "appearance": {
+    "item_walk_particle": {
+      "id": "minecraft:cobweb"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.webby"},
+  "foods": [{ "tag": "c:vegetables" }],
+  "favorite_food": { "id": "minecraft:beetroot" },
+  "slime_effects": [
     {
-      "effect": "minecraft:slowness",
-      "duration": 120,
-      "amplifier": 2
+      "effect_type": "positive",
+      "emit_effects": [
+        {
+          "id": "minecraft:slowness",
+          "duration": 120,
+          "amplifier": 2
+        }
+      ]
     }
   ]
 }

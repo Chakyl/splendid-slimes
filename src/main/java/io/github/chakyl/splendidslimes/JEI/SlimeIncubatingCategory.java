@@ -36,7 +36,7 @@ public class SlimeIncubatingCategory implements IRecipeCategory<SlimeRecipe> {
 
     public SlimeIncubatingCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 126, 39);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.SLIME_INCUBATOR.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.SLIME_INCUBATOR.value()));
         this.name = Component.translatable("jei.splendid_slimes.category.slime_incubating");
     }
 
@@ -64,12 +64,12 @@ public class SlimeIncubatingCategory implements IRecipeCategory<SlimeRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, SlimeRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 5, 5).addIngredient(VanillaTypes.ITEM_STACK, recipe.heart);
-        builder.addSlot(RecipeIngredientRole.CATALYST, 54, 5).addItemStack(ModElements.Items.SLIME_INCUBATOR.get().getDefaultInstance());
+        builder.addSlot(RecipeIngredientRole.CATALYST, 54, 5).addItemStack(ModElements.Items.SLIME_INCUBATOR.value().getDefaultInstance());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 105, 5).addIngredient(VanillaTypes.ITEM_STACK, recipe.slime);
     }
 
     @Override
     public void draw(SlimeRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("jei.splendid_slimes.category.slime_incubation.incubation_time", SlimyConfig.incubationTime / 20)), 4, 28, 0xFF4b3658, false);
+        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("jei.splendid_slimes.category.slime_incubation.incubation_time", SplendidSlimes.CONFIG.INCUBATION_TIME.getAsInt() / 20)), 4, 28, 0xFF4b3658, false);
     }
 }

@@ -37,14 +37,14 @@ public class PlortPressScreen extends AbstractContainerScreen<PlortPressMenu> {
     }
 
     private void renderProgressArrow(GuiGraphics guiGraphics, int x, int y) {
-        if (menu.isCrafting()) {
-            guiGraphics.blit(TEXTURE, x + 82, y + 25, 176, 0, 12, menu.getScaledProgress());
-        }
+//        if (menu.isCrafting()) {
+//            guiGraphics.blit(TEXTURE, x + 82, y + 25, 176, 0, 12, menu.getScaledProgress());
+//        }
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics,  mouseX, mouseY,  delta);
         super.render(guiGraphics, mouseX, mouseY, delta);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }

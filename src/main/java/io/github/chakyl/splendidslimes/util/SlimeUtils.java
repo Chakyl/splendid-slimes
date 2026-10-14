@@ -3,6 +3,10 @@ package io.github.chakyl.splendidslimes.util;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.entity.slimeffects.SlimeEffect;
+import io.github.chakyl.splendidslimes.entity.slimeffects.SlimeEffectType;
+import io.github.chakyl.splendidslimes.entity.slimeffects.SlimeEffects;
+import io.github.chakyl.splendidslimes.entity.slimetraits.SlimeTrait;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
@@ -27,50 +31,45 @@ import java.util.List;
 
 public class SlimeUtils {
     public static MobEffectInstance copyEffect(SplendidSlime slime, MobEffectInstance effect) {
-        boolean putrid = slime.hasTrait("putrid");
+        boolean putrid = slime.hasTrait(SlimeTrait.PUTRID);
         return new MobEffectInstance(effect.getEffect(), effect.getDuration() * (putrid ? effect.getDuration() : 1), effect.getAmplifier() + (putrid ? 1 : 0), effect.isAmbient(), effect.isVisible());
     }
 
-    public static void applyEffects(SplendidSlime slime, LivingEntity entity, List<MobEffectInstance> effects, boolean particles) {
-        if (particles) slime.setParticleAnimationTick(0);
+    public static void setInnateEffects(SplendidSlime slime, LivingEntity entity, List<MobEffectInstance> effects, boolean particles) {
         for (MobEffectInstance effect : effects) {
             if (effect != null && entity != null) entity.addEffect(copyEffect(slime, effect));
         }
     }
 
-    public static void applyNegativeEffects(SplendidSlime splendidSlime, LivingEntity entity, boolean particles) {
-        DynamicHolder<SlimeBreed> slime = splendidSlime.getSlime();
-        DynamicHolder<SlimeBreed> secondarySlime = splendidSlime.getSecondarySlime();
-        if (!slime.isBound()) return;
-        if (!(splendidSlime.hasSameBreed(entity))) {
-            List<MobEffectInstance> effects = slime.get().negativeEmitEffects();
-            if (secondarySlime.isBound()) {
-                List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().negativeEmitEffects();
-                if (!secondarySlimeEffects.isEmpty()) {
-                    applyEffects(splendidSlime, entity, secondarySlimeEffects, particles);
-                }
-            }
-            if (!effects.isEmpty()) {
-                applyEffects(splendidSlime, entity, effects, particles);
+    public static void setEffects(SplendidSlime slime, LivingEntity entity, SlimeEffects effects, boolean particles, SlimeEffectType effectType) {
+        if (particles) slime.setParticleAnimationTick(0);
+        for (SlimeEffect effect : effects) {
+            // TODO: handle particles
+            if (effectType != effect.getEffectType() || effect.getEmitEffects().isEmpty()) continue;
+            for (MobEffectInstance mobEffectInstance : effect.getEmitEffects()) {
+                if (mobEffectInstance != null && entity != null) entity.addEffect(copyEffect(slime, mobEffectInstance));
             }
         }
     }
 
-    public static void applyPositiveEffects(SplendidSlime splendidSlime, LivingEntity entity, boolean particles) {
+    public static void applyEffects(SplendidSlime splendidSlime, LivingEntity entity, boolean particles, SlimeEffectType effectType) {
         DynamicHolder<SlimeBreed> slime = splendidSlime.getSlime();
         DynamicHolder<SlimeBreed> secondarySlime = splendidSlime.getSecondarySlime();
         if (!slime.isBound()) return;
-        List<MobEffectInstance> effects = slime.get().positiveEmitEffects();
+        if (splendidSlime.hasSameBreed(entity) && effectType == SlimeEffectType.NEGATIVE) return;
+        SlimeEffects effects = slime.get().slimeEffects();
+        if (!effects.isEmpty()) {
+            setEffects(splendidSlime, entity, effects, particles, effectType);
+        }
         if (secondarySlime.isBound()) {
-            List<MobEffectInstance> secondarySlimeEffects = secondarySlime.get().positiveEmitEffects();
+            SlimeEffects secondarySlimeEffects = secondarySlime.get().slimeEffects();
             if (!secondarySlimeEffects.isEmpty()) {
-                applyEffects(splendidSlime, entity, secondarySlimeEffects, particles);
+                setEffects(splendidSlime, entity, secondarySlimeEffects, particles, effectType);
             }
         }
-        if (!effects.isEmpty()) {
-            applyEffects(splendidSlime, entity, effects, particles);
-        }
+
     }
+
 
 
     private static CommandSourceStack createCommandSourceStack(@Nullable Player pPlayer, Entity pEntity, Level pLevel, BlockPos pPos, Component displayName) {
@@ -88,35 +87,30 @@ public class SlimeUtils {
         }
     }
 
-    public static void executeSlimeCommands(SplendidSlime splendidSlime, boolean positive, boolean attack) {
+    public static void executeSlimeCommands(SplendidSlime splendidSlime, SlimeEffectType slimeEffectType) {
         DynamicHolder<SlimeBreed> slime = splendidSlime.getSlime();
         DynamicHolder<SlimeBreed> secondarySlime = splendidSlime.getSecondarySlime();
         if (!slime.isBound()) return;
-        if (attack) {
-            runCommands(splendidSlime, slime.get().attackCommands());
-            if (secondarySlime.isBound()) {
-                runCommands(splendidSlime, secondarySlime.get().attackCommands());
-            }
-        } else if (positive) {
-            runCommands(splendidSlime, slime.get().positiveCommands());
-            if (secondarySlime.isBound()) {
-                runCommands(splendidSlime, secondarySlime.get().positiveCommands());
-            }
-        } else {
-            runCommands(splendidSlime, slime.get().negativeCommands());
-            if (secondarySlime.isBound()) {
-                runCommands(splendidSlime, secondarySlime.get().negativeCommands());
-            }
+        for (SlimeEffect effect : slime.get().slimeEffects()) {
+            // TODO: handle particles
+            if (slimeEffectType != effect.getEffectType() || effect.getCommands().isEmpty()) continue;
+            runCommands(splendidSlime, effect.getCommands());
+        }
+        for (SlimeEffect effect : secondarySlime.get().slimeEffects()) {
+            // TODO: handle particles
+            if (slimeEffectType != effect.getEffectType() || effect.getCommands().isEmpty()) continue;
+            runCommands(splendidSlime, effect.getCommands());
+
         }
     }
 
     public static void handleHungryTraits(SplendidSlime splendidSlime) {
         double chance = 1 - (((splendidSlime.getHunger() + 1.0) / SplendidSlime.SLIME_HUNGRY_THRESHOLD));
         if (splendidSlime.getRandom().nextFloat() <= chance) {
-            if (splendidSlime.hasTrait("explosive")) {
-                splendidSlime.level().explode(splendidSlime, splendidSlime.getX(), splendidSlime.getY(), splendidSlime.getZ(), splendidSlime.hasTrait("flaming") ? 3f : 4f, splendidSlime.hasTrait("flaming"), Level.ExplosionInteraction.NONE);
+            if (splendidSlime.hasTrait(SlimeTrait.EXPLOSIVE)) {
+                splendidSlime.level().explode(splendidSlime, splendidSlime.getX(), splendidSlime.getY(), splendidSlime.getZ(), splendidSlime.hasTrait(SlimeTrait.FLAMING) ? 3f : 4f, splendidSlime.hasTrait(SlimeTrait.FLAMING), Level.ExplosionInteraction.NONE);
             }
-            if (splendidSlime.hasTrait("flaming")) {
+            if (splendidSlime.hasTrait(SlimeTrait.FLAMING)) {
                 BlockPos blockpos = splendidSlime.getOnPos();
                 if (splendidSlime.level().isEmptyBlock(blockpos)) {
                     splendidSlime.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(splendidSlime.level(), blockpos));
@@ -149,8 +143,9 @@ public class SlimeUtils {
     public static boolean compareDay(int day, int checkedDay, int amount) {
         return day < checkedDay || day - checkedDay >= amount;
     }
+
     public static int getDayOffset(int day, int checkedDay) {
-        if (day < checkedDay ) return 1;
+        if (day < checkedDay) return 1;
         return day - checkedDay;
     }
 

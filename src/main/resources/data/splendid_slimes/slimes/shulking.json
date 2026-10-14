@@ -1,24 +1,41 @@
 {
   "breed": "shulking",
-  "name": "slime.splendid_slimes.shulking",
+  "name": {
+    "translate": "slime.splendid_slimes.shulking"
+  },
   "color": "#976997",
-  "particle": { "item": "minecraft:purpur_block" },
-  "hat_y_offset": -1,
-  "diet": "diet.splendid_slimes.shulking",
+  "appearance": {
+    "decorators": [
+      {
+        "y_offset": -1
+      }
+    ],
+    "item_walk_particle": {
+      "id": "minecraft:purpur_block"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.shulking"},
   "foods": [
     { "item": "minecraft:popped_chorus_fruit" },
     { "item": "minecraft:chorus_flower" },
     { "item": "minecraft:chorus_plant" },
     { "item": "minecraft:chorus_fruit" }
   ],
-  "favorite_food": { "item": "minecraft:chorus_flower" },
+  "favorite_food": { "id": "minecraft:chorus_flower" },
   "traits": ["foodporting"],
-  "emit_effect_particle": "minecraft:end_rod",
-  "negative_emit_effects": [
+  "slime_effects": [
     {
-      "effect": "minecraft:levitation",
-      "duration": 120,
-      "amplifier": 0
+      "effect_type": "positive",
+      "emit_effects": [
+        {
+          "id": "minecraft:levitation",
+          "duration": 120,
+          "amplifier": 0
+        }
+      ],
+      "effect_particle": {
+        "type": "minecraft:end_rod"
+      }
     }
   ]
 }
