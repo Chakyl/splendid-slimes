@@ -31,8 +31,8 @@ public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecip
 
     public PlortPressingCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURE, 0, 0, 84, 64);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_PRESS.get()));
-        this.name = Component.translatable(ModElements.Blocks.PLORT_PRESS.get().getDescriptionId());
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_PRESS.value()));
+        this.name = Component.translatable(ModElements.Blocks.PLORT_PRESS.value().getDescriptionId());
     }
 
     @Override
@@ -58,9 +58,9 @@ public class PlortPressingCategory implements IRecipeCategory<PlortPressingRecip
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PlortPressingRecipe recipe, IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 17, 1).addItemStack(recipe.getInputItem(null));
-        if (!recipe.getOutputItem(null).isEmpty())
-            builder.addSlot(RecipeIngredientRole.CATALYST, 17, 43).addItemStack(recipe.getOutputItem(null));
+        builder.addSlot(RecipeIngredientRole.INPUT, 17, 1).addItemStack(recipe.getInput());
+        if (!recipe.getOutput().isEmpty())
+            builder.addSlot(RecipeIngredientRole.CATALYST, 17, 43).addItemStack(recipe.getOutput());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 55, 24).addItemStack(recipe.getResultItem(null));
 
     }

@@ -3,9 +3,7 @@ package io.github.chakyl.splendidslimes.item.ItemProjectile;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,14 +18,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemProjectileEntity extends AbstractHurtingProjectile implements IEntityAdditionalSpawnData {
+public class ItemProjectileEntity extends AbstractHurtingProjectile implements IEntityWithComplexSpawn {
     protected ItemStack stack = ItemStack.EMPTY;
 
     public ItemProjectileEntity(EntityType<? extends AbstractHurtingProjectile> type, Level world) {
@@ -44,16 +40,22 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
 
     @Override
     public void readAdditionalSaveData(CompoundTag nbt) {
-        stack = ItemStack.of(nbt.getCompound("Item"));
         super.readAdditionalSaveData(nbt);
+        if (nbt.contains("Item", 10)) {
+            this.stack = ItemStack.parse(this.registryAccess(), nbt.getCompound("Item")).orElse(ItemStack.EMPTY);
+        }
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
-        nbt.put("Item", stack.serializeNBT());
         super.addAdditionalSaveData(nbt);
+        if (!stack.isEmpty()) {
+            CompoundTag itemTag = new CompoundTag();
+            nbt.put("Item", stack.save(this.registryAccess(), itemTag));
+        }
     }
 
+    @Override
     public void tick() {
         setDeltaMovement(getDeltaMovement().add(0, -0.05, 0).scale(1));
         super.tick();
@@ -79,7 +81,7 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
 
         if (!target.isAlive())
             return;
-        if (target instanceof WitherBoss && ((WitherBoss) target).isPowered())
+        if (target instanceof WitherBoss wither && wither.isPowered())
             return;
 
         boolean onServer = !level().isClientSide;
@@ -87,13 +89,11 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
         if (target.getType() == EntityType.ENDERMAN)
             return;
 
-        if (!(target instanceof LivingEntity)) {
+        if (!(target instanceof LivingEntity livingentity)) {
             recoverItem();
-            kill();
+            discard();
             return;
         }
-
-        LivingEntity livingentity = (LivingEntity) target;
 
         if (onServer) {
             Vec3 appliedMotion = this.getDeltaMovement()
@@ -104,46 +104,50 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
                 livingentity.push(appliedMotion.x, 0.1D, appliedMotion.z);
         }
 
-        if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer
+        if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer serverOwner
                 && !this.isSilent()) {
-            ((ServerPlayer) owner).connection
-                    .send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
+            serverOwner.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
         }
         recoverItem();
-        kill();
+        discard();
     }
 
     private void recoverItem() {
         if (!stack.isEmpty())
-            spawnAtLocation(ItemHandlerHelper.copyStackWithSize(stack, 1));
+            spawnAtLocation(stack.copyWithCount(1));
     }
-
 
     @Override
     protected void onHitBlock(BlockHitResult ray) {
-        if (!this.level().isClientSide() && getItem().getItem() == ModElements.Items.ROCKET_POD.get()) {
+        if (!this.level().isClientSide() && getItem().getItem() == ModElements.Items.ROCKET_POD.value()) {
             BlockPos hitBlock = ray.getBlockPos();
             List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(2));
             for (LivingEntity entity : nearbyEntities) {
-
                 Vec3 appliedMotion = this.getDeltaMovement()
                         .multiply(-1.0D, 0.0D, -1.0D)
                         .normalize()
                         .scale(4 * 0.6);
-                if (entity instanceof ServerPlayer) {
-                    ((ServerPlayer) entity).connection.send(new ClientboundExplodePacket(hitBlock.getX(), hitBlock.getY(), hitBlock.getZ(), 4, new ArrayList<>(), new Vec3(appliedMotion.x, 1.5D, appliedMotion.z)));
+
+                if (entity instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.connection.send(new ClientboundExplodePacket(
+                            hitBlock.getX(), hitBlock.getY(), hitBlock.getZ(),
+                            4.0f, new ArrayList<>(),
+                            new Vec3(appliedMotion.x, 1.5D, appliedMotion.z),
+                            net.minecraft.world.level.Explosion.BlockInteraction.KEEP,
+                            net.minecraft.core.particles.ParticleTypes.EXPLOSION,
+                            net.minecraft.core.particles.ParticleTypes.EXPLOSION_EMITTER,
+                            net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE
+                    ));
                 }
                 if (appliedMotion.lengthSqr() > 0.0D) {
                     entity.push(appliedMotion.x, 1D, appliedMotion.z);
                 }
             }
-
         } else {
-
             recoverItem();
         }
         super.onHitBlock(ray);
-        kill();
+        discard();
     }
 
     @SuppressWarnings("unchecked")
@@ -153,20 +157,17 @@ public class ItemProjectileEntity extends AbstractHurtingProjectile implements I
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         CompoundTag compound = new CompoundTag();
         addAdditionalSaveData(compound);
         buffer.writeNbt(compound);
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf additionalData) {
-        readAdditionalSaveData(additionalData.readNbt());
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
+        CompoundTag tag = additionalData.readNbt();
+        if (tag != null) {
+            readAdditionalSaveData(tag);
+        }
     }
-
 }

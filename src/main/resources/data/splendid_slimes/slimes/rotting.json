@@ -1,14 +1,20 @@
 {
   "breed": "rotting",
-  "name": "slime.splendid_slimes.rotting",
+  "name": {
+    "translate": "slime.splendid_slimes.rotting"
+  },
   "color": "#6f4d1b",
-  "particle": { "item": "minecraft:rotten_flesh" },
-  "diet": "diet.splendid_slimes.rotting",
+  "appearance": {
+    "item_walk_particle": {
+      "id": "minecraft:rotten_flesh"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.rotting"},
   "foods": [
-    { "tag": "forge:raw_meat" },
+    { "tag": "c:raw_meat" },
     { "tag": "splendid_slimes:animal_spawn_eggs" }
   ],
-  "favorite_food": { "item": "minecraft:chicken" },
+  "favorite_food": { "id": "minecraft:chicken" },
   "entities": [
     "minecraft:chicken",
     "minecraft:cow",
@@ -21,14 +27,22 @@
   "hostile_to_entities": [
     "minecraft:villager"
   ],
-  "negative_emit_effects": [
+  "slime_effects": [
     {
-      "effect": "minecraft:hunger",
-      "duration": 220,
-      "amplifier": 0
+      "effect_type": "positive",
+      "emit_effects": [
+        {
+          "id": "minecraft:hunger",
+          "duration": 220,
+          "amplifier": 0
+        }
+      ]
+    },
+    {
+      "effect_type": "attack",
+      "commands": [
+        "summon zombie ~ ~ ~ {DeathLootTable:\"minecraft:empty\",Health:8f,ArmorItems:[{},{},{},{id:\"minecraft:slime_block\",Count:1b}],ArmorDropChances:[0.085F,0.085F,0.085F,0.000F],Attributes:[{Name:generic.max_health,Base:8}]}"
+      ]
     }
-  ],
-  "attack_commands": [
-    "summon zombie ~ ~ ~ {DeathLootTable:\"minecraft:empty\",Health:8f,ArmorItems:[{},{},{},{id:\"minecraft:slime_block\",Count:1b}],ArmorDropChances:[0.085F,0.085F,0.085F,0.000F],Attributes:[{Name:generic.max_health,Base:8}]}"
   ]
 }

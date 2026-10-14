@@ -36,19 +36,15 @@ public class SlimeHandyLayer<T extends Entity> extends RenderLayer<T, SlimeEntit
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, T pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 
         if (pLivingEntity.isAlive() && !pLivingEntity.isInvisible()) {
-            ItemStack stack = null;
-            Iterable<ItemStack> handSlots = pLivingEntity.getHandSlots();
-            for (ItemStack handItem : handSlots) {
-                if (!handItem.isEmpty()) stack = handItem;
-            }
-            if (stack == null || stack.isEmpty()) {
+            ItemStack weapon = pLivingEntity.getWeaponItem();
+            if (weapon == null || weapon.isEmpty()) {
                 return;
             }
-            if (!stack.isEmpty()) {
+            if (!weapon.isEmpty()) {
                 pPoseStack.pushPose();
                 pPoseStack.translate(0.25, 1F, -0.25f);
                 pPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
-                this.itemInHandRenderer.renderItem((LivingEntity) pLivingEntity, stack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, false, pPoseStack, pBuffer, pPackedLight);
+                this.itemInHandRenderer.renderItem((LivingEntity) pLivingEntity, weapon, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, false, pPoseStack, pBuffer, pPackedLight);
                 pPoseStack.popPose();
             }
 

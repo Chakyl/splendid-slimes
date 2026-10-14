@@ -13,48 +13,32 @@ public class GhostVertexBuilder implements VertexConsumer {
     }
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
-        return this.wrapped.vertex(x, y, z);
+    public VertexConsumer addVertex(float x, float y, float z) {
+        return this.wrapped.addVertex(x, y, z);
     }
 
     @Override
-    public VertexConsumer color(int red, int green, int blue, int alpha) {
-        return this.wrapped.color(red, green, blue, alpha);
+    public VertexConsumer setColor(int red, int green, int blue, int alpha) {
+        return this.wrapped.setColor(red, green, blue, alpha);
     }
 
     @Override
-    public VertexConsumer uv(float u, float v) {
-        return this.wrapped.uv(u, v);
+    public VertexConsumer setUv(float u, float v) {
+        return this.wrapped.setUv(u, v);
     }
 
     @Override
-    public VertexConsumer overlayCoords(int u, int v) {
-        return this.wrapped.overlayCoords(u, v);
+    public VertexConsumer setUv1(int u, int v) {
+        return this.wrapped.setUv1(u, v);
     }
 
     @Override
-    public VertexConsumer uv2(int u, int v) {
-        return this.wrapped.uv2(u, v);
+    public VertexConsumer setUv2(int u, int v) {
+        return this.wrapped.setUv2(u, v);
     }
 
     @Override
-    public VertexConsumer normal(float x, float y, float z) {
-        return this.wrapped.normal(x, y, z);
+    public VertexConsumer setNormal(float x, float y, float z) {
+        return this.wrapped.setNormal(x, y, z);
     }
-
-    @Override
-    public void endVertex() {
-        this.wrapped.endVertex();
-    }
-
-    @Override
-    public void defaultColor(int pRed, int pGreen, int pBlue, int pAlpha) {
-
-    }
-
-    @Override
-    public void unsetDefaultColor() {
-
-    }
-
 }

@@ -1,0 +1,28 @@
+{
+  "values": [
+    "splendid_slimes:slime_item",
+    "splendid_slimes:plort",
+    "splendid_slimes:rocket_pod",
+    "minecraft:arrow",
+    "minecraft:tnt",
+    "minecraft:milk_bucket",
+    "minecraft:quartz",
+    "minecraft:nether_quartz_ore",
+    "minecraft:quartz_block",
+    "minecraft:smooth_quartz",
+    "minecraft:chorus_flower",
+    "minecraft:chorus_fruit",
+    "minecraft:chorus_plant",
+    "minecraft:popped_chorus_fruit",
+    "#c:vegetables",
+    "#c:fruits",
+    "#c:raw_meat",
+    "#c:cooked_meat",
+    "#c:ingots",
+    "#c:gems",
+    "#minecraft:flowers",
+    "#minecraft:beds",
+    "#minecraft:fishes",
+    "#minecraft:logs"
+  ]
+}

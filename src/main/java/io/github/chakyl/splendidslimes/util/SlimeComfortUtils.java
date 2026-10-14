@@ -1,7 +1,7 @@
 package io.github.chakyl.splendidslimes.util;
 
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.entity.slimetraits.SlimeTrait;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +36,15 @@ public class SlimeComfortUtils {
     }
 
     public static boolean photosynthesizingTraitCheck(SplendidSlime splendidSlime) {
-        return splendidSlime.hasTrait("photosynthesizing") && !splendidSlime.level().canSeeSkyFromBelowWater(splendidSlime.getOnPos());
+        return splendidSlime.hasTrait(SlimeTrait.PHOTOSYNTHESIZING) && !splendidSlime.level().canSeeSkyFromBelowWater(splendidSlime.getOnPos());
     }
 
     public static boolean aquaticTraitCheck(SplendidSlime splendidSlime) {
-        return splendidSlime.hasTrait("aquatic") && !splendidSlime.isInWater();
+        return splendidSlime.hasTrait(SlimeTrait.AQUATIC) && !splendidSlime.isInWater();
     }
 
     public static boolean diverseTraitCheck(SplendidSlime splendidSlime) {
-        if (splendidSlime.hasTrait("diverse")) {
+        if (splendidSlime.hasTrait(SlimeTrait.DIVERSE)) {
             List<String> breeds = new ArrayList<>();
             List<SplendidSlime> nearbyDifferent = SlimeComfortUtils.getNearbyDifferent(splendidSlime);
             for (SplendidSlime slime : nearbyDifferent) {

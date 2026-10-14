@@ -2,12 +2,12 @@ package io.github.chakyl.splendidslimes.jade;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -36,7 +36,7 @@ public enum SlimeIncubatorInfoComponentProvider implements IBlockComponentProvid
             tooltip.add(Component.translatable("block.splendid_slimes.slime_incubator.breed_unset"));
         }
         if (accessor.getServerData().contains("progress") && accessor.getServerData().getInt("progress") > 0) {
-            int totalSeconds = SlimyConfig.incubationTime / 20;
+            int totalSeconds = SplendidSlimes.CONFIG.INCUBATION_TIME.getAsInt() / 20;
             int currentSeconds = accessor.getServerData().getInt("progress") / 20;
             int remainingSeconds = totalSeconds - currentSeconds;
 
@@ -61,6 +61,6 @@ public enum SlimeIncubatorInfoComponentProvider implements IBlockComponentProvid
 
     @Override
     public ResourceLocation getUid() {
-        return SlimeInfoPlugin.UID;
+        return SlimeInfoPlugin.SLIME_INCUBATOR_UID;
     }
 }

@@ -6,7 +6,9 @@ import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -24,7 +26,7 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
     private int dispensedSlimes = 0;
 
     public SlimeSpawnerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModElements.BlockEntities.SLIME_SPAWNER.get(), pos, state);
+        super(ModElements.BlockEntities.SLIME_SPAWNER, pos, state);
     }
 
     @Override
@@ -77,8 +79,8 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider regs) {
+        super.saveAdditional(tag, regs);
         tag.putInt("cooldown", this.cooldown);
         tag.putString("slimeType", this.slimeType);
         tag.putInt("slimeCount", this.slimeCount);
@@ -86,8 +88,8 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider regs) {
+        super.loadAdditional(tag, regs);
         this.cooldown = tag.getInt("cooldown");
         this.slimeType = tag.getString("slimeType");
         this.slimeCount = tag.getInt("slimeCount");
@@ -112,5 +114,17 @@ public class SlimeSpawnerBlockEntity extends BlockEntity implements TickingBlock
 
     public int getSlimeCount() {
         return this.slimeCount;
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, registries);
+        return tag;
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

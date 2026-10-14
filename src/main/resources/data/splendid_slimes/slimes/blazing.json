@@ -1,10 +1,16 @@
 {
   "breed": "blazing",
-  "name": "slime.splendid_slimes.blazing",
-  "particle": { "item": "minecraft:blaze_powder" },
+  "name": {
+    "translate": "slime.splendid_slimes.blazing"
+  },
+  "appearance": {
+    "item_walk_particle": {
+      "id": "minecraft:blaze_powder"
+    }
+  },
   "color": "#c96c03",
-  "diet": "diet.splendid_slimes.blazing",
-  "foods": [{ "tag": "forge:cooked_meat" }],
-  "favorite_food": { "item": "minecraft:cooked_porkchop" },
+  "diet": {"translate": "diet.splendid_slimes.blazing"},
+  "foods": [{ "tag": "c:cooked_meat" }],
+  "favorite_food": { "id": "minecraft:cooked_porkchop" },
   "traits": ["flaming"]
 }

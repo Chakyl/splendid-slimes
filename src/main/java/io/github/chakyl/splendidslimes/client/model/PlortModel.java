@@ -1,7 +1,6 @@
 package io.github.chakyl.splendidslimes.client.model;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,8 +10,8 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -41,9 +40,9 @@ public class PlortModel implements BakedModel {
     }
 
     public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
-        DynamicHolder<SlimeBreed> plort = getSlimeData(stack, "plort");
+        DynamicHolder<SlimeBreed> plort = getSlimeData(stack);
         if (plort.isBound()) {
-            return Minecraft.getInstance().getModelManager().getModel(loc("item/plort/" + plort.getId().getPath()));
+            return Minecraft.getInstance().getModelManager().getModel(ModelResourceLocation.standalone(loc("item/plort/" + plort.getId().getPath())));
         }
         return original;
     }

@@ -1,12 +1,13 @@
 package io.github.chakyl.splendidslimes.item.ItemProjectile;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
 
 public class ItemProjectileType {
 
-    private List<Supplier<Item>> items = new ArrayList<>();
+    private List<Holder<Item>> items = new ArrayList<>();
 
     private float drag = 0.99f;
     private float velocityMultiplier = 1;
@@ -29,7 +30,7 @@ public class ItemProjectileType {
     protected ItemProjectileType() {
     }
 
-    public List<Supplier<Item>> getItems() {
+    public List<Holder<Item>> getItems() {
         return items;
     }
 
@@ -98,8 +99,9 @@ public class ItemProjectileType {
         }
 
         public Builder addItems(ItemLike... items) {
-            for (ItemLike provider : items)
-                result.items.add(ForgeRegistries.ITEMS.getDelegateOrThrow(provider.asItem()));
+            for (ItemLike provider : items) {
+                result.items.add(BuiltInRegistries.ITEM.wrapAsHolder(provider.asItem()));
+            }
             return this;
         }
 
