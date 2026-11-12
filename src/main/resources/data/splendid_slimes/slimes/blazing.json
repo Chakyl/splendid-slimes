@@ -10,7 +10,7 @@
   },
   "color": "#c96c03",
   "diet": {"translate": "diet.splendid_slimes.blazing"},
-  "foods": [{ "tag": "c:cooked_meat" }],
+  "foods": [{ "tag": "c:foods/cooked_meat" }],
   "favorite_food": { "id": "minecraft:cooked_porkchop" },
   "traits": ["flaming"]
 }

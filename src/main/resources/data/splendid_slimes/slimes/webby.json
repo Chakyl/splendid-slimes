@@ -10,7 +10,7 @@
     }
   },
   "diet": {"translate": "diet.splendid_slimes.webby"},
-  "foods": [{ "tag": "c:vegetables" }],
+  "foods": [{ "tag": "c:foods/vegetable" }],
   "favorite_food": { "id": "minecraft:beetroot" },
   "slime_effects": [
     {

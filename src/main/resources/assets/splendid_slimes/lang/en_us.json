@@ -34,7 +34,7 @@
   "diet.splendid_slimes.slimy": "Flowers",
   "diet.splendid_slimes.sweet": "Fruit",
   "diet.splendid_slimes.webby": "Vegetables",
-  "diet.splendid_slimes.weeping": "Fruit",
+  "diet.splendid_slimes.weeping": "Berries",
   "diet.splendid_slimes.default_diet": "Any",
 
   "entity.splendid_slimes.diet": "Diet: %s",

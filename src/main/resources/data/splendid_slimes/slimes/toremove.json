@@ -1,0 +1,16 @@
+{
+  "breed": "toremove",
+  "name": {
+    "translate": "slime.splendid_slimes.toremove"
+  },
+  "appearance": {
+    "item_walk_particle": {
+      "id": "minecraft:ghast_tear"
+    }
+  },
+  "color": "#cff1f1",
+  "diet": {"translate": "diet.splendid_slimes.toremove"},
+  "foods": [{ "tag": "c:fruits" }],
+  "traits": ["weeping"],
+  "favorite_food": { "id": "minecraft:glow_berries" }
+}

@@ -12,7 +12,7 @@
     ]
   },
   "diet": {"translate": "diet.splendid_slimes.sweet"},
-  "foods": [{ "tag": "c:fruits" }],
+  "foods": [{ "tag": "c:foods/fruit" }],
   "favorite_food": {
     "id": "minecraft:glow_berries"
   },

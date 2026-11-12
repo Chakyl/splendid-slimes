@@ -11,7 +11,7 @@
   },
   "diet": {"translate": "diet.splendid_slimes.rotting"},
   "foods": [
-    { "tag": "c:raw_meat" },
+    { "tag": "c:foods/raw_meat" },
     { "tag": "splendid_slimes:animal_spawn_eggs" }
   ],
   "favorite_food": { "id": "minecraft:chicken" },
@@ -22,7 +22,7 @@
     "minecraft:rabbit",
     "minecraft:sheep"
   ],
-  "traits": ["putrid", "necromancer"],
+  "traits": ["putrid"],
   "favorite_entity": "minecraft:chicken",
   "hostile_to_entities": [
     "minecraft:villager"

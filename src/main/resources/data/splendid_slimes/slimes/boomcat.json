@@ -11,8 +11,8 @@
   },
   "diet": {"translate": "diet.splendid_slimes.boomcat"},
   "foods": [
-    { "tag": "c:raw_meat" },
-    { "tag": "c:cooked_meat" },
+    { "tag": "c:foods/raw_meat" },
+    { "tag": "c:foods/cooked_meat" },
     { "tag": "splendid_slimes:animal_spawn_eggs" }
   ],
   "favorite_food": { "id": "minecraft:cooked_beef" },
