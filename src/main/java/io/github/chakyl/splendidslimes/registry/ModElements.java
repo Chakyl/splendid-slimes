@@ -86,6 +86,7 @@ public class ModElements {
         public static final Holder<Item> CORRAL_PANE = R.blockItem("corral_pane", Blocks.CORRAL_PANE);
         public static final Holder<Item> SLIME_SPAWNER = R.blockItem("slime_spawner", Blocks.SLIME_SPAWNER);
 
+        public static final Holder<Item> SLIMEPEDIA = R.item("slimepedia", SlimepediaItem::new, p -> p.stacksTo(1));
         public static final Holder<Item> PLORT = R.item("plort", PlortItem::new, p -> p.stacksTo(64));
         public static final Holder<Item> DECORATOR = R.item("decorator", DecoratorItem::new, p -> p.stacksTo(64));
         public static final Holder<Item> SLIME_HEART = R.item("slime_heart", SlimeHeartItem::new, p -> p.stacksTo(64));
