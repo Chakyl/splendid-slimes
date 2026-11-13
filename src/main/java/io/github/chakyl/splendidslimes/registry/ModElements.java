@@ -1,14 +1,21 @@
 package io.github.chakyl.splendidslimes.registry;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntityType;
 import dev.shadowsoffire.placebo.registry.DeferredHelper;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.block.*;
+import io.github.chakyl.splendidslimes.block.PlortPressBlock;
+import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
+import io.github.chakyl.splendidslimes.block.SlimeIncubatorBlock;
+import io.github.chakyl.splendidslimes.block.SlimeSpawnerBlock;
 import io.github.chakyl.splendidslimes.block.corral.CorralBlock;
 import io.github.chakyl.splendidslimes.block.corral.CorralPane;
-import io.github.chakyl.splendidslimes.blockentity.*;
+import io.github.chakyl.splendidslimes.blockentity.PlortPressBlockEntity;
+import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
+import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
+import io.github.chakyl.splendidslimes.blockentity.SlimeSpawnerBlockEntity;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
@@ -35,12 +42,15 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
@@ -57,7 +67,7 @@ public class ModElements {
         public static final Holder<Block> SLIME_INCUBATOR = R.block("slime_incubator", SlimeIncubatorBlock::new, p -> p.strength(4, 3000).noOcclusion());
         public static final Holder<Block> PLORT_PRESS = R.block("plort_press", PlortPressBlock::new, p -> p.strength(4, 3000).noOcclusion());
         public static final Holder<Block> PLORT_RIPPIT = R.block("plort_rippit", PlortRippitBlock::new, p -> p.strength(4, 3000).noOcclusion());
-//        public static final Holder<Block> SLIME_FEEDER = R.block("slime_feeder", SlimeFeederBlock::new, p -> p.strength(4, 3000).noOcclusion());
+        //        public static final Holder<Block> SLIME_FEEDER = R.block("slime_feeder", SlimeFeederBlock::new, p -> p.strength(4, 3000).noOcclusion());
         public static final Holder<Block> CORRAL_BLOCK = R.block("corral_block", CorralBlock::new, p -> p.strength(4, 3000).noOcclusion().isSuffocating((state, world, pos) -> false).isViewBlocking((state, world, pos) -> false));
         public static final Holder<Block> CORRAL_PANE = R.block("corral_pane", CorralPane::new, p -> p.strength(4, 3000).noOcclusion().isSuffocating((state, world, pos) -> false).isViewBlocking((state, world, pos) -> false));
         public static final Holder<Block> SLIME_SPAWNER = R.block("slime_spawner", SlimeSpawnerBlock::new, p -> p.strength(4, 3000).noOcclusion());
@@ -70,7 +80,7 @@ public class ModElements {
         public static final BlockEntityType<SlimeIncubatorBlockEntity> SLIME_INCUBATOR = R.tickingBlockEntity("slime_incubator", SlimeIncubatorBlockEntity::new, TickingBlockEntityType.TickSide.SERVER, ModElements.Blocks.SLIME_INCUBATOR);
         public static final BlockEntityType<PlortPressBlockEntity> PLORT_PRESS = R.tickingBlockEntity("plort_press", PlortPressBlockEntity::new, TickingBlockEntityType.TickSide.SERVER, Blocks.PLORT_PRESS);
         public static final BlockEntityType<PlortRippitBlockEntity> PLORT_RIPPIT = R.tickingBlockEntity("plort_rippit", PlortRippitBlockEntity::new, TickingBlockEntityType.TickSide.SERVER, Blocks.PLORT_RIPPIT);
-//        public static final BlockEntityType<SlimeFeederBlockEntity> SLIME_FEEDER = R.tickingBlockEntity("slime_feeder", SlimeFeederBlockEntity::new, TickingBlockEntityType.TickSide.SERVER, Blocks.SLIME_FEEDER);
+        //        public static final BlockEntityType<SlimeFeederBlockEntity> SLIME_FEEDER = R.tickingBlockEntity("slime_feeder", SlimeFeederBlockEntity::new, TickingBlockEntityType.TickSide.SERVER, Blocks.SLIME_FEEDER);
         public static final BlockEntityType<SlimeSpawnerBlockEntity> SLIME_SPAWNER = R.tickingBlockEntity("slime_spawner", SlimeSpawnerBlockEntity::new, TickingBlockEntityType.TickSide.SERVER, ModElements.Blocks.SLIME_SPAWNER);
 
         private static void bootstrap() {
@@ -81,7 +91,7 @@ public class ModElements {
         public static final Holder<Item> SLIME_INCUBATOR = R.blockItem("slime_incubator", Blocks.SLIME_INCUBATOR);
         public static final Holder<Item> PLORT_PRESS = R.blockItem("plort_press", Blocks.PLORT_PRESS);
         public static final Holder<Item> PLORT_RIPPIT = R.blockItem("plort_rippit", Blocks.PLORT_RIPPIT);
-//        public static final Holder<Item> SLIME_FEEDER = R.blockItem("slime_feeder", Blocks.SLIME_FEEDER);
+        //        public static final Holder<Item> SLIME_FEEDER = R.blockItem("slime_feeder", Blocks.SLIME_FEEDER);
         public static final Holder<Item> CORRAL_BLOCK = R.blockItem("corral_block", Blocks.CORRAL_BLOCK);
         public static final Holder<Item> CORRAL_PANE = R.blockItem("corral_pane", Blocks.CORRAL_PANE);
         public static final Holder<Item> SLIME_SPAWNER = R.blockItem("slime_spawner", Blocks.SLIME_SPAWNER);
@@ -114,6 +124,14 @@ public class ModElements {
         private static void bootstrap() {
         }
     }
+
+    public static class Attachments {
+        public static final AttachmentType<List<String>> SLIMEPEDIA_DATA = R.attachment("slimepedia_data", (Supplier<List<String>>) ArrayList::new, b -> b.serialize(Codec.STRING.listOf()).copyOnDeath());
+
+        private static void bootstrap() {
+        }
+    }
+
 
     public static class Menus {
         public static final MenuType<PlortPressMenu> PLORT_PRESS_MENU = R.menuWithPos("roe_recycler", PlortPressMenu::new);
@@ -166,6 +184,7 @@ public class ModElements {
         BlockEntities.bootstrap();
         Items.bootstrap();
         Entities.bootstrap();
+        Attachments.bootstrap();
         Menus.bootstrap();
         Particles.bootstrap();
         Recipes.bootstrap();
