@@ -18,6 +18,7 @@ import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
 import io.github.chakyl.splendidslimes.blockentity.SlimeSpawnerBlockEntity;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
+import io.github.chakyl.splendidslimes.entity.SlimeDataComponent;
 import io.github.chakyl.splendidslimes.entity.SlimeEntityBase;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.entity.Tarr;
@@ -31,6 +32,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -108,8 +110,7 @@ public class ModElements {
         public static final Holder<Item> TARRTAR = R.item("tarrtar", Item::new, p -> p.stacksTo(64));
         public static final Holder<Item> SLIME_CANDY = R.item("slime_candy", Item::new, p -> p.stacksTo(64).rarity(Rarity.UNCOMMON));
         public static final Holder<Item> ROCKET_POD = R.item("rocket_pod", Item::new, p -> p.stacksTo(64));
-        // TODO: Slime Vac
-//        public static final Holder<SlimeVac> SLIME_VAC = R.item("slime_vac", SlimeVac::new, p -> p.stacksTo(1));
+        public static final Holder<Item> SLIME_VAC = R.item("slime_vac", SlimeVac::new, p -> p.stacksTo(1));
         public static final Holder<Item> SLIME_INSPECTOR = R.item("slime_inspector", SlimeInspector::new, p -> p.stacksTo(1));
 
         private static void bootstrap() {
@@ -156,11 +157,23 @@ public class ModElements {
 
     public static class Components {
         /**
-         * Stored fish pond type, used by {@link PlortItem} and {@link SlimeHeartItem}. The underlying holder may be unbound.
+         * Stored slime type, used by {@link PlortItem} and {@link SlimeHeartItem}. The underlying holder may be unbound.
          */
         public static final DataComponentType<DynamicHolder<SlimeBreed>> SLIME_BREED = R.component("slime_breed", b -> b
                 .persistent(SlimeBreedRegistry.INSTANCE.holderCodec())
                 .networkSynchronized(SlimeBreedRegistry.INSTANCE.holderStreamCodec()));
+
+        public static final DataComponentType<DynamicHolder<SlimeBreed>> SECONDARY_SLIME_BREED = R.component("secondary_slime_breed", b -> b
+                .persistent(SlimeBreedRegistry.INSTANCE.holderCodec())
+                .networkSynchronized(SlimeBreedRegistry.INSTANCE.holderStreamCodec()));
+
+        public static final DataComponentType<VacMode> VAC_MODE = R.component("vac_mode", b -> b
+                .persistent(VacMode.CODEC)
+                .networkSynchronized(VacMode.STREAM_CODEC));
+
+        public static final DataComponentType<SlimeDataComponent> SLIME_DATA = R.component("slime_data", b -> b
+                .persistent(SlimeDataComponent.CODEC)
+                .networkSynchronized(SlimeDataComponent.STREAM_CODEC));
 
 
         private static void bootstrap() {

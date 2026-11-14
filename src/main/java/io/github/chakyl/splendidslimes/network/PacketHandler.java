@@ -20,6 +20,12 @@ public class PacketHandler {
                 ClientBoundOpenSlimepediaScreenPacket.STREAM_CODEC,
                 ClientBoundOpenSlimepediaScreenPacket::handle
         );
+
+        registrar.playToServer(
+                ServerBoundSlimeVacModePacket.TYPE,
+                ServerBoundSlimeVacModePacket.STREAM_CODEC,
+                ServerBoundSlimeVacModePacket::handle
+        );
     }
 
     public static <MSG extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToServer(MSG message) {

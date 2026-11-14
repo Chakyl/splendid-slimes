@@ -64,7 +64,6 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
                 int hunger = (int) Math.round(((double) eatingCooldown / maxHunger) * 10.0);
                 IElementHelper elements = IElementHelper.get();
                 ItemStack plort = ModElements.Items.PLORT.value().getDefaultInstance();
-                // TODO: Components
                 SlimeData.getSlimeData(entityAccessor.getServerData().getString("Breed"));
                 PlortItem.setStoredPlort(plort, SlimeData.getSlimeData(entityAccessor.getServerData().getString("Breed")));
                 tooltip.add(Component.translatable("entity.splendid_slimes.hunger"));

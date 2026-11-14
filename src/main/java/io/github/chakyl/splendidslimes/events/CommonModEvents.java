@@ -15,12 +15,4 @@ public class CommonModEvents {
         event.put(ModElements.Entities.SPLENDID_SLIME.value(), SlimeEntityBase.createAttributes().build());
         event.put(ModElements.Entities.TARR.value(), SlimeEntityBase.createAttributes().build());
     }
-// TODO: Slime Vac
-//    @SubscribeEvent
-//    public static void commonSetup(FMLCommonSetupEvent event) {
-//        event.enqueueWork(() ->{
-//            PacketHandler.register();
-//        });
-//    }
-
 }

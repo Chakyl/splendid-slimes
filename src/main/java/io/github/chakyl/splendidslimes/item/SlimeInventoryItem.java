@@ -2,22 +2,20 @@ package io.github.chakyl.splendidslimes.item;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.tabs.ITabFiller;
-import io.github.chakyl.splendidslimes.client.renderer.SlimeItemModelRenderer;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
+import io.github.chakyl.splendidslimes.entity.SplendidSlime;
 import io.github.chakyl.splendidslimes.entity.slimetraits.SlimeTrait;
 import io.github.chakyl.splendidslimes.entity.slimetraits.SlimeTraits;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import java.util.List;
@@ -85,5 +83,24 @@ public class SlimeInventoryItem extends Item implements ITabFiller {
 
     public static DynamicHolder<SlimeBreed> getStoredSlime(ItemStack stack) {
         return stack.getOrDefault(ModElements.Components.SLIME_BREED, SlimeBreedRegistry.INSTANCE.emptyHolder());
+    }
+
+    public static SplendidSlime getSlimeFromItem(Level level, ItemStack itemStack) {
+        if (itemStack.has(ModElements.Components.SLIME_BREED)) {
+            SplendidSlime slimeEntity = new SplendidSlime(ModElements.Entities.SPLENDID_SLIME.get(), level);
+            DynamicHolder<SlimeBreed> slimeBreed = itemStack.get(ModElements.Components.SLIME_BREED);
+            if (itemStack.has(ModElements.Components.SECONDARY_SLIME_BREED)) {
+                DynamicHolder<SlimeBreed> secondaryBreed = itemStack.get(ModElements.Components.SLIME_BREED);
+                if ((secondaryBreed == null || !secondaryBreed.isBound())) return null;
+                slimeEntity.setSlimeSecondaryBreed(secondaryBreed.get().breed());
+            }
+            if (slimeBreed == null || !slimeBreed.isBound()) return null;
+            slimeEntity.setSlimeBreed(slimeBreed.get().breed());
+            if (itemStack.has(ModElements.Components.SLIME_DATA)) {
+                slimeEntity.load(itemStack.get(ModElements.Components.SLIME_DATA).entity());
+            }
+            return slimeEntity;
+        }
+        return null;
     }
 }

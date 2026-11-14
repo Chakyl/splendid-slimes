@@ -179,7 +179,7 @@ public class SlimeEntityBase extends Mob implements NeutralMob {
     }
 
     public String getSlimeFace() {
-       return "angry";
+        return "angry";
     }
 
     public DynamicHolder<SlimeBreed> getSecondarySlime() {
@@ -267,6 +267,11 @@ public class SlimeEntityBase extends Mob implements NeutralMob {
 
     public boolean isTiny() {
         return this.getSize() <= 1;
+    }
+
+    @Override
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource damageSource) {
+        return false;
     }
 
     protected ParticleOptions getParticleType() {

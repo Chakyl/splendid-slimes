@@ -51,6 +51,7 @@ public class SplendidSlimes {
                             .setTitle(Component.translatable("Equipment"))
                             .setTextColor(0xFFFFFF).setTextOutline(0xFF555500)
                             .add(Items.SLIMEPEDIA.value())
+                            .add(Items.SLIME_VAC.value())
                             .add(Items.SLIME_INCUBATOR.value())
                             .add(Items.PLORT_PRESS.value())
                             .add(Items.PLORT_RIPPIT.value())
