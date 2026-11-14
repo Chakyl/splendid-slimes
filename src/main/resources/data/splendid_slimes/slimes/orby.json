@@ -1,10 +1,20 @@
 {
   "breed": "orby",
-  "name": "slime.splendid_slimes.orby",
+  "name": {
+    "translate": "slime.splendid_slimes.orby"
+  },
   "color": "#b8e45a",
-  "particle": { "item": "minecraft:experience_bottle" },
-  "hat_y_offset": -0.5,
-  "diet": "diet.splendid_slimes.orby",
+  "appearance": {
+    "decorators": [
+      {
+        "y_offset": -0.5
+      }
+    ],
+    "item_walk_particle": {
+      "id": "minecraft:experience_bottle"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.orby"},
   "foods": [
     { "tag": "splendid_slimes:animal_spawn_eggs" },
     { "tag": "splendid_slimes:monster_spawn_eggs" }
@@ -32,7 +42,7 @@
   "favorite_entity": "minecraft:skeleton",
   "innate_effects": [
     {
-      "effect": "minecraft:strength",
+      "id": "minecraft:strength",
       "amplifier": 0
     }
   ]

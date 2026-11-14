@@ -1,5 +1,6 @@
 package io.github.chakyl.splendidslimes.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
 import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
 import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
@@ -11,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -26,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 
 public class SlimeIncubatorBlock extends HorizontalDirectionalBlock implements TickingEntityBlock {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
@@ -58,7 +61,7 @@ public class SlimeIncubatorBlock extends HorizontalDirectionalBlock implements T
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult hitResult) {
         if (!pLevel.isClientSide) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if (pHand == InteractionHand.MAIN_HAND && entity instanceof SlimeIncubatorBlockEntity slimeIncubatorBlockEntity && slimeIncubatorBlockEntity.getProgress() == 0) {
@@ -66,12 +69,18 @@ public class SlimeIncubatorBlock extends HorizontalDirectionalBlock implements T
                 if (slimeIncubatorBlockEntity.insertItem(heldItem)) {
                     if (!pPlayer.isCreative()) heldItem.shrink(1);
                     pLevel.playSound(pPlayer, pPos, SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                    return InteractionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         } else {
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
     }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return null;
+    }
+
 }

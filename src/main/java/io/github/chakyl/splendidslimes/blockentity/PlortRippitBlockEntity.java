@@ -2,26 +2,28 @@ package io.github.chakyl.splendidslimes.blockentity;
 
 import dev.shadowsoffire.placebo.block_entity.TickingBlockEntity;
 import dev.shadowsoffire.placebo.cap.InternalItemHandler;
+import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.block.PlortRippitBlock;
-import io.github.chakyl.splendidslimes.item.PlortItem;
+import io.github.chakyl.splendidslimes.data.SlimeBreed;
+import io.github.chakyl.splendidslimes.recipe.PlortPressingRecipe;
 import io.github.chakyl.splendidslimes.recipe.PlortRippingRecipe;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +38,7 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     protected final RippitItemHandler inventory = new RippitItemHandler();
 
     public PlortRippitBlockEntity(BlockPos pos, BlockState state) {
-        super(ModElements.BlockEntities.PLORT_RIPPIT.get(), pos, state);
+        super(ModElements.BlockEntities.PLORT_RIPPIT, pos, state);
     }
 
     @Override
@@ -46,7 +48,12 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
             if (this.progress == 0 && !state.getValue(WORKING)) {
                 BlockState newState = state.setValue(WORKING, true);
                 level.setBlockAndUpdate(pos, newState);
-                this.setSlimeType(this.inventory.getStackInSlot(0).getTagElement("plort").get("id").toString().replace("\"", ""));
+                // TODO: Check Components
+                DynamicHolder<SlimeBreed> slimeBreedComp = this.inventory.getStackInSlot(0).get(ModElements.Components.SLIME_BREED);
+                if (slimeBreedComp != null) {
+                    this.setSlimeType(slimeBreedComp.getRegistryPath());
+                }
+
                 level.playSound(null, pos, SoundEvents.FROG_TONGUE, SoundSource.BLOCKS, 1.0F, 0.9F);
                 level.playSound(null, pos, SoundEvents.FROG_EAT, SoundSource.BLOCKS, 1.0F, 0.9F);
             } else if (this.progress >= RIPPIT_PROCESSING_TIME) {
@@ -60,26 +67,25 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     }
 
     private boolean hasRecipe() {
-        Optional<PlortRippingRecipe> recipe = getCurrentRecipe();
+        Optional<RecipeHolder<PlortRippingRecipe>> recipe = getCurrentRecipe();
         if (recipe.isEmpty()) return false;
-        ItemStack input = recipe.get().getInputItem(getLevel().registryAccess());
+        ItemStack input = recipe.get().value().getInput();
 
         return this.inventory.getStackInSlot(0).is(input.getItem());
     }
 
-    private Optional<PlortRippingRecipe> getCurrentRecipe() {
-        SimpleContainer newInventory = new SimpleContainer(this.inventory.getSlots());
-        ItemStack newItemStack = this.inventory.getStackInSlot(0).copy();
-        newItemStack.setCount(1);
-        newInventory.setItem(0, newItemStack);
+    private Optional<RecipeHolder<PlortRippingRecipe>> getCurrentRecipe() {
+        SingleRecipeInput newInventory = new SingleRecipeInput(inventory.getStackInSlot(0));
         return this.level.getRecipeManager().getRecipeFor(PlortRippingRecipe.Type.INSTANCE, newInventory, level);
     }
 
     private void craftItem(BlockPos pos, BlockState state) {
-        Optional<PlortRippingRecipe> recipe = getCurrentRecipe();
-        NonNullList<ItemStack> results = recipe.get().getResults(null);
+        Optional<RecipeHolder<PlortRippingRecipe>> recipe = getCurrentRecipe();
+        if (recipe.isEmpty()) return;
+
+        NonNullList<ItemStack> results = recipe.get().value().getResults();
         ItemStack outputItem = Items.AIR.getDefaultInstance();
-        List<Integer> weights = recipe.get().getWeights(null);
+        List<Integer> weights = recipe.get().value().getWeights();
         int weightTotal = 0;
         int currentWeight = 0;
         for (Integer weight : weights) weightTotal += weight;
@@ -129,25 +135,39 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) return LazyOptional.of(() -> this.inventory).cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inventory", this.inventory.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider regs) {
+        super.saveAdditional(tag, regs);
+        tag.put("inventory", this.inventory.serializeNBT(regs));
         tag.putInt("progress", this.progress);
         tag.putString("slimeType", this.slimeType);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        this.inventory.deserializeNBT(tag.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider regs) {
+        super.loadAdditional(tag, regs);
+        this.inventory.deserializeNBT(regs, tag.getCompound("inventory"));
         this.progress = tag.getInt("progress");
         this.slimeType = tag.getString("slimeType");
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, registries);
+        return tag;
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_ALL);
+        }
     }
 
     public class RippitItemHandler extends InternalItemHandler {
@@ -158,11 +178,9 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            if (this.getStackInSlot(0).isEmpty() && stack.getItem() instanceof PlortItem && stack.hasTag()) {
-                CompoundTag plortTag = stack.getTagElement("plort");
-                return plortTag != null && plortTag.contains("id");
+            if (this.getStackInSlot(0).isEmpty() && stack.getItem() instanceof io.github.chakyl.splendidslimes.item.PlortItem) {
+                return stack.has(ModElements.Components.SLIME_BREED) || !stack.getComponents().isEmpty();
             }
-
             return false;
         }
 
@@ -181,5 +199,8 @@ public class PlortRippitBlockEntity extends BlockEntity implements TickingBlockE
             PlortRippitBlockEntity.this.setChanged();
         }
 
+        public NonNullList<ItemStack> getItems() {
+            return this.stacks;
+        }
     }
 }

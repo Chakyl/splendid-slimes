@@ -1,9 +1,13 @@
 {
   "breed": "bitwise",
-  "name": "slime.splendid_slimes.bitwise",
+  "name": {
+    "translate": "slime.splendid_slimes.bitwise"
+  },
   "color": "#aa0f01",
-  "particle": { "item": "minecraft:redstone_block" },
-  "diet": "diet.splendid_slimes.bitwise",
+  "appearance": {
+    "item_walk_particle": { "id": "minecraft:redstone_block" }
+  },
+  "diet": {"translate": "diet.splendid_slimes.bitwise"},
   "foods": [{ "tag": "minecraft:logs" }],
-  "favorite_food": { "item": "minecraft:mangrove_log" }
+  "favorite_food": { "id": "minecraft:mangrove_log" }
 }

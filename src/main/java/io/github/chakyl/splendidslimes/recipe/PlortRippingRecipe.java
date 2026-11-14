@@ -1,52 +1,55 @@
 package io.github.chakyl.splendidslimes.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.registry.ModElements;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
-
-public class PlortRippingRecipe implements Recipe<SimpleContainer> {
+public class PlortRippingRecipe implements Recipe<SingleRecipeInput> {
     private final Ingredient ingredient;
     private final ItemStack input;
     private final NonNullList<ItemStack> results;
     private final List<Integer> weights;
-    private final ResourceLocation id;
 
-    public PlortRippingRecipe(Ingredient ingredient, ItemStack input, NonNullList<ItemStack> results, List<Integer> weights, ResourceLocation id) {
+    public PlortRippingRecipe(Ingredient ingredient, ItemStack input, List<WeightedOutput> outputEntries) {
+        this.ingredient = ingredient;
+        this.input = input;
+        this.results = NonNullList.create();
+        this.weights = new ArrayList<>();
+
+        for (WeightedOutput entry : outputEntries) {
+            this.results.add(entry.stack());
+            this.weights.add(entry.weight());
+        }
+    }
+
+    public PlortRippingRecipe(Ingredient ingredient, ItemStack input, NonNullList<ItemStack> results, List<Integer> weights) {
         this.ingredient = ingredient;
         this.input = input;
         this.results = results;
         this.weights = weights;
-        this.id = id;
     }
 
     @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
-        if (pLevel.isClientSide()) {
+    public boolean matches(SingleRecipeInput singleRecipeInput, Level level) {
+        if (level.isClientSide()) {
             return false;
         }
-
-        return input.equals(pContainer.getItem(0), true);
+        return ItemStack.isSameItemSameComponents(this.input, singleRecipeInput.getItem(0));
     }
 
     @Override
-    public ItemStack assemble(SimpleContainer pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(SingleRecipeInput pSingleRecipeInput, HolderLookup.Provider pProvider) {
         return results.get(0).copy();
     }
 
@@ -55,35 +58,64 @@ public class PlortRippingRecipe implements Recipe<SimpleContainer> {
         return true;
     }
 
-    public ItemStack getInputItem(RegistryAccess pRegistryAccess) {
-        return input.copy();
+    public Ingredient getIngredient() {
+        return ingredient;
     }
 
-    public NonNullList<ItemStack> getResults(RegistryAccess pRegistryAccess) {
+    public ItemStack getInput() {
+        return input;
+    }
+
+    public NonNullList<ItemStack> getResults() {
         return results;
     }
-    public List<Integer> getWeights(RegistryAccess pRegistryAccess) {
+
+    public List<Integer> getWeights() {
         return weights;
     }
 
-    @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
-        return results.get(0).copy();
+    public List<WeightedOutput> getOutputEntries() {
+        List<WeightedOutput> entries = new ArrayList<>();
+        for (int i = 0; i < results.size(); i++) {
+            int weight = (i < weights.size()) ? weights.get(i) : 1;
+            entries.add(new WeightedOutput(results.get(i), weight));
+        }
+        return entries;
     }
 
     @Override
-    public ResourceLocation getId() {
-        return id;
+    public ItemStack getResultItem(HolderLookup.Provider provider) {
+        return results.isEmpty() ? ItemStack.EMPTY : results.get(0).copy();
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        NonNullList<Ingredient> list = NonNullList.create();
+        list.add(ingredient);
+        return list;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModElements.Recipes.PLORT_RIPPING_SERIALIZER.get();
+        return Serializer.INSTANCE;
     }
 
     @Override
     public RecipeType<?> getType() {
         return Type.INSTANCE;
+    }
+
+    public record WeightedOutput(ItemStack stack, int weight) {
+        public static final Codec<WeightedOutput> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ItemStack.CODEC.fieldOf("item").forGetter(WeightedOutput::stack),
+                Codec.INT.optionalFieldOf("weight", 1).forGetter(WeightedOutput::weight)
+        ).apply(instance, WeightedOutput::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, WeightedOutput> STREAM_CODEC = StreamCodec.composite(
+                ItemStack.STREAM_CODEC, WeightedOutput::stack,
+                ByteBufCodecs.VAR_INT, WeightedOutput::weight,
+                WeightedOutput::new
+        );
     }
 
     public static class Type implements RecipeType<PlortRippingRecipe> {
@@ -93,64 +125,28 @@ public class PlortRippingRecipe implements Recipe<SimpleContainer> {
 
     public static class Serializer implements RecipeSerializer<PlortRippingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = loc("plort_ripping");
+
+        public static final MapCodec<PlortRippingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(PlortRippingRecipe::getIngredient),
+                ItemStack.CODEC.fieldOf("input").forGetter(PlortRippingRecipe::getInput),
+                WeightedOutput.CODEC.listOf().fieldOf("results").forGetter(PlortRippingRecipe::getOutputEntries)
+        ).apply(instance, PlortRippingRecipe::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, PlortRippingRecipe> STREAM_CODEC = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC, PlortRippingRecipe::getIngredient,
+                ItemStack.STREAM_CODEC, PlortRippingRecipe::getInput,
+                WeightedOutput.STREAM_CODEC.apply(ByteBufCodecs.list()), PlortRippingRecipe::getOutputEntries,
+                PlortRippingRecipe::new
+        );
 
         @Override
-        public PlortRippingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
-            JsonArray resultJson = GsonHelper.getAsJsonArray(pSerializedRecipe, "results");
-            NonNullList<ItemStack> results = NonNullList.withSize(resultJson.size(), Items.AIR.getDefaultInstance());
-            List<Integer> weights = new ArrayList<>();
-
-            for (int i = 0; i < resultJson.size(); i++) {
-                JsonObject itemStackJson = new JsonObject();
-                JsonObject thisJson = resultJson.get(i).getAsJsonObject();
-                itemStackJson.add("item", thisJson.get("item"));
-                itemStackJson.add("count", thisJson.get("count"));
-                if (thisJson.has("nbt")) itemStackJson.add("nbt", thisJson.get("nbt"));
-                results.set(i,ShapedRecipe.itemStackFromJson(itemStackJson));
-                if (thisJson.has("weight")) {
-                    weights.add(thisJson.get("weight").getAsInt());
-                } else {
-                    weights.add(1);
-                }
-            }
-            ItemStack inputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "ingredient"));
-            Ingredient ingredientItem = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "ingredient"));
-
-
-            return new PlortRippingRecipe(ingredientItem, inputItem, results, weights, pRecipeId);
+        public MapCodec<PlortRippingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable PlortRippingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            Ingredient recipeIngredient =  Ingredient.fromNetwork(pBuffer);
-            ItemStack input = pBuffer.readItem();
-            NonNullList<ItemStack> results = NonNullList.withSize(pBuffer.readVarInt(), Items.AIR.getDefaultInstance());
-
-            List<Integer> weights = new ArrayList<>();
-
-            for (int i = 0; i < results.size(); i++) {
-                results.set(i, pBuffer.readItem());
-            }
-            for (int i = 0; i < results.size(); i++) {
-                weights.add(pBuffer.readVarInt());
-            }
-
-            return new PlortRippingRecipe(recipeIngredient, input, results, weights, pRecipeId);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, PlortRippingRecipe pRecipe) {
-            pRecipe.ingredient.toNetwork(pBuffer);
-            pBuffer.writeItemStack(pRecipe.getInputItem(null), false);
-            pBuffer.writeVarInt(pRecipe.getResults(null).size());
-
-            for (ItemStack result : pRecipe.getResults(null)) {
-                pBuffer.writeItemStack(result, false);
-            }
-            for (Integer weight : pRecipe.getWeights(null)) {
-                pBuffer.writeVarInt(weight);
-            }
+        public StreamCodec<RegistryFriendlyByteBuf, PlortRippingRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

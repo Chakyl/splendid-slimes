@@ -1,0 +1,53 @@
+[03Jul2025 13:02:20.917] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\Chakyl\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, splendid_slimes, --all, --output, C:\Users\Chakyl\IdeaProjects\splendid-slimes\src\generated\resources, --existing, C:\Users\Chakyl\IdeaProjects\splendid-slimes\src\main\resources]
+[03Jul2025 13:02:20.920] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.14 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
+[03Jul2025 13:02:21.010] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[03Jul2025 13:02:21.043] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/Chakyl/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
+[03Jul2025 13:02:21.269] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Chakyl\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.3.0\d7ebc62120f202109e300e084ca1a31a7b946a62\javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[03Jul2025 13:02:21.271] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Chakyl\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.3.0\1bf3e845ea0ce750096da8c71c8364b188ab74d4\lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[03Jul2025 13:02:21.273] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Chakyl\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.3.0\6093682e943ddccbabf70539319d7f2fe64db2e7\mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[03Jul2025 13:02:21.274] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\Chakyl\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.3.0\3b6be96aba3e323f3c918e8ef6a96312d82d76ad\fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
+[03Jul2025 13:02:21.350] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[03Jul2025 13:02:22.934] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[03Jul2025 13:02:22.935] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\Chakyl\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, splendid_slimes, --all, --output, C:\Users\Chakyl\IdeaProjects\splendid-slimes\src\generated\resources, --existing, C:\Users\Chakyl\IdeaProjects\splendid-slimes\src\main\resources]
+[03Jul2025 13:02:23.157] [main/INFO] [mixin/]: Remapping refMap jade.refmap.json using C:\Users\Chakyl\IdeaProjects\splendid-slimes\build\createSrgToMcp\output.srg
+[03Jul2025 13:02:23.158] [main/INFO] [mixin/]: Remapping refMap placebo.refmap.json using C:\Users\Chakyl\IdeaProjects\splendid-slimes\build\createSrgToMcp\output.srg
+[03Jul2025 13:02:23.229] [main/INFO] [net.minecraftforge.coremod.CoreMod.placebo/COREMODLOG]: Patching IForgeItemStack#getEnchantmentLevel
+[03Jul2025 13:02:23.256] [main/INFO] [net.minecraftforge.coremod.CoreMod.placebo/COREMODLOG]: Patching IForgeItemStack#getEnchantmentLevel
+[03Jul2025 13:02:23.459] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [splendid_slimes]
+[03Jul2025 13:02:24.344] [main/INFO] [net.minecraftforge.coremod.CoreMod.placebo/COREMODLOG]: Patching IForgeItemStack#getEnchantmentLevel
+[03Jul2025 13:02:24.344] [main/INFO] [net.minecraftforge.coremod.CoreMod.placebo/COREMODLOG]: Patching IForgeItemStack#getEnchantmentLevel
+[03Jul2025 13:02:24.363] [main/INFO] [net.minecraftforge.coremod.CoreMod.placebo/COREMODLOG]: Patching IForgeItemStack#getEnchantmentLevel
+[03Jul2025 13:02:24.363] [main/INFO] [net.minecraftforge.coremod.CoreMod.placebo/COREMODLOG]: Patching IForgeItemStack#getEnchantmentLevel
+[03Jul2025 13:02:26.000] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
+[03Jul2025 13:02:26.001] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
+[03Jul2025 13:02:26.213] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
+[03Jul2025 13:02:26.218] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 3.176 ms
+[03Jul2025 13:02:26.429] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Chakyl/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[03Jul2025 13:02:26.429] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/Chakyl/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.3.0_mapped_parchment_2023.09.03-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[03Jul2025 13:02:26.606] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
+[03Jul2025 13:02:26.669] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 61 ms
+[03Jul2025 13:02:26.669] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
+[03Jul2025 13:02:26.670] [main/INFO] [splendid_slimes/]: generating pressing recipe for all_seeing
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for bitwise
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for boomcat
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for blazing
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for bony
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for ender
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for gold
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for luminous
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for minty
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for orby
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for phantom
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for prisma
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for puddle
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for rotting
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for shulking
+[03Jul2025 13:02:26.671] [main/INFO] [splendid_slimes/]: generating pressing recipe for slimy
+[03Jul2025 13:02:26.672] [main/INFO] [splendid_slimes/]: generating pressing recipe for sweet
+[03Jul2025 13:02:26.672] [main/INFO] [splendid_slimes/]: generating pressing recipe for webby
+[03Jul2025 13:02:26.672] [main/INFO] [splendid_slimes/]: generating pressing recipe for weeping
+[03Jul2025 13:02:26.672] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 3 ms
+[03Jul2025 13:02:26.672] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id splendid_slimes
+[03Jul2025 13:02:26.687] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id splendid_slimes finished after 14 ms
+[03Jul2025 13:02:26.687] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 80 ms
+[03Jul2025 13:02:26.691] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 27, old count: 27, new count: 28, removed stale: 0, written: 1

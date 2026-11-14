@@ -24,14 +24,13 @@ public class SlimeInspector extends Item {
         super(pProperties);
     }
 
-
     @Override
-    public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable("info.splendid_slimes.slime_inspector").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("info.splendid_slimes.slime_inspector").withStyle(ChatFormatting.GRAY));
     }
 
     public void runInspection(Player player, SplendidSlime splendidSlime) {
-        if (player.getCooldowns().isOnCooldown(ModElements.Items.SLIME_INSPECTOR.get())) return;
+        if (player.getCooldowns().isOnCooldown(ModElements.Items.SLIME_INSPECTOR.value())) return;
         boolean allGood = true;
         List<Component> messagesToSend = new ArrayList<>();
         if (SlimeComfortUtils.slimeIsSuffocated(splendidSlime)) {
@@ -64,6 +63,6 @@ public class SlimeInspector extends Item {
             }
         }
         splendidSlime.playSound(SoundEvents.ALLAY_ITEM_GIVEN, 1.0F, 0.2F);
-        player.getCooldowns().addCooldown(ModElements.Items.SLIME_INSPECTOR.get(), 120);
+        player.getCooldowns().addCooldown(ModElements.Items.SLIME_INSPECTOR.value(), 120);
     }
 }

@@ -1,11 +1,17 @@
 {
   "breed": "prisma",
-  "name": "slime.splendid_slimes.prisma",
+  "name": {
+    "translate": "slime.splendid_slimes.prisma"
+  },
   "color": "#a4d1c2",
-  "particle": { "item": "minecraft:prismarine_shard" },
-  "diet": "diet.splendid_slimes.prisma",
+  "appearance": {
+    "item_walk_particle": {
+      "id": "minecraft:prismarine_shard"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.prisma"},
   "foods": [{ "tag": "minecraft:fishes" }],
-  "favorite_food": { "item": "minecraft:tropical_fish" },
+  "favorite_food": { "id": "minecraft:tropical_fish" },
   "entities": [
     "minecraft:cod",
     "minecraft:salmon",
@@ -16,28 +22,41 @@
   "traits": ["aquatic", "spiky"],
   "innate_effects": [
     {
-      "effect": "minecraft:water_breathing",
+      "id": "minecraft:water_breathing",
       "amplifier": 0
     }
   ],
-  "emit_effect_particle": "minecraft:splash",
-  "negative_emit_effects": [
+  "slime_effects": [
     {
-      "effect": "minecraft:mining_fatigue",
-      "duration": 120,
-      "amplifier": 0
-    }
-  ],
-  "positive_emit_effects": [
-    {
-      "effect": "minecraft:dolphins_grace",
-      "duration": 600,
-      "amplifier": 0
+      "effect_type": "negative",
+      "emit_effects": [
+        {
+          "id": "minecraft:mining_fatigue",
+          "duration": 120,
+          "amplifier": 0
+        }
+      ],
+      "effect_particle": {
+        "type": "minecraft:splash"
+      }
     },
     {
-      "effect": "minecraft:conduit_power",
-      "duration": 600,
-      "amplifier": 0
+      "effect_type": "positive",
+      "emit_effects": [
+        {
+          "id": "minecraft:dolphins_grace",
+          "duration": 600,
+          "amplifier": 0
+        },
+        {
+          "id": "minecraft:conduit_power",
+          "duration": 600,
+          "amplifier": 0
+        }
+      ],
+      "effect_particle": {
+        "type": "minecraft:splash"
+      }
     }
   ]
 }

@@ -4,70 +4,62 @@ import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import dev.shadowsoffire.placebo.tabs.ITabFiller;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
+import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import java.util.List;
 
 import static io.github.chakyl.splendidslimes.util.SlimeData.getSlimeData;
 
 public class SlimeHeartItem extends Item implements ITabFiller {
-    public static final String SLIME_HEART = "slime";
-    public static final String ID = "id";
-    public static final String DATA = "data";
-
     public SlimeHeartItem(Properties pProperties) {
         super(pProperties);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable("info.splendid_slimes.slime_heart").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("info.splendid_slimes.slime_heart").withStyle(ChatFormatting.GRAY));
     }
 
     @Override
-    public void fillItemCategory(CreativeModeTab tab, CreativeModeTab.Output output) {
-        SlimeBreedRegistry.INSTANCE.getKeys().stream().sorted().forEach(key -> {
+    public void fillItemCategory(CreativeModeTab creativeModeTab, BuildCreativeModeTabContentsEvent event) {
+        SlimeBreedRegistry.INSTANCE.getKeys().stream().sorted().map(SlimeBreedRegistry.INSTANCE::holder).forEach(holder -> {
             ItemStack s = new ItemStack(this);
-            setStoredPlort(s, key);
-            output.accept(s);
+            setStoredPlort(s, holder);
+            event.accept(s);
         });
     }
 
-    @Override
     public Component getName(ItemStack pStack) {
-        DynamicHolder<SlimeBreed> slime = getSlimeData(pStack, SLIME_HEART);
-        Component slimeName;
+        DynamicHolder<SlimeBreed> slime = setStoredPlort(pStack);
+        Component name;
         if (!slime.isBound()) {
-            slimeName = Component.translatable("item.splendid_slimes.default_heart");
-        }
-        else slimeName = slime.get().name();
-        return Component.translatable(this.getDescriptionId(pStack), slimeName);
+            name = Component.translatable("item.splendid_slimes.default_heart");
+        } else name = slime.get().name().copy();
+        return Component.translatable(this.getDescriptionId(pStack), name);
     }
 
+    public static DynamicHolder<SlimeBreed> setStoredPlort(ItemStack stack) {
+        return stack.getOrDefault(ModElements.Components.SLIME_BREED, SlimeBreedRegistry.INSTANCE.emptyHolder());
+    }
+
+    public static DynamicHolder<SlimeBreed> getStoredPlort(ItemStack stack) {
+        return stack.getOrDefault(ModElements.Components.SLIME_BREED, SlimeBreedRegistry.INSTANCE.emptyHolder());
+    }
     public static void setStoredPlort(ItemStack stack, SlimeBreed slimeBreed) {
-        setStoredPlort(stack, SlimeBreedRegistry.INSTANCE.getKey(slimeBreed));
+        setStoredPlort(stack, SlimeBreedRegistry.INSTANCE.holder(slimeBreed));
     }
 
-    public static void setStoredPlort(ItemStack stack, ResourceLocation plort) {
-        stack.removeTagKey(SLIME_HEART);
-        stack.getOrCreateTagElement(SLIME_HEART).putString(ID, plort.toString());
-    }
-
-    public static int getData(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement(SLIME_HEART);
-        return stack.isEmpty() || tag == null ? 0 : tag.getInt(DATA);
-    }
-
-    public static void setData(ItemStack stack, int data) {
-        stack.getOrCreateTagElement(SLIME_HEART).putInt(DATA, data);
+    public static void setStoredPlort(ItemStack stack, DynamicHolder<SlimeBreed> slimeBreed) {
+        stack.set(ModElements.Components.SLIME_BREED, slimeBreed);
     }
 
 }
+
+

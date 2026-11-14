@@ -2,10 +2,15 @@ package io.github.chakyl.splendidslimes.jade;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.SlimyConfig;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
+import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
-import io.github.chakyl.splendidslimes.entity.Tarr;
+import io.github.chakyl.splendidslimes.entity.slimetraits.SlimeTrait;
+import io.github.chakyl.splendidslimes.item.PlortItem;
 import io.github.chakyl.splendidslimes.registry.ModElements;
+import io.github.chakyl.splendidslimes.util.SlimeData;
+import io.github.chakyl.splendidslimes.util.SlimeUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -38,15 +43,15 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
         boolean isLargo = entityAccessor.getServerData().contains("SecondaryBreed") && !entityAccessor.getServerData().getString("SecondaryBreed").isEmpty();
         if (entityAccessor.getServerData().contains("Breed")) {
             DynamicHolder<SlimeBreed> slime = getSlimeData(entityAccessor.getServerData().getString("Breed"));
-            SlimeBreed primaryBreed = slime.get();
             if (slime.isBound()) {
-                if (!isLargo || primaryBreed.traits().contains("dominant")) {
+                SlimeBreed primaryBreed = slime.get();
+                if (!isLargo || primaryBreed.traits().contains(SlimeTrait.DOMINANT)) {
                     tooltip.add(Component.translatable("entity.splendid_slimes.diet", primaryBreed.diet()));
                 } else {
                     SlimeBreed secondaryBreed = getSlimeData(entityAccessor.getServerData().getString("SecondaryBreed")).get();
-                    if (secondaryBreed.traits().contains("recessive")) {
+                    if (secondaryBreed.traits().contains(SlimeTrait.RECESSIVE)) {
                         tooltip.add(Component.translatable("entity.splendid_slimes.diet", primaryBreed.diet()));
-                    } else if (primaryBreed.traits().contains("recessive") || secondaryBreed.traits().contains("dominant")) {
+                    } else if (primaryBreed.traits().contains(SlimeTrait.RECESSIVE) || secondaryBreed.traits().contains(SlimeTrait.DOMINANT)) {
                         tooltip.add(Component.translatable("entity.splendid_slimes.diet", secondaryBreed.diet()));
                     } else {
                         tooltip.add(Component.translatable("entity.splendid_slimes.largo_diet", primaryBreed.diet(), secondaryBreed.diet()));
@@ -55,14 +60,16 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
             }
             if (entityAccessor.getServerData().contains("Hunger")) {
                 int eatingCooldown = entityAccessor.getServerData().getInt("Hunger");
-                int maxHunger = SlimyConfig.slimeHungerAmount;
+                int maxHunger = SplendidSlimes.CONFIG.SLIME_HUNGER_AMOUNT.getAsInt();
                 int hunger = (int) Math.round(((double) eatingCooldown / maxHunger) * 10.0);
                 IElementHelper elements = IElementHelper.get();
-                ItemStack plort = ModElements.Items.PLORT.get().getDefaultInstance();
-                plort.getOrCreateTagElement("plort").putString("id", entityAccessor.getServerData().getString("Breed"));
+                ItemStack plort = ModElements.Items.PLORT.value().getDefaultInstance();
+                // TODO: Components
+                SlimeData.getSlimeData(entityAccessor.getServerData().getString("Breed"));
+                PlortItem.setStoredPlort(plort, SlimeData.getSlimeData(entityAccessor.getServerData().getString("Breed")));
                 tooltip.add(Component.translatable("entity.splendid_slimes.hunger"));
                 for (int i = 0; i < 10; i++) {
-                    if (i >= hunger) plort = ModElements.Items.PLORT.get().getDefaultInstance();
+                    if (i >= hunger) plort = ModElements.Items.PLORT.value().getDefaultInstance();
                     tooltip.append(elements.item(plort, 0.5f).size(new Vec2(6, 10)).translate(new Vec2(i, -1)));
                 }
                 tooltip.append(elements.spacer(14, 2));
@@ -114,7 +121,7 @@ public enum SlimeInfoComponentProvider implements IEntityComponentProvider, ISer
 
     @Override
     public ResourceLocation getUid() {
-        return SlimeInfoPlugin.UID;
+        return SlimeInfoPlugin.SLIME_UID;
     }
 
 }

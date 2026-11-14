@@ -16,7 +16,9 @@ import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
 
 @WailaPlugin
 public class SlimeInfoPlugin implements IWailaPlugin {
-    public static final ResourceLocation UID = loc("splendid_slime");
+    public static final ResourceLocation SLIME_UID = loc("splendid_slime");
+    public static final ResourceLocation SLIME_SPAWNER_UID = loc("slime_spawner");
+    public static final ResourceLocation SLIME_INCUBATOR_UID = loc("slime_incubator");
     @Override
     public void register(IWailaCommonRegistration registration) {
         registration.registerEntityDataProvider(SlimeInfoComponentProvider.INSTANCE, SplendidSlime.class);

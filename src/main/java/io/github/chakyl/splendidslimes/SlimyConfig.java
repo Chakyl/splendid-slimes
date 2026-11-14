@@ -1,117 +1,84 @@
 package io.github.chakyl.splendidslimes;
 
-import dev.shadowsoffire.placebo.config.Configuration;
-import dev.shadowsoffire.placebo.network.MessageHelper;
-import dev.shadowsoffire.placebo.network.MessageProvider;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent.Context;
-
-import java.util.Optional;
-import java.util.function.Supplier;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class SlimyConfig {
+    //Slimes
+    public  final ModConfigSpec.IntValue SLIME_HUNGER_AMOUNT;
+    public  final ModConfigSpec.IntValue SLIME_MAX_HAPPINESS;
+    public  final ModConfigSpec.IntValue SLIME_HAPPY_THRESHOLD;
+    public  final ModConfigSpec.IntValue SLIME_UNHAPPY_THRESHOLD;
+    public  final ModConfigSpec.IntValue SLIME_FURIOUS_THRESHOLD;
+    public  final ModConfigSpec.IntValue SLIME_EFFECT_COOLDOWN;
+    public  final ModConfigSpec.BooleanValue SLIME_OWNER_OFFLINE_CHECK;
 
-    public static int slimeHungerAmount;
-    public static int slimeMaxHappiness;
+    // Tarrs
+    public  final ModConfigSpec.BooleanValue ENABLE_TARRS;
+    public  final ModConfigSpec.BooleanValue ENABLE_FORGIVING_TARRS;
 
-    public static int slimeHappyThreshold;
-    public static int slimeUnhappyThreshold;
-    public static int slimeFuriousThreshold;
+    // Machine
+    public  final ModConfigSpec.IntValue INCUBATION_TIME;
+    public  final ModConfigSpec.IntValue PLORT_PRESSING_TIME;
 
-    public static int slimeEffectCooldown;
-    public static boolean slimeOwnerOfflineCheck;
 
-    public static boolean enableTarrs;
-    public static boolean enableForgivingTarrs;
+    public SlimyConfig(final ModConfigSpec.Builder builder) {
+        builder.comment("꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦ Splendid Slimes Config! ꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷");
 
-    public static int incubationTime;
-    public static int plortPressingTime;
+        builder.push("slimes");
 
-    public static int slimeSpawnerTime;
+        SLIME_HUNGER_AMOUNT = builder
+                .comment("How much a full slime's hunger will equate to")
+                .defineInRange("Slime Hunger Amount", 24000, 20, Integer.MAX_VALUE);
 
-    public static void load() {
-        Configuration cfg = new Configuration(SplendidSlimes.MODID);
-        cfg.setTitle("꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦ Splendid Slimes Config! ꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷꒦꒷");
-        cfg.setComment("All entries in this config file are synced from server to client.");
-        slimeHungerAmount = cfg.getInt("Slime Hunger Amount", "slimes", 24000, 20, Integer.MAX_VALUE, "How much a full slime's hunger will equate to");
+        SLIME_MAX_HAPPINESS = builder
+                .comment("Maximum happiness value for a Splendid Slime.")
+                .defineInRange("Slime Max Happiness", 1000, 3, Integer.MAX_VALUE);
 
-        slimeMaxHappiness = cfg.getInt("Slime Max Happiness", "slimes", 1000, 3, Integer.MAX_VALUE - 500, "Maximum happiness value for a Splendid Slime.");
-        slimeHappyThreshold = cfg.getInt("Slime Happy Threshold", "slimes", 600, 0, Integer.MAX_VALUE, "Minimum amount of happiness a Splendid Slime can have before being considered 'Happy'.");
-        slimeUnhappyThreshold = cfg.getInt("Slime Unhappy Threshold", "slimes", 400, 0, Integer.MAX_VALUE, "Maximum amount of happiness a Splendid Slime can have before being considered 'Unhappy'.");
-        slimeFuriousThreshold = cfg.getInt("Slime Furious Threshold", "slimes", 200, 0, Integer.MAX_VALUE, "Maximum amount of happiness a Splendid Slime can have before being considered 'Furious'.");
+        SLIME_HAPPY_THRESHOLD = builder
+                .comment("Minimum amount of happiness a Splendid Slime can have before being considered 'Happy'.")
+                .defineInRange("Slime Happy Threshold", 600, 0, Integer.MAX_VALUE);
 
-        slimeEffectCooldown = cfg.getInt("Slime Effect Cooldown", "slimes", 800, 20, Integer.MAX_VALUE, "How many ticks it takes for a Splendid Slime to try and perform Negative/Positive effects/commands. Setting this value too low may cause performance issues.");
-        slimeOwnerOfflineCheck = cfg.getBoolean("Slime Owner Offline Check", "slimes", true, "When true, Slimes will not get hungry or perform effects when their owner is offline. This can help prevent disasters on Multiplayer servers and has no effect in single player.");
+        SLIME_UNHAPPY_THRESHOLD = builder
+                .comment("Maximum amount of happiness a Splendid Slime can have before being considered 'Unhappy'.")
+                .defineInRange("Slime Unhappy Threshold", 400, 0, Integer.MAX_VALUE);
 
-        enableTarrs = cfg.getBoolean("Enable Tarrs", "slimes", true, "If true, Largo Slimes will turn into Tarrs after eating a 3rd Plort instead of just dying.");
-        enableForgivingTarrs = cfg.getBoolean("Enable Forgiving Tarrs", "slimes", false, "If true, Tarrs will be persistent and turn back into previous slime when killed");
+        SLIME_FURIOUS_THRESHOLD = builder
+                .comment("Maximum amount of happiness a Splendid Slime can have before being considered 'Furious'.")
+                .defineInRange("Slime Furious Threshold", 200, 0, Integer.MAX_VALUE);
 
-        incubationTime = cfg.getInt("Slime Incubation Time", "machines", 6000, 1, Integer.MAX_VALUE, "Time it takes for Splendid Slimes to incubate in Slime Incubator");
-        plortPressingTime = cfg.getInt("Plort Pressing Time", "machines", 1200, 20, Integer.MAX_VALUE - 10, "Time it takes to craft items in a Plort Press");
+        SLIME_EFFECT_COOLDOWN = builder
+                .comment("How many ticks it takes for a Splendid Slime to try and perform Negative/Positive effects/commands. Setting this value too low may cause performance issues.")
+                .defineInRange("Slime Effect Cooldown", 800, 20, Integer.MAX_VALUE);
 
-        if (cfg.hasChanged()) cfg.save();
-    }
+        SLIME_OWNER_OFFLINE_CHECK = builder
+                .comment("When true, Slimes will not get hungry or perform effects when their owner is offline. This can help prevent disasters on Multiplayer servers and has no effect in single player.")
+                .define("Slime Owner Offline Check", true);
 
-    static record ConfigMessage(int slimeHungerAmount, int slimeMaxHappiness, int slimeHappyThreshold,
-                                int slimeUnhappyThreshold, int slimeFuriousThreshold, int slimeEffectCooldown,
-                                boolean slimeOwnerOfflineCheck, boolean enableTarrs, boolean enableForgivingTarrs,
-                                int incubationTime, int plortPressingTime) {
+        builder.pop();
 
-        public ConfigMessage() {
-            this(SlimyConfig.slimeHungerAmount, SlimyConfig.slimeMaxHappiness, SlimyConfig.slimeHappyThreshold, SlimyConfig.slimeUnhappyThreshold, SlimyConfig.slimeFuriousThreshold, SlimyConfig.slimeEffectCooldown, SlimyConfig.slimeOwnerOfflineCheck, SlimyConfig.enableTarrs, SlimyConfig.enableForgivingTarrs, SlimyConfig.incubationTime, SlimyConfig.plortPressingTime);
-        }
+        builder.push("tarrs");
 
-        public static class Provider implements MessageProvider<ConfigMessage> {
+        ENABLE_TARRS = builder
+                .comment("If true, Largo Slimes will turn into Tarrs after eating a 3rd Plort instead of just dying.")
+                .define("Enable Tarrs", true);
 
-            @Override
-            public Class<?> getMsgClass() {
-                return ConfigMessage.class;
-            }
+        ENABLE_FORGIVING_TARRS = builder
+                .comment("If true, Tarrs will be persistent and turn back into previous slime when killed")
+                .define("Enable Forgiving Tarrs", false);
 
-            @Override
-            public void write(ConfigMessage msg, FriendlyByteBuf buf) {
-                buf.writeInt(msg.slimeHungerAmount);
-                buf.writeInt(msg.slimeMaxHappiness);
-                buf.writeInt(msg.slimeHappyThreshold);
-                buf.writeInt(msg.slimeUnhappyThreshold);
-                buf.writeInt(msg.slimeFuriousThreshold);
-                buf.writeInt(msg.slimeEffectCooldown);
-                buf.writeBoolean(msg.slimeOwnerOfflineCheck);
-                buf.writeBoolean(msg.enableTarrs);
-                buf.writeBoolean(msg.enableForgivingTarrs);
-                buf.writeInt(msg.incubationTime);
-                buf.writeInt(msg.plortPressingTime);
-            }
+        builder.pop();
 
-            @Override
-            public ConfigMessage read(FriendlyByteBuf buf) {
-                return new ConfigMessage(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readInt(), buf.readInt());
-            }
+        builder.push("machines");
 
-            @Override
-            public void handle(ConfigMessage msg, Supplier<Context> ctx) {
-                MessageHelper.handlePacket(() -> {
-                    SlimyConfig.slimeHungerAmount = msg.slimeHungerAmount;
-                    SlimyConfig.slimeMaxHappiness = msg.slimeMaxHappiness;
-                    SlimyConfig.slimeHappyThreshold = msg.slimeHappyThreshold;
-                    SlimyConfig.slimeUnhappyThreshold = msg.slimeUnhappyThreshold;
-                    SlimyConfig.slimeFuriousThreshold = msg.slimeFuriousThreshold;
-                    SlimyConfig.slimeEffectCooldown = msg.slimeEffectCooldown;
-                    SlimyConfig.slimeOwnerOfflineCheck = msg.slimeOwnerOfflineCheck;
-                    SlimyConfig.enableTarrs = msg.enableTarrs;
-                    SlimyConfig.enableForgivingTarrs = msg.enableForgivingTarrs;
-                    SlimyConfig.incubationTime = msg.incubationTime;
-                    SlimyConfig.plortPressingTime = msg.plortPressingTime;
-                }, ctx);
-            }
+        INCUBATION_TIME = builder
+                .comment("Time it takes for Splendid Slimes to incubate in Slime Incubator")
+                .defineInRange("Slime Incubation Time", 6000, 1, Integer.MAX_VALUE);
 
-            @Override
-            public Optional<NetworkDirection> getNetworkDirection() {
-                return Optional.of(NetworkDirection.PLAY_TO_CLIENT);
-            }
+        PLORT_PRESSING_TIME = builder
+                .comment("Time it takes to craft items in a Plort Press")
+                .defineInRange("Plort Pressing Time", 1200, 20, Integer.MAX_VALUE);
 
-        }
+        builder.pop();
 
     }
 

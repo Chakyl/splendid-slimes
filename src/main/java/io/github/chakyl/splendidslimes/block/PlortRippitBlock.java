@@ -1,5 +1,6 @@
 package io.github.chakyl.splendidslimes.block;
 
+import com.mojang.serialization.MapCodec;
 import dev.shadowsoffire.placebo.block_entity.TickingEntityBlock;
 import io.github.chakyl.splendidslimes.blockentity.PlortRippitBlockEntity;
 import io.github.chakyl.splendidslimes.item.PlortItem;
@@ -9,6 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -20,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 
 public class PlortRippitBlock extends HorizontalDirectionalBlock implements TickingEntityBlock {
     public static final BooleanProperty WORKING = BooleanProperty.create("working");
@@ -45,24 +48,29 @@ public class PlortRippitBlock extends HorizontalDirectionalBlock implements Tick
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+    protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult hitResult) {
         BlockEntity entity = pLevel.getBlockEntity(pPos);
         if (pHand == InteractionHand.MAIN_HAND && entity instanceof PlortRippitBlockEntity && !entity.getBlockState().getValue(WORKING)) {
             ItemStack heldItem = pPlayer.getItemInHand(pHand);
-            if (!(heldItem.getItem() instanceof PlortItem)) return InteractionResult.FAIL;
+            if (!(heldItem.getItem() instanceof PlortItem)) return ItemInteractionResult.FAIL;
             if (!pLevel.isClientSide()) {
                 pPlayer.swing(InteractionHand.MAIN_HAND);
                 if (((PlortRippitBlockEntity) entity).insertItem(heldItem)) {
                     if (!pPlayer.isCreative()) heldItem.shrink(1);
-                    return InteractionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
                 ;
-                return InteractionResult.FAIL;
+                return ItemInteractionResult.FAIL;
             } else {
                 pLevel.playSound(pPlayer, pPos, SoundEvents.FROG_TONGUE, SoundSource.BLOCKS, 1.0F, 0.9F);
                 pLevel.playSound(pPlayer, pPos, SoundEvents.FROG_EAT, SoundSource.BLOCKS, 1.0F, 0.9F);
             }
         }
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
+    }
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return null;
     }
 }

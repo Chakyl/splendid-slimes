@@ -1,31 +1,32 @@
 package io.github.chakyl.splendidslimes.network;
 
 import io.github.chakyl.splendidslimes.SplendidSlimes;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
-
+@EventBusSubscriber(modid = SplendidSlimes.MODID)
 public class PacketHandler {
-    private static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder.named(
-            loc("main"))
-            .serverAcceptedVersions((version) -> true)
-            .clientAcceptedVersions((version) -> true)
-            .networkProtocolVersion(() -> String.valueOf(1))
-            .simpleChannel();
 
-    public static void register() {
-        INSTANCE.messageBuilder(SlimeVacModePacket.class, 0, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(SlimeVacModePacket::encode)
-                .decoder(SlimeVacModePacket::new)
-                .consumerMainThread(SlimeVacModePacket::handle)
-                .add();
+    @SubscribeEvent
+    public static void register(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar("1");
+
+        registrar.playToClient(
+                ClientBoundOpenSlimepediaScreenPacket.TYPE,
+                ClientBoundOpenSlimepediaScreenPacket.STREAM_CODEC,
+                ClientBoundOpenSlimepediaScreenPacket::handle
+        );
     }
 
-    public static void sendToServer(Object msg) {
-        INSTANCE.send(PacketDistributor.SERVER.noArg(), msg);
+    public static <MSG extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToServer(MSG message) {
+        PacketDistributor.sendToServer(message);
+    }
+
+    public static <MSG extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void sendToPlayer(MSG message, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, message);
     }
 }

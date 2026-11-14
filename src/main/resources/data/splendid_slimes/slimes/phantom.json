@@ -1,18 +1,28 @@
 {
   "breed": "phantom",
-  "name": "slime.splendid_slimes.phantom",
+  "name": {
+    "translate": "slime.splendid_slimes.phantom"
+  },
   "color": "#dcd9c0",
-  "particle": { "item": "minecraft:lapis_block" },
-  "hat_z_offset": -0.06,
-  "diet": "diet.splendid_slimes.phantom",
+  "appearance": {
+    "decorators": [
+      {
+        "z_offset": -0.06
+      }
+    ],
+    "item_walk_particle": {
+      "id": "minecraft:lapis_block"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.phantom"},
   "foods": [{ "tag": "minecraft:beds" }],
   "favorite_food": {
-    "item": "minecraft:purple_bed"
+    "id": "minecraft:purple_bed"
   },
   "traits": ["floating"],
   "innate_effects": [
     {
-      "effect": "minecraft:slow_falling",
+      "id": "minecraft:slow_falling",
       "amplifier": 0
     }
   ]

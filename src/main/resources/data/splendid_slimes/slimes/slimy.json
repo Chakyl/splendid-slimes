@@ -1,12 +1,22 @@
 {
   "breed": "slimy",
-  "name": "slime.splendid_slimes.slimy",
+  "name": {
+    "translate":  "slime.splendid_slimes.slimy"
+  },
   "color": "#ff7d9d",
-  "particle": { "item": "minecraft:pink_concrete" },
-  "hat_y_offset": -0.55,
-  "diet": "diet.splendid_slimes.slimy",
+  "appearance": {
+    "decorators": [
+      {
+        "y_offset": -0.55
+      }
+    ],
+    "walk_particle": {
+      "type": "minecraft:cherry_leaves"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.slimy"},
   "foods": [{ "tag": "minecraft:flowers" }],
   "favorite_food": {
-    "item": "minecraft:blue_orchid"
+    "id": "minecraft:blue_orchid"
   }
 }
