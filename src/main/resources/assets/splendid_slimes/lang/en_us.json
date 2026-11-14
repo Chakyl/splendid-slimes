@@ -66,6 +66,7 @@
   "info.splendid_slimes.slime_inspector.not_happy": "Your Slime is not very happy with its living conditions...",
 
 
+  "item.splendid_slimes.slimepedia": "Slimepedia",
   "item.splendid_slimes.default_plort": "Any",
   "item.splendid_slimes.default_heart": "Any",
   "item.splendid_slimes.default_slime_item": "Any",
@@ -193,5 +194,24 @@
   "jei.splendid_slimes.category.slime_incubation.incubation_time": "%ss incubation time",
   "jei.splendid_slimes.plort_rippit.chance": "Chance: %s",
   "jei.splendid_slimes.category.slime_traits": "Slime Traits",
-  "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits"
+  "jei.splendid_slimes.category.slime_traits.none": "Slime has no traits",
+
+  "gui.splendid_slimes.slimepedia.name": "Slimepedia",
+  "gui.splendid_slimes.slimepedia.slime_breeds": "Slime Breeds",
+  "gui.splendid_slimes.slimepedia.discovered": "%s Discovered",
+  "gui.splendid_slimes.slimepedia.eats_these_mobs": "Eats these mobs",
+  "gui.splendid_slimes.slimepedia.tag_eats": "Eats any of:",
+  "gui.splendid_slimes.slimepedia.other_similar_items": "...and %s other similar items",
+  "gui.splendid_slimes.slimepedia.other_similar_mobs": "...and %s other similar mobs",
+  "gui.splendid_slimes.slimepedia.no_items": "Slime doesn't eat items!",
+  "gui.splendid_slimes.slimepedia.diet_button": "View Slime's diet",
+  "gui.splendid_slimes.slimepedia.info_button": "View Slime's basic information",
+  "gui.splendid_slimes.slimepedia.trait_button": "View Slime's traits and effects",
+  "gui.splendid_slimes.slimepedia.no_traits": "Slime has no traits!",
+  "gui.splendid_slimes.slimepedia.traits": "Traits:",
+  "gui.splendid_slimes.slimepedia.effects": "Slime Effects:",
+  "gui.splendid_slimes.slimepedia.no_effects": "Slime has no effects!",
+  "gui.splendid_slimes.slimepedia.positive_effect": "Positive",
+  "gui.splendid_slimes.slimepedia.negative_effect": "Negative:",
+  "gui.splendid_slimes.slimepedia.attack_effect": "Attack:"
 }

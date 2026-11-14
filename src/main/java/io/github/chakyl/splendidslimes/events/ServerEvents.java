@@ -12,6 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //import static io.github.chakyl.splendidslimes.util.SlimeVacUtils.dropLargo;
@@ -26,7 +27,7 @@ public class ServerEvents {
         if (stack.isEmpty() || !(stack.getItem() instanceof SlimeInventoryItem)) return;
         DynamicHolder<SlimeBreed> breed = SlimeInventoryItem.getStoredSlime(stack);
         String slimeId = breed.getId().toString();
-        List<String> slimepediaData = player.getData(ModElements.Attachments.SLIMEPEDIA_DATA);
+        List<String> slimepediaData = new ArrayList<>(player.getData(ModElements.Attachments.SLIMEPEDIA_DATA));
         if (!slimepediaData.contains(slimeId)) {
             slimepediaData.add(slimeId);
             player.setData(ModElements.Attachments.SLIMEPEDIA_DATA, slimepediaData);
