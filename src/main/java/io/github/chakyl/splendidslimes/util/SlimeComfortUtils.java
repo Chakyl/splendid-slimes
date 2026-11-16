@@ -1,7 +1,7 @@
 package io.github.chakyl.splendidslimes.util;
 
-import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.entity.slimetraits.SlimeTrait;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ public class SlimeComfortUtils {
     private static final double NEARBY_SUFFOCATED_RADIUS = 0.2;
 
     public static boolean slimeIsSimilar(SplendidSlime slime1, SplendidSlime slime2) {
+        if (slime1 == slime2) return false;
         if (Objects.equals(slime1.getSlimeBreed(), slime2.getSlimeBreed())) return true;
         if (!slime1.getSlimeSecondaryBreed().isEmpty()) {
             if (Objects.equals(slime1.getSlimeSecondaryBreed(), slime2.getSlimeBreed())) return true;
@@ -36,15 +37,15 @@ public class SlimeComfortUtils {
     }
 
     public static boolean photosynthesizingTraitCheck(SplendidSlime splendidSlime) {
-        return splendidSlime.hasTrait("photosynthesizing") && !splendidSlime.level().canSeeSkyFromBelowWater(splendidSlime.getOnPos());
+        return splendidSlime.hasTrait(SlimeTrait.PHOTOSYNTHESIZING) && !splendidSlime.level().canSeeSkyFromBelowWater(splendidSlime.getOnPos());
     }
 
     public static boolean aquaticTraitCheck(SplendidSlime splendidSlime) {
-        return splendidSlime.hasTrait("aquatic") && !splendidSlime.isInWater();
+        return splendidSlime.hasTrait(SlimeTrait.AQUATIC) && !splendidSlime.isInWater();
     }
 
     public static boolean diverseTraitCheck(SplendidSlime splendidSlime) {
-        if (splendidSlime.hasTrait("diverse")) {
+        if (splendidSlime.hasTrait(SlimeTrait.DIVERSE)) {
             List<String> breeds = new ArrayList<>();
             List<SplendidSlime> nearbyDifferent = SlimeComfortUtils.getNearbyDifferent(splendidSlime);
             for (SplendidSlime slime : nearbyDifferent) {

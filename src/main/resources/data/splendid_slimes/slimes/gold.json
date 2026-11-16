@@ -1,13 +1,23 @@
 {
   "breed": "gold",
-  "name": "slime.splendid_slimes.gold",
-  "color": "#e9b115",
-  "particle": { "item": "minecraft:raw_gold_block" },
-  "hat_y_offset": -1,
-  "diet": "diet.splendid_slimes.gold",
-  "foods": [{ "tag": "forge:ingots" }],
-  "favorite_food": {
-    "item": "minecraft:copper_ingot"
+  "name": {
+    "translate": "slime.splendid_slimes.gold"
   },
-  "traits": ["moody", "picky"]
+  "color": "#e9b115",
+  "appearance": {
+    "decorators": [
+      {
+        "y_offset": -1
+      }
+    ],
+    "item_walk_particle": {
+      "id": "minecraft:raw_gold_block"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.gold"},
+  "foods": [{ "tag": "c:ingots" }],
+  "favorite_food": {
+    "id": "minecraft:copper_ingot"
+  },
+  "traits": ["moody"]
 }

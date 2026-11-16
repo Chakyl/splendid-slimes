@@ -23,11 +23,7 @@ import org.joml.Quaternionf;
 public class SlimeVacUtils {
     public static Entity getVacSlime(Player player) {
         if (!SlimeVac.hasLargo(player)) return null;
-        CompoundTag slime = player.getItemInHand(InteractionHand.MAIN_HAND).getTag().getCompound("largo");
-        if (slime.isEmpty()) return null;
-        Entity entity = SlimeInventoryItem.getSlimeFromItem(slime.getCompound("entity"), slime.getCompound("slime"), player.level());
-
-        return entity;
+        return SlimeInventoryItem.getSlimeFromItem(player.level(), player.getItemInHand(InteractionHand.MAIN_HAND));
     }
 
 //    public static Entity getVacSlime(Player player, ItemStack stack) {
@@ -41,10 +37,7 @@ public class SlimeVacUtils {
 
     public static Entity getVacSlimeFromItem(Level level, ItemStack stack) {
         if (!(stack.getItem() instanceof SlimeVac)) return null;
-        CompoundTag slime = stack.getTag().getCompound("largo");
-        if (slime.isEmpty()) return null;
-        Entity entity = SlimeInventoryItem.getSlimeFromItem(slime.getCompound("entity"), slime.getCompound("slime"), level);
-        return entity;
+        return SlimeInventoryItem.getSlimeFromItem(level, stack);
     }
 
     public static void dropLargo(Level level, Player player, ItemStack stack) {

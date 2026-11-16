@@ -1,12 +1,20 @@
 {
   "breed": "minty",
-  "name": "slime.splendid_slimes.minty",
-  "color": "#cd75a4",
-  "particle": {
-    "item": "minecraft:dragon_egg"
+  "name": {
+    "translate": "slime.splendid_slimes.minty"
   },
-  "hat_y_offset": -0.7,
-  "diet": "diet.splendid_slimes.minty",
+  "color": "#cd75a4",
+  "appearance": {
+    "decorators": [
+      {
+        "y_offset": -0.7
+      }
+    ],
+    "item_walk_particle": {
+      "id": "minecraft:dragon_egg"
+    }
+  },
+  "diet": {"translate": "diet.splendid_slimes.minty"},
   "foods": [
     {
       "tag": "splendid_slimes:monster_spawn_eggs"
@@ -36,19 +44,24 @@
   ],
   "innate_effects": [
     {
-      "effect": "minecraft:strength",
+      "id": "minecraft:strength",
       "amplifier": 2
     },
     {
-      "effect": "minecraft:slow_falling",
+      "id": "minecraft:slow_falling",
       "amplifier": 0
     }
   ],
-  "positive_emit_effects": [
+  "slime_effects": [
     {
-      "effect": "minecraft:regeneration",
-      "duration": 40,
-      "amplifier": 0
+      "effect_type": "positive",
+      "emit_effects": [
+        {
+          "id": "minecraft:regeneration",
+          "duration": 40,
+          "amplifier": 0
+        }
+      ]
     }
   ]
 }

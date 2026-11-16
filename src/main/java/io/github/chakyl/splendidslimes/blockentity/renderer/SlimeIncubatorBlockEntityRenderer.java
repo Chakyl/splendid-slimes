@@ -25,7 +25,7 @@ public class SlimeIncubatorBlockEntityRenderer implements BlockEntityRenderer<Sl
     public void render(SlimeIncubatorBlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
         if (pBlockEntity.isIncubating()) {
             if (slimeRender == null) {
-                slimeRender = ModElements.Entities.SPLENDID_SLIME.get().create(pBlockEntity.getLevel());
+                slimeRender = ModElements.Entities.SPLENDID_SLIME.value() .create(pBlockEntity.getLevel());
             }
 
             if (slimeRender != null) {

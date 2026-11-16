@@ -1,8 +1,6 @@
 package io.github.chakyl.splendidslimes.jade;
 
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
-import io.github.chakyl.splendidslimes.SlimyConfig;
-import io.github.chakyl.splendidslimes.blockentity.SlimeIncubatorBlockEntity;
 import io.github.chakyl.splendidslimes.blockentity.SlimeSpawnerBlockEntity;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import net.minecraft.nbt.CompoundTag;
@@ -49,7 +47,7 @@ public enum SlimeSpawnerInfoComponentProvider implements IBlockComponentProvider
 
     @Override
     public ResourceLocation getUid() {
-        return SlimeInfoPlugin.UID;
+        return SlimeInfoPlugin.SLIME_SPAWNER_UID;
     }
 
 }

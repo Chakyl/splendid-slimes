@@ -33,7 +33,7 @@ public class SlimeInfoCategory implements IRecipeCategory<PlortRecipe> {
 
     public SlimeInfoCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 232, 111);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_VAC.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_CANDY.value()));
         this.name = Component.translatable("jei.splendid_slimes.category.slime_info");
     }
 
@@ -69,10 +69,10 @@ public class SlimeInfoCategory implements IRecipeCategory<PlortRecipe> {
 
     @Override
     public void draw(PlortRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        String[] slimeId = recipe.slime.getTagElement("slime").getString("id").split(":");
+        String[] slimeId = recipe.slime.get(ModElements.Components.SLIME_BREED).getId().toString().split(":");
         String translationKey = slimeId[0] + "." + slimeId[1];
         IRecipeCategory.super.draw(recipe, recipeSlotsView, guiGraphics, mouseX, mouseY);
-        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("slime." + translationKey)), 32, 15, 0xFF4b3658, false);
+        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(recipe.slime.get(ModElements.Components.SLIME_BREED).get().name()), 32, 15, 0xFF4b3658, false);
         guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(Component.translatable("slime." + translationKey + ".info").getString()), 15, 38, 107, 0xFF4b3658);
         guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("jei.splendid_slimes.category.slime_info.diet")), 134, 22, 0xFF4b3658, false);
     }

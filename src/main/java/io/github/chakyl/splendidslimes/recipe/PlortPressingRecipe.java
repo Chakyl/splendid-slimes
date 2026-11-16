@@ -1,86 +1,82 @@
 package io.github.chakyl.splendidslimes.recipe;
 
-import com.google.gson.JsonObject;
-import io.github.chakyl.splendidslimes.SplendidSlimes;
-import io.github.chakyl.splendidslimes.registry.ModElements;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.SimpleContainer;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
-import static io.github.chakyl.splendidslimes.SplendidSlimes.loc;
-
-public class PlortPressingRecipe implements Recipe<SimpleContainer> {
+public class PlortPressingRecipe implements Recipe<SingleRecipeInput> {
     private final Ingredient ingredient;
     private final ItemStack input;
     private final ItemStack output;
     private final ItemStack result;
-    private final ResourceLocation id;
 
-    public PlortPressingRecipe(Ingredient ingredient, ItemStack input, ItemStack output, ItemStack result, ResourceLocation id) {
+    public PlortPressingRecipe(Ingredient ingredient, ItemStack input, ItemStack output, ItemStack result) {
         this.ingredient = ingredient;
         this.input = input;
         this.output = output;
         this.result = result;
-        this.id = id;
     }
 
-
     @Override
-    public boolean matches(SimpleContainer pContainer, Level pLevel) {
-        if (pLevel.isClientSide()) {
+    public boolean matches(SingleRecipeInput inputWrapper, Level level) {
+        if (level.isClientSide()) {
             return false;
         }
-        boolean outputMatches = true;
-        if (this.output != Items.AIR.getDefaultInstance() && this.output != null && !output.isEmpty())
-            outputMatches = greaterThanOrEquals(output, pContainer.getItem(1));
-        return outputMatches && greaterThanOrEquals(input, pContainer.getItem(0));
+        ItemStack containerStack = inputWrapper.getItem(0);
+        return greaterThanOrEquals(this.input, containerStack);
     }
 
     private boolean greaterThanOrEquals(ItemStack self, ItemStack other) {
         if (self.isEmpty()) return other.isEmpty();
-        else
-            return !other.isEmpty() && self.getCount() <= other.getCount() && self.getItem() == other.getItem() && self.areShareTagsEqual(other);
+        return !other.isEmpty()
+                && self.getCount() <= other.getCount()
+                && ItemStack.isSameItemSameComponents(self, other);
     }
 
     @Override
-    public ItemStack assemble(SimpleContainer pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(SingleRecipeInput inputWrapper, HolderLookup.Provider provider) {
         return result.copy();
     }
 
     @Override
-    public boolean canCraftInDimensions(int pWidth, int pHeight) {
+    public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
-    public ItemStack getInputItem(RegistryAccess pRegistryAccess) {
-        return input.copy();
-    }
-
-    public ItemStack getOutputItem(RegistryAccess pRegistryAccess) {
-        if (output != null) return output.copy();
-        return Items.AIR.getDefaultInstance();
-    }
-
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider provider) {
         return result.copy();
     }
 
     @Override
-    public ResourceLocation getId() {
-        return id;
+    public NonNullList<Ingredient> getIngredients() {
+        NonNullList<Ingredient> list = NonNullList.create();
+        list.add(ingredient);
+        return list;
+    }
+
+    public Ingredient getIngredient() {
+        return ingredient;
+    }
+
+    public ItemStack getInput() {
+        return input;
+    }
+
+    public ItemStack getOutput() {
+        return output.isEmpty() ? Items.AIR.getDefaultInstance() : output;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModElements.Recipes.PLORT_PRESSING_SERIALIZER.get();
+        return Serializer.INSTANCE;
     }
 
     @Override
@@ -95,38 +91,30 @@ public class PlortPressingRecipe implements Recipe<SimpleContainer> {
 
     public static class Serializer implements RecipeSerializer<PlortPressingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = loc("plort_pressing");
+
+        public static final MapCodec<PlortPressingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(PlortPressingRecipe::getIngredient),
+                ItemStack.CODEC.fieldOf("input").forGetter(PlortPressingRecipe::getInput),
+                ItemStack.CODEC.optionalFieldOf("output", ItemStack.EMPTY).forGetter(PlortPressingRecipe::getOutput),
+                ItemStack.CODEC.fieldOf("result").forGetter(r -> r.result)
+        ).apply(instance, PlortPressingRecipe::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, PlortPressingRecipe> STREAM_CODEC = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC, PlortPressingRecipe::getIngredient,
+                ItemStack.STREAM_CODEC, PlortPressingRecipe::getInput,
+                ItemStack.OPTIONAL_STREAM_CODEC, PlortPressingRecipe::getOutput,
+                ItemStack.STREAM_CODEC, r -> r.result,
+                PlortPressingRecipe::new
+        );
 
         @Override
-        public PlortPressingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
-            ItemStack outputItem = Items.AIR.getDefaultInstance();
-            if (pSerializedRecipe.has("output")) {
-                outputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
-            }
-
-            ItemStack inputItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "ingredient"));
-            Ingredient ingredientItem = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "ingredient"));
-
-            return new PlortPressingRecipe(ingredientItem, inputItem, outputItem, result, pRecipeId);
+        public MapCodec<PlortPressingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable PlortPressingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            Ingredient recipeIngredient = Ingredient.fromNetwork(pBuffer);
-            ItemStack input = pBuffer.readItem();
-            ItemStack output = pBuffer.readItem();
-            ItemStack result = pBuffer.readItem();
-            return new PlortPressingRecipe(recipeIngredient, input, output, result, pRecipeId);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, PlortPressingRecipe pRecipe) {
-            pRecipe.ingredient.toNetwork(pBuffer);
-
-            pBuffer.writeItemStack(pRecipe.getInputItem(null), false);
-            pBuffer.writeItemStack(pRecipe.getOutputItem(null), false);
-            pBuffer.writeItemStack(pRecipe.getResultItem(null), false);
+        public StreamCodec<RegistryFriendlyByteBuf, PlortPressingRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

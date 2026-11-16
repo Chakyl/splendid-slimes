@@ -34,8 +34,8 @@ public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe>
 
     public PlortRippingCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 112, 54);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_RIPPIT.get()));
-        this.name = Component.translatable(ModElements.Blocks.PLORT_RIPPIT.get().getDescriptionId());
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Blocks.PLORT_RIPPIT.value()));
+        this.name = Component.translatable(ModElements.Blocks.PLORT_RIPPIT.value().getDescriptionId());
     }
 
     @Override
@@ -61,13 +61,13 @@ public class PlortRippingCategory implements IRecipeCategory<PlortRippingRecipe>
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PlortRippingRecipe recipe, IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 5, 19).addItemStack(recipe.getInputItem(null));
+        builder.addSlot(RecipeIngredientRole.INPUT, 5, 19).addItemStack(recipe.getInput());
         int row = 0;
-        for (int i = 0; i < recipe.getResults(null).toArray().length; i++) {
+        for (int i = 0; i < recipe.getResults().toArray().length; i++) {
             if (i % 3 == 0) row++;
             int finalI1 = i;
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 109 + ((i - (row * 3)) * 18), 1 + ((18 * (i / 3)))).addItemStack(recipe.getResults(null).get(i)).addRichTooltipCallback((view, tooltip) -> {
-                List<Integer> weights = recipe.getWeights(null);
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 109 + ((i - (row * 3)) * 18), 1 + ((18 * (i / 3)))).addItemStack(recipe.getResults().get(i)).addRichTooltipCallback((view, tooltip) -> {
+                List<Integer> weights = recipe.getWeights();
                 int weightTotal = 0;
                 int currentWeight = weights.get(finalI1);
                 for (Integer weight : weights) weightTotal += weight;

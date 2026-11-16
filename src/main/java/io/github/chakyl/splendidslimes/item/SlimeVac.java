@@ -9,7 +9,6 @@ import io.github.chakyl.splendidslimes.util.SlimeVacUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -38,7 +37,7 @@ import java.util.List;
 
 public class SlimeVac extends Item {
     public static final String NBT_MODE = "Mode";
-    private static final int RANGE = 10;
+    private static final int RANGE = 15;
     private static final double ANGLE = Math.cos(Math.PI / 4F); //Pre-calc cosine for speed
 
     public SlimeVac(Properties pProperties) {
@@ -46,34 +45,31 @@ public class SlimeVac extends Item {
     }
 
     public static VacMode getMode(ItemStack stack) {
-        if (stack.hasTag()) {
-            String stringMode = stack.getOrCreateTag().getString(NBT_MODE);
-            if (stringMode.isEmpty()) return VacMode.BOTH;
-            return VacMode.valueOf(stack.getOrCreateTag().getString(NBT_MODE));
+        if (stack.has(ModElements.Components.VAC_MODE)) {
+            return stack.get(ModElements.Components.VAC_MODE);
         }
         return VacMode.BOTH;
     }
 
     public static void setMode(ItemStack stack, VacMode mode) {
-        stack.getOrCreateTag().putString(NBT_MODE, mode.name());
+        stack.set(ModElements.Components.VAC_MODE, mode);
     }
 
     @Override
     public void onCraftedBy(ItemStack pStack, Level pLevel, Player pPlayer) {
         super.onCraftedBy(pStack, pLevel, pPlayer);
-        initNbt(pStack);
+        initComponents(pStack);
     }
 
-    private ItemStack initNbt(ItemStack stack) {
-        stack.getOrCreateTag().putString(NBT_MODE, VacMode.BOTH.name());
-        return stack;
+    private void initComponents(ItemStack stack) {
+        stack.set(ModElements.Components.VAC_MODE, VacMode.BOTH);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(Component.translatable("info.splendid_slimes.slime_vac.shoot").withStyle(ChatFormatting.GRAY));
-        list.add(Component.translatable("info.splendid_slimes.slime_vac.suck").withStyle(ChatFormatting.GRAY));
-        list.add(Component.translatable("info.splendid_slimes.slime_vac.mode", getMode(pStack).name()));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("info.splendid_slimes.slime_vac.shoot").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("info.splendid_slimes.slime_vac.suck").withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("info.splendid_slimes.slime_vac.mode", getMode(stack).name()));
     }
 
     private void suckParticles(Level level, Player player) {
@@ -101,42 +97,33 @@ public class SlimeVac extends Item {
 
     public static boolean playerCanPickupSlime(Player player) {
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (!stack.is(ModElements.Items.SLIME_VAC.get())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
+        if (!stack.is(ModElements.Items.SLIME_VAC.value())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
         return getMode(stack) != VacMode.ITEM;
     }
 
-    public static void removeLargoTag(Player player) {
+    public static void removeLargoComponents(Player player) {
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (!stack.is(ModElements.Items.SLIME_VAC.get())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
-        removeLargoTag(stack);
+        if (!stack.is(ModElements.Items.SLIME_VAC.value())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
+        removeLargoComponents(stack);
     }
 
-    public static void removeLargoTag(ItemStack stack) {
-        if (!stack.is(ModElements.Items.SLIME_VAC.get())) return;
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("largo")) {
-            tag.remove("largo");
-        }
+    public static void removeLargoComponents(ItemStack stack) {
+        if (!stack.is(ModElements.Items.SLIME_VAC.value())) return;
+        stack.set(ModElements.Components.SLIME_BREED, null);
+        stack.set(ModElements.Components.SECONDARY_SLIME_BREED, null);
+        stack.set(ModElements.Components.SLIME_DATA, null);
     }
 
     public static boolean hasLargo(Player player) {
         ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (!stack.is(ModElements.Items.SLIME_VAC.get())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
-        if (!stack.is(ModElements.Items.SLIME_VAC.get())) return false;
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("largo")) {
-            return !tag.getCompound("largo").isEmpty();
-        }
-        return false;
+        if (!stack.is(ModElements.Items.SLIME_VAC.value())) stack = player.getItemInHand(InteractionHand.OFF_HAND);
+        if (!stack.is(ModElements.Items.SLIME_VAC.value())) return false;
+        return stack.has(ModElements.Components.SECONDARY_SLIME_BREED);
     }
 
     public static boolean hasLargo(ItemStack handStack) {
-        if (!handStack.is(ModElements.Items.SLIME_VAC.get())) return false;
-        CompoundTag tag = handStack.getTag();
-        if (tag != null && tag.contains("largo")) {
-            return !tag.getCompound("largo").isEmpty();
-        }
-        return false;
+        if (!handStack.is(ModElements.Items.SLIME_VAC.value())) return false;
+        return handStack.has(ModElements.Components.SECONDARY_SLIME_BREED);
     }
 
     // References: Crossroads Vacuum, Create Potato Cannon
@@ -164,7 +151,7 @@ public class SlimeVac extends Item {
             });
 
             for (Entity entity : entities) {
-                Vec3 motVec = player.position().subtract(entity.position()).scale(0.25D);
+                Vec3 motVec = player.position().subtract(entity.position()).scale(0.15D);
                 entity.push(motVec.x, motVec.y + 0.1, motVec.z);
             }
 
@@ -175,7 +162,7 @@ public class SlimeVac extends Item {
             }
             Vec3 lookVec = player.getLookAngle();
             Vec3 motion = lookVec.normalize()
-                    .scale(2)
+                    .scale(1.75f)
                     .scale(1.5f);
             InteractionHand inverseHand = InteractionHand.OFF_HAND;
             if (hand == InteractionHand.OFF_HAND) {
@@ -196,8 +183,8 @@ public class SlimeVac extends Item {
                     projectile = SlimeVacUtils.getVacSlime(player);
                     projectile.setDeltaMovement(0, 0, 0);
                     slimeFired = true;
-                } else if (itemToLaunch == ModElements.Items.SLIME_ITEM.get()) {
-                    projectile = SlimeInventoryItem.getSlimeFromItem(itemStackToLaunch.getTag().getCompound("entity"), itemStackToLaunch.getTag().getCompound("slime"), level);
+                } else if (itemToLaunch == ModElements.Items.SLIME_ITEM.value()) {
+                    projectile = SlimeInventoryItem.getSlimeFromItem(level, itemStackToLaunch);
                     projectile.setDeltaMovement(0, 0, 0);
                     slimeFired = true;
                 } else if (itemToLaunch == Items.ARROW.asItem()) {
@@ -209,7 +196,7 @@ public class SlimeVac extends Item {
                     projectile = new ItemProjectileEntity(ModElements.Entities.ITEM_PROJECTILE.get(), level);
                     ((ItemProjectileEntity) projectile).setItem(itemStackToLaunch.copy());
                     barrelPos = getShootLocVec(player, hand == InteractionHand.MAIN_HAND,
-                            new Vec3(.65f, -1.0f, 2.0f));
+                            new Vec3(.65f, -0.5f, 0.75f));
                 }
                 if (projectile == null) return InteractionResultHolder.pass(handStack);
                 Vec3 splitMotion = motion;
@@ -228,11 +215,11 @@ public class SlimeVac extends Item {
                 projectile.playSound(SoundEvents.CHICKEN_EGG, 1.0F, 0.9F);
                 if (slimeFired) {
                     if (hasLargo) {
-                        removeLargoTag(player);
+                        removeLargoComponents(player);
                     } else itemStackToLaunch.shrink(1);
                 }
                 else if (!player.isCreative()) itemStackToLaunch.shrink(1);
-                player.getCooldowns().addCooldown(ModElements.Items.SLIME_VAC.get(), 4);
+                player.getCooldowns().addCooldown(ModElements.Items.SLIME_VAC.value(), 4);
 
                 return InteractionResultHolder.pass(handStack);
             }
@@ -247,8 +234,8 @@ public class SlimeVac extends Item {
             ItemStack stack = player.getInventory().getItem(i);
 
             if (stack.isEmpty()) continue;
-            if (stack.is(ModElements.Items.SLIME_ITEM.get()) && (vacMode == VacMode.SLIME || vacMode == VacMode.BOTH)) return stack;
-            if (!stack.is(ModElements.Items.SLIME_ITEM.get()) && fireable.isEmpty() && (vacMode == VacMode.ITEM || vacMode == VacMode.BOTH) && stack.is(SplendidSlimesItemTags.SLIME_VAC_FIREABLE)) fireable = stack;
+            if (stack.is(ModElements.Items.SLIME_ITEM.value()) && (vacMode == VacMode.SLIME || vacMode == VacMode.BOTH)) return stack;
+            if (!stack.is(ModElements.Items.SLIME_ITEM.value()) && fireable.isEmpty() && (vacMode == VacMode.ITEM || vacMode == VacMode.BOTH) && stack.is(SplendidSlimesItemTags.SLIME_VAC_FIREABLE)) fireable = stack;
         }
         return fireable;
     }
@@ -265,13 +252,5 @@ public class SlimeVac extends Item {
         return barrelPos;
     }
 
-    public enum VacMode {
-        ITEM,
-        SLIME,
-        BOTH;
-
-        VacMode() {
-        }
-    }
 
 }

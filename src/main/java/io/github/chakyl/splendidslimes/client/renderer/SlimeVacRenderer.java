@@ -3,6 +3,7 @@ package io.github.chakyl.splendidslimes.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Axis;
@@ -27,15 +28,6 @@ import java.util.Map;
 import static io.github.chakyl.splendidslimes.util.SlimeVacUtils.*;
 
 public class SlimeVacRenderer {
-
-    private static Map<RenderType, BufferBuilder> builders = Map.of(
-            RenderType.glint(), new BufferBuilder(RenderType.glint().bufferSize()),
-            RenderType.glintDirect(), new BufferBuilder(RenderType.glintDirect().bufferSize()),
-            RenderType.glintTranslucent(), new BufferBuilder(RenderType.glintTranslucent().bufferSize()),
-            RenderType.entityGlint(), new BufferBuilder(RenderType.entityGlint().bufferSize()),
-            RenderType.entityGlintDirect(), new BufferBuilder(RenderType.entityGlintDirect().bufferSize())
-    );
-
     public static boolean drawFirstPerson(Player player, MultiBufferSource buffer, PoseStack matrix, int light, float partialTicks) {
         if (!SlimeVac.hasLargo(player)) return false;
         try {
@@ -63,7 +55,8 @@ public class SlimeVacRenderer {
 
             matrix.pushPose();
             matrix.mulPose(Axis.YP.rotationDegrees(180));
-            matrix.translate(0.0 - 0.75, -height - .01, width + 0.1);
+            matrix.translate(0.0 - 0.75, -height + 0.25, width + 0.1);
+            matrix.scale(1.2f, 1.2f, 1.2f);
 
             manager.setRenderShadow(false);
 
@@ -81,7 +74,8 @@ public class SlimeVacRenderer {
     public static void drawThirdPerson(float partialticks, Matrix4f mat) {
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
-        int light = 0;
+        if (level == null) return;
+
         int perspective = SlimeVacUtils.getPerspective();
         EntityRenderDispatcher manager = mc.getEntityRenderDispatcher();
 
@@ -92,45 +86,43 @@ public class SlimeVacRenderer {
         RenderSystem.disableCull();
         RenderSystem.disableDepthTest();
 
-        BufferSource buffer = MultiBufferSource.immediateWithBuffers(builders, Tesselator.getInstance().getBuilder());
+        try (ByteBufferBuilder byteBufferBuilder = new ByteBufferBuilder(786432)) {
+            MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(byteBufferBuilder);
 
-        for (Player player : level.players()) {
-            try {
-                if (perspective == 0 && player == mc.player) continue;
+            for (Player player : level.players()) {
+                try {
+                    if (perspective == 0 && player == mc.player) continue;
 
-                light = manager.getPackedLightCoords(player, partialticks);
+                    int light = manager.getPackedLightCoords(player, partialticks);
 
-                Entity entity = SlimeVacUtils.getVacSlime(player);
+                    Entity entity = SlimeVacUtils.getVacSlime(player);
 
-                if (entity != null) {
-                    applyEntityTransformations(player, partialticks, matrix, entity);
+                    if (entity != null) {
+                        applyEntityTransformations(player, partialticks, matrix, entity);
 
-                    manager.setRenderShadow(false);
+                        manager.setRenderShadow(false);
 
-                    if (entity instanceof LivingEntity le) le.hurtTime = 0;
+                        if (entity instanceof LivingEntity le) le.hurtTime = 0;
 
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-                    manager.render(entity, 0, 0, 0, 0f, 0, matrix, buffer, light);
-                    matrix.popPose();
-                    manager.setRenderShadow(true);
-                    matrix.popPose();
+                        matrix.scale(1.5f, 1.5f, 1.5f);
+                        manager.render(entity, 0, 0, 0, 0f, 0, matrix, buffer, light);
+                        matrix.popPose();
+                        manager.setRenderShadow(true);
+                        matrix.popPose();
+                    }
+                } catch (Exception e) {
                 }
-            } catch (Exception e) {
             }
 
-        }
-        buffer.endLastBatch();
+            buffer.endBatch();
 
-        buffer.endBatch(RenderType.entitySolid(TextureAtlas.LOCATION_BLOCKS));
-        buffer.endBatch(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
-        buffer.endBatch(RenderType.entityCutoutNoCull(TextureAtlas.LOCATION_BLOCKS));
-        buffer.endBatch(RenderType.entitySmoothCutout(TextureAtlas.LOCATION_BLOCKS));
+        } catch (Exception e) {
+        }
 
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
-
-
     }
 }

@@ -31,16 +31,17 @@ public class SlimeBreedRegistry extends DynamicRegistry<SlimeBreed> {
     }
 
     @Override
-    protected void beginReload() {
-        super.beginReload();
+    protected void beginReload(ReloadType type) {
+        super.beginReload(type);
         this.slimesByBreed = new HashMap<>();
     }
 
     @Override
-    protected void onReload() {
-        super.onReload();
+    protected void onReload(ReloadType type) {
+        super.onReload(type);
         this.slimesByBreed = ImmutableMap.copyOf(this.slimesByBreed);
     }
+
 
     @Override
     protected void validateItem(ResourceLocation key, SlimeBreed slimeBreed) {
@@ -63,3 +64,4 @@ public class SlimeBreedRegistry extends DynamicRegistry<SlimeBreed> {
     }
 
 }
+

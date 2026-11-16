@@ -1,6 +1,7 @@
 package io.github.chakyl.splendidslimes.entity;
 
 import io.github.chakyl.splendidslimes.SlimyConfig;
+import io.github.chakyl.splendidslimes.SplendidSlimes;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -14,9 +15,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class Tarr extends SlimeEntityBase {
-    public static final String SLIME = "slime";
-    public static final String ID = "id";
-    public static final String DATA = "data";
     private final EntityType<SlimeEntityBase> entityType;
 
     public Tarr(EntityType<SlimeEntityBase> entityType, Level level) {
@@ -59,16 +57,16 @@ public class Tarr extends SlimeEntityBase {
 
     @Override
     protected ParticleOptions getParticleType() {
-        return new ItemParticleOption(ParticleTypes.ITEM, ModElements.Items.TARRTAR.get().getDefaultInstance());
+        return new ItemParticleOption(ParticleTypes.ITEM, ModElements.Items.TARRTAR.value().getDefaultInstance());
     }
 
     @Override
     public void remove(RemovalReason pReason) {
         if (!this.level().isClientSide && this.isDeadOrDying()) {
-            if (SlimyConfig.enableForgivingTarrs) {
+            if (SplendidSlimes.CONFIG.ENABLE_FORGIVING_TARRS.getAsBoolean()) {
                 Component component = this.getCustomName();
                 boolean flag = this.isNoAi();
-                SlimeEntityBase slime = ModElements.Entities.SPLENDID_SLIME.get().create(this.level());
+                SlimeEntityBase slime = ModElements.Entities.SPLENDID_SLIME.value().create(this.level());
                 if (slime != null) {
                     if (this.isPersistenceRequired()) {
                         slime.setPersistenceRequired();
@@ -87,7 +85,7 @@ public class Tarr extends SlimeEntityBase {
             }
         }
         this.setRemoved(pReason);
-        this.invalidateCaps();
+        this.level().invalidateCapabilities(this.getOnPos());
         this.brain.clearMemories();
     }
 }

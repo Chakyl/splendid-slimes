@@ -3,7 +3,7 @@ package io.github.chakyl.splendidslimes.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.chakyl.splendidslimes.SplendidSlimes;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
 public final class Keybindings {
     public static final Keybindings INSTANCE = new Keybindings();

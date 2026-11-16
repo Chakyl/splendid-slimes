@@ -33,7 +33,7 @@ public class SlimeTraitsCategory implements IRecipeCategory<TraitRecipe> {
 
     public SlimeTraitsCategory(IGuiHelper guiHelper) {
         this.background = guiHelper.createDrawable(TEXTURES, 0, 0, 208, 111);
-        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_CANDY.get()));
+        this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModElements.Items.SLIME_CANDY.value()));
         this.name = Component.translatable("jei.splendid_slimes.category.slime_traits");
     }
 
@@ -63,11 +63,10 @@ public class SlimeTraitsCategory implements IRecipeCategory<TraitRecipe> {
 
     @Override
     public void draw(TraitRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        String slimeId = recipe.slime.getTagElement("slime").getString("id").replace("splendid_slimes:", ".");
         IRecipeCategory.super.draw(recipe, recipeSlotsView, guiGraphics, mouseX, mouseY);
-        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("slime.splendid_slimes" + slimeId)), 32, 15, 0xFF4b3658, false);
-        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("trait.splendid_slimes." + recipe.trait + ".name")), 104, 15, 0xFF4b3658, false);
-        guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(Component.translatable("trait.splendid_slimes." + recipe.trait + ".info").getString()), 36, 38, 144, 0xFF4b3658);
+        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(recipe.slime.get(ModElements.Components.SLIME_BREED).get().name()), 32, 15, 0xFF4b3658, false);
+        guiGraphics.drawString(Minecraft.getInstance().font, Language.getInstance().getVisualOrder(Component.translatable("trait.splendid_slimes." + recipe.trait.getSerializedName() + ".name")), 104, 15, 0xFF4b3658, false);
+        guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(Component.translatable("trait.splendid_slimes." + recipe.trait.getSerializedName() + ".info").getString()), 36, 38, 144, 0xFF4b3658);
 
     }
 }

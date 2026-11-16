@@ -1,0 +1,21 @@
+{
+	"textures": {
+		"0": "splendid_slimes:item/decorator/blazing_hat",
+		"particle": "splendid_slimes:item/decorator/blazing_hat"
+	},
+	"elements": [
+		{
+			"from": [7, 7, 7],
+			"to": [9, 12, 9],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [7, 5, 7]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 5], "texture": "#0"},
+				"east": {"uv": [2, 0, 4, 5], "texture": "#0"},
+				"south": {"uv": [4, 0, 6, 5], "texture": "#0"},
+				"west": {"uv": [0, 5, 2, 10], "texture": "#0"},
+				"up": {"uv": [4, 7, 2, 5], "texture": "#0"},
+				"down": {"uv": [6, 5, 4, 7], "texture": "#0"}
+			}
+		}
+	]
+}
