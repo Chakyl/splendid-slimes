@@ -32,6 +32,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static io.github.chakyl.splendidslimes.SplendidSlimes.MODID;
@@ -330,6 +331,12 @@ public class SlimepediaScreen extends Screen {
 
                     topPosOffset += 22;
                 }
+                if (!Objects.equals(slimeEffect.getCommandsDescription(), Component.empty())) {
+                    guiGraphics.drawWordWrap(this.font, slimeEffect.getCommandsDescription(), this.leftPos + 96, topPosOffset, TRAITS_TAB_WIDTH, 0x5088a4);
+
+                    topPosOffset += (11 * (int) Math.ceil((double) this.font.width(slimeEffect.getCommandsDescription()) / TRAITS_TAB_WIDTH)) + 14;
+                }
+
             }
         }
         guiGraphics.disableScissor();
@@ -339,6 +346,7 @@ public class SlimepediaScreen extends Screen {
             renderTraitsScroller(guiGraphics, startX + TRAITS_TAB_WIDTH + 2, startY, TRAITS_TAB_HEIGHT, maxScroll);
         }
     }
+
     private int calculateTraitsContentHeight() {
         if (this.selectedBreed == null) return 0;
         int height = 0;
@@ -360,6 +368,11 @@ public class SlimepediaScreen extends Screen {
                 height += 14;
                 for (MobEffectInstance yeet : slimeEffect.getEmitEffects()) {
                     height += 22;
+                }
+
+                if (!Objects.equals(slimeEffect.getCommandsDescription(), Component.empty())) {
+                    int lines = (int) Math.ceil((double) this.font.width(slimeEffect.getCommandsDescription()) / TRAITS_TAB_WIDTH);
+                    height += (11 * lines) + 14;
                 }
             }
         }
@@ -415,7 +428,7 @@ public class SlimepediaScreen extends Screen {
         }
         return super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
     }
-    
+
     private void renderTraitsScroller(GuiGraphics guiGraphics, int x, int y, int height, int maxScroll) {
         int trackHeight = height - SCROLLER_HEIGHT - 4;
         int scrollerY = y + (int) ((double) this.scrollOff / maxScroll * trackHeight);

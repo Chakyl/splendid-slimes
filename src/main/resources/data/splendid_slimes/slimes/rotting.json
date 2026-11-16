@@ -40,6 +40,7 @@
     },
     {
       "effect_type": "attack",
+      "commands_description": {"translate": "commands.splendid_slimes.rotting"},
       "commands": [
         "summon zombie ~ ~ ~ {DeathLootTable:\"minecraft:empty\",Health:8f,ArmorItems:[{},{},{},{id:\"minecraft:slime_block\",Count:1b}],ArmorDropChances:[0.085F,0.085F,0.085F,0.000F],Attributes:[{Name:generic.max_health,Base:8}]}"
       ]

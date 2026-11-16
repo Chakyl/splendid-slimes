@@ -2,6 +2,7 @@ package io.github.chakyl.splendidslimes.item;
 
 import com.mojang.blaze3d.shaders.Effect;
 import io.github.chakyl.splendidslimes.entity.SplendidSlime;
+import io.github.chakyl.splendidslimes.entity.slimetraits.SlimeTrait;
 import io.github.chakyl.splendidslimes.registry.ModElements;
 import io.github.chakyl.splendidslimes.util.SlimeComfortUtils;
 import net.minecraft.ChatFormatting;
@@ -39,7 +40,13 @@ public class SlimeInspector extends Item {
         }
         List<SplendidSlime> nearbyFriends = SlimeComfortUtils.getNearbyFriends(splendidSlime);
         if (nearbyFriends.size() > 8) {
-            messagesToSend.add(Component.translatable("info.splendid_slimes.slime_inspector.crowded", nearbyFriends.size()).withStyle(ChatFormatting.GOLD));
+            messagesToSend.add(Component.translatable("info.splendid_slimes.slime_inspector.crowded", nearbyFriends.size() - 8).withStyle(ChatFormatting.GOLD));
+            for (SplendidSlime friend : nearbyFriends) {
+                friend.addEffect(new MobEffectInstance(MobEffects.GLOWING, 120, 0, false, false));
+            }
+        }
+        if (nearbyFriends.size() > 2 && splendidSlime.hasTrait(SlimeTrait.SHY)) {
+            messagesToSend.add(Component.translatable("info.splendid_slimes.slime_inspector.shy_failure", 2 - nearbyFriends.size()).withStyle(ChatFormatting.GOLD));
             for (SplendidSlime friend : nearbyFriends) {
                 friend.addEffect(new MobEffectInstance(MobEffects.GLOWING, 120, 0, false, false));
             }

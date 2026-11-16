@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import dev.shadowsoffire.placebo.reload.DynamicHolder;
 import io.github.chakyl.splendidslimes.data.SlimeBreed;
 import io.github.chakyl.splendidslimes.data.SlimeBreedRegistry;
+import io.github.chakyl.splendidslimes.entity.slimethetics.SlimeAppearance;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -60,6 +61,7 @@ public class SlimeEntityBase extends Mob implements NeutralMob {
     public float squish;
     public float oSquish;
     private boolean wasOnGround;
+    private SoundEvent walkSound = null;
 
     private static final EntityDataAccessor<Integer> ID_SIZE;
     public static final EntityDataAccessor<String> BREED = SynchedEntityData.defineId(SlimeEntityBase.class, EntityDataSerializers.STRING);
@@ -409,7 +411,10 @@ public class SlimeEntityBase extends Mob implements NeutralMob {
     }
 
     protected SoundEvent getSquishSound() {
-        return this.isTiny() ? SoundEvents.SLIME_SQUISH_SMALL : SoundEvents.SLIME_SQUISH;
+        if (this.walkSound != null) return this.walkSound;
+        SlimeAppearance appearance = this.getSlime().get().slimeAppearance();
+        this.walkSound = appearance.getWalkSound().value();
+        return this.walkSound;
     }
 
     public static boolean checkSlimeSpawnRules(EntityType<Slime> slime, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {

@@ -12,6 +12,7 @@ public class SlimeComfortUtils {
     private static final double NEARBY_SUFFOCATED_RADIUS = 0.2;
 
     public static boolean slimeIsSimilar(SplendidSlime slime1, SplendidSlime slime2) {
+        if (slime1 == slime2) return false;
         if (Objects.equals(slime1.getSlimeBreed(), slime2.getSlimeBreed())) return true;
         if (!slime1.getSlimeSecondaryBreed().isEmpty()) {
             if (Objects.equals(slime1.getSlimeSecondaryBreed(), slime2.getSlimeBreed())) return true;

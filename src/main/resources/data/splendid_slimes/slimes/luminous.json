@@ -17,6 +17,7 @@
     { "item": "minecraft:smooth_quartz" }
   ],
   "favorite_food": { "id": "minecraft:quartz_block" },
+  "traits": ["greedy"],
   "slime_effects": [
     {
       "effect_type": "negative",

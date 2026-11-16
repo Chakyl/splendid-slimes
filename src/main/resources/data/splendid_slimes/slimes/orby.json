@@ -5,6 +5,7 @@
   },
   "color": "#b8e45a",
   "appearance": {
+    "walk_sound": "block.enchantment_table.use",
     "decorators": [
       {
         "y_offset": -0.5

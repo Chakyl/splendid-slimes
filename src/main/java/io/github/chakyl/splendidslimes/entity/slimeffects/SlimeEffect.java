@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.effect.MobEffectInstance;
 
 import java.util.List;
@@ -12,12 +14,14 @@ import java.util.List;
 public class SlimeEffect {
     private SlimeEffectType effectType;
     private List<String> commands;
+    private MutableComponent commandsDescription;
     private List<MobEffectInstance> emitEffects;
     private ParticleOptions effectParticle;
 
-    public SlimeEffect(SlimeEffectType effectType, List<String> commands, List<MobEffectInstance> emitEffects, ParticleOptions effectParticle) {
+    public SlimeEffect(SlimeEffectType effectType, List<String> commands, MutableComponent commandsDescription, List<MobEffectInstance> emitEffects, ParticleOptions effectParticle) {
         this.effectType = effectType;
         this.commands = commands;
+        this.commandsDescription = commandsDescription;
         this.emitEffects = emitEffects;
         this.effectParticle = effectParticle;
     }
@@ -28,6 +32,14 @@ public class SlimeEffect {
 
     public void setCommands(List<String> commands) {
         this.commands = commands;
+    }
+
+    public MutableComponent getCommandsDescription() {
+        return commandsDescription;
+    }
+
+    public void setCommandsDescription(MutableComponent commandsDescription) {
+        this.commandsDescription = commandsDescription;
     }
 
     public SlimeEffectType getEffectType() {
@@ -69,7 +81,8 @@ public class SlimeEffect {
                     }
             ).forGetter(SlimeEffect::getEffectType),
             Codec.STRING.listOf().optionalFieldOf("commands", List.of()).forGetter(SlimeEffect::getCommands),
+            ComponentSerialization.CODEC.xmap(Component::copy, type -> type).optionalFieldOf("commands_description", Component.empty()).forGetter(SlimeEffect::getCommandsDescription),
             MobEffectInstance.CODEC.listOf().optionalFieldOf("emit_effects", List.of()).forGetter(SlimeEffect::getEmitEffects),
-            ParticleTypes.CODEC.optionalFieldOf("effect_particle",  ParticleTypes.EFFECT).forGetter(SlimeEffect::getEffectParticle)
+            ParticleTypes.CODEC.optionalFieldOf("effect_particle", ParticleTypes.EFFECT).forGetter(SlimeEffect::getEffectParticle)
     ).apply(inst, SlimeEffect::new));
 }

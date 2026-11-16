@@ -7,6 +7,7 @@ import java.util.Locale;
 
 public enum SlimeTrait implements StringRepresentable {
     AQUATIC,
+    BOISTEROUS,
     DEFIANT,
     DOMINANT,
     RECESSIVE,
@@ -14,6 +15,8 @@ public enum SlimeTrait implements StringRepresentable {
     FERAL,
     FLAMING,
     FLOATING,
+    GREEDY,
+    HANGRY,
     FOODPORTING,
     FRIENDLY,
     DIVERSE,
@@ -26,6 +29,7 @@ public enum SlimeTrait implements StringRepresentable {
     PHOTOSYNTHESIZING,
     PUTRID,
     SPIKY,
+    SHY,
     WEEPING;
 
     public static final Codec<SlimeTrait> CODEC = StringRepresentable.fromEnum(SlimeTrait::values);

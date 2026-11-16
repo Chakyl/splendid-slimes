@@ -37,6 +37,9 @@
   "diet.splendid_slimes.weeping": "Berries",
   "diet.splendid_slimes.default_diet": "Any",
 
+  "commands.splendid_slimes.ender": "Teleports nearby items and entities to itself.",
+  "commands.splendid_slimes.rotting": "Hates Villagers and raises the slimy dead to attack them.",
+
   "entity.splendid_slimes.diet": "Diet: %s",
   "entity.splendid_slimes.largo_diet": "Diet: %s, %s",
   "entity.splendid_slimes.largo_splendid_slime": "%s %s Largo",
@@ -59,12 +62,12 @@
 
   "info.splendid_slimes.slime_inspector": "Checks if there are living conditions making a Slime unhappy",
   "info.splendid_slimes.slime_inspector.suffocating": "This Slime is suffocating in slime!!",
-  "info.splendid_slimes.slime_inspector.crowded": "This Slime has %s nearby Slimes with the same breed! It's a bit crowded...",
+  "info.splendid_slimes.slime_inspector.crowded": "This Slime has %s too many nearby Slimes with the same breed! It's a bit crowded...",
   "info.splendid_slimes.slime_inspector.aquatic_failure": "This Aquatic Slime is stuck on land...",
   "info.splendid_slimes.slime_inspector.diverse_failure": "This Slime needs some different breeds near it!",
+  "info.splendid_slimes.slime_inspector.shy_failure": "This Slime is shy and overcrowded! There's %s too many slimes of the same breed nearby...",
   "info.splendid_slimes.slime_inspector.all_good": "Your Slime is squelching around happily!",
   "info.splendid_slimes.slime_inspector.not_happy": "Your Slime is not very happy with its living conditions...",
-
 
   "item.splendid_slimes.slimepedia": "Slimepedia",
   "item.splendid_slimes.default_plort": "Any",
@@ -169,10 +172,14 @@
   "trait.splendid_slimes.pompous.info": "Slime's favorite food no longer makes it drop double.",
   "trait.splendid_slimes.ravenous.name": "Ravenous",
   "trait.splendid_slimes.ravenous.info": "Will only drop plorts when its hunger bar is full. Each food in its diet feeds a different amount.",
-  "trait.splendid_slimes.wormhole.name": "Wormhole",
-  "trait.splendid_slimes.wormhole.info": "Slime will occasionally teleport nearby entities to itself when upset.",
-  "trait.splendid_slimes.necromancer.name": "Necromancer",
-  "trait.splendid_slimes.necromancer.info": "Slime summon slimy zombies when attacking. Always attacks nearby villagers.",
+  "trait.splendid_slimes.shy.name": "Shy",
+  "trait.splendid_slimes.shy.info": "Slime will become upset if near more than 2 other slimes of the same breed.",
+  "trait.splendid_slimes.boisterous.name": "Boisterous",
+  "trait.splendid_slimes.boisterous.info": "Slime becomes hostile when turned into a Largo.",
+  "trait.splendid_slimes.greedy.name": "Greedy",
+  "trait.splendid_slimes.greedy.info": "Slime will eat when not hungry, but won't produce plorts when doing so.",
+  "trait.splendid_slimes.hangry.name": "Hangry",
+  "trait.splendid_slimes.hangry.info": "Slime becomes hostile when hungry.",
 
   "splendid_slimes.advancement.obtain_corral.description": "Use Corral Blocks to keep Slimes contained",
   "splendid_slimes.advancement.obtain_corral.title": "Herding Slimes",

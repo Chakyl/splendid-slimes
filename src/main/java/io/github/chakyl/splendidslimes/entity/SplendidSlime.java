@@ -209,23 +209,25 @@ public class SplendidSlime extends SlimeEntityBase {
             return InteractionResult.SUCCESS;
         }
         CompoundTag slimeTags = new CompoundTag();
-        this.save(slimeTags);
-        // TODO: Test Cull tags
-//        slimeTags.putInt("Size", this.getSize());
-//        slimeTags.putFloat("Health", this.getHealth());
-//        slimeTags.putInt("Hunger", this.getHunger());
-//        slimeTags.putInt("LastAte", this.getPickyLastAte());
-//        slimeTags.putInt("DayLastAte", this.getDayLastAte());
-//        slimeTags.putInt("DayLastDigested", this.getDayLastDigested());
-//        slimeTags.putInt("Happiness", this.getHappiness());
-//        if (this.getOwnerUUID() != null) {
-//            slimeTags.putUUID("Owner", this.getOwnerUUID());
-//        }
-//        slimeTags.putBoolean("Tamed", this.getTamed());
+        // No idea why this needs -1
+        slimeTags.putInt("Size", Math.max(0, this.getSize() - 1));
+        slimeTags.putString("Breed", getSlimeBreed());
+        slimeTags.putString("SecondaryBreed", getSlimeSecondaryBreed());
+        slimeTags.putFloat("Health", this.getHealth());
+        slimeTags.putInt("Hunger", this.getHunger());
+        slimeTags.putInt("LastAte", this.getPickyLastAte());
+        slimeTags.putInt("DayLastAte", this.getDayLastAte());
+        slimeTags.putInt("DayLastDigested", this.getDayLastDigested());
+        slimeTags.putInt("Happiness", this.getHappiness());
+        if (this.getOwnerUUID() != null) {
+            slimeTags.putUUID("Owner", this.getOwnerUUID());
+        }
+        slimeTags.putBoolean("Tamed", this.getTamed());
         SlimeDataComponent slimeData = new SlimeDataComponent(slimeTags);
         if (isLargo) {
             ItemStack handStack = player.getItemInHand(InteractionHand.MAIN_HAND);
-            if (!handStack.is(ModElements.Items.SLIME_VAC.value())) handStack = player.getItemInHand(InteractionHand.OFF_HAND);
+            if (!handStack.is(ModElements.Items.SLIME_VAC.value()))
+                handStack = player.getItemInHand(InteractionHand.OFF_HAND);
             handStack.set(ModElements.Components.SLIME_DATA, slimeData);
             handStack.set(ModElements.Components.SLIME_BREED, this.getSlime());
             handStack.set(ModElements.Components.SECONDARY_SLIME_BREED, this.getSlime());
@@ -257,6 +259,7 @@ public class SplendidSlime extends SlimeEntityBase {
     // TODO: Ravenous
     private boolean isHungry() {
 //        if (hasTrait("ravenous")) return getHunger() != SLIME_MAX_HUNGER;
+        if (hasTrait(SlimeTrait.GREEDY)) return true;
         return getHunger() <= SLIME_HUNGRY_THRESHOLD;
     }
 
@@ -339,6 +342,7 @@ public class SplendidSlime extends SlimeEntityBase {
     }
 
     public List<EntityType<? extends LivingEntity>> getHostileToMobs() {
+
         DynamicHolder<SlimeBreed> slime = getSlime();
         if (!slime.isBound()) return null;
         DynamicHolder<SlimeBreed> secondarySlime = getSecondarySlime();
@@ -543,7 +547,7 @@ public class SplendidSlime extends SlimeEntityBase {
 
     public void playerTouch(Player pPlayer) {
         if (pPlayer.isHolding(ModElements.Items.SLIME_VAC.value()) && pPlayer.isCrouching()) {
-            if (this.distanceToSqr(pPlayer) <= 2.2) {
+            if (this.distanceToSqr(pPlayer) <= 2.4) {
                 if (SlimeVac.playerCanPickupSlime(pPlayer)) {
                     boolean isLargo = !this.getSlimeSecondaryBreed().isEmpty();
                     if (isLargo && !SlimeVac.hasLargo(pPlayer)) {
@@ -554,13 +558,17 @@ public class SplendidSlime extends SlimeEntityBase {
                 }
             }
         }
-        if (this.isDealsDamage() && (this.getHappiness() <= FURIOUS_THRESHOLD || this.hasTrait(SlimeTrait.SPIKY) || this.hasTrait(SlimeTrait.FERAL))) {
+        if (this.isDealsDamage() && slimeShouldAttackEntity()) {
             applyEffects(this, pPlayer, false, SlimeEffectType.NEGATIVE);
             super.playerTouch(pPlayer);
         }
         if (this.isDealsDamage() && this.hasTrait(SlimeTrait.FLAMING)) {
             pPlayer.setRemainingFireTicks(3);
         }
+    }
+
+    private boolean slimeShouldAttackEntity() {
+        return this.getHappiness() <= FURIOUS_THRESHOLD || this.hasTrait(SlimeTrait.SPIKY) || this.hasTrait(SlimeTrait.FERAL) || (this.hasTrait(SlimeTrait.HANGRY) && isHungry()) || (this.hasTrait(SlimeTrait.BOISTEROUS) && isLargo());
     }
 
     private void handleSlimeCandy() {
@@ -610,9 +618,10 @@ public class SplendidSlime extends SlimeEntityBase {
             }
         }
         int nearbyFriends = SlimeComfortUtils.getNearbyFriends(this).size();
-        if (nearbyFriends >= 3) happinessIncrease += 15;
-        if (nearbyFriends > 5) happinessIncrease += 15;
-        if (SlimeComfortUtils.slimeIsSuffocated(this) || nearbyFriends > 8) {
+        if (nearbyFriends >= 2) happinessIncrease += 15;
+        if (nearbyFriends > 4) happinessIncrease += 15;
+        if (nearbyFriends > 2 && hasTrait(SlimeTrait.SHY)) happinessIncrease = -25;
+        if (SlimeComfortUtils.slimeIsSuffocated(this) || nearbyFriends > 7) {
             displayAngerParticles = true;
             happinessIncrease -= 120;
 
@@ -656,8 +665,9 @@ public class SplendidSlime extends SlimeEntityBase {
 //            setHunger(SLIME_MAX_HUNGER);
 //        }
 
-            setDayLastAte(getDay(this.level()));
-            setHunger(SLIME_MAX_HUNGER);
+        setDayLastAte(getDay(this.level()));
+        setHunger(SLIME_MAX_HUNGER);
+        if (this.hasTrait(SlimeTrait.GREEDY) && this.getHunger() > SLIME_HUNGRY_THRESHOLD) return;
         if (this.getHunger() == SLIME_MAX_HUNGER && happiness > FURIOUS_THRESHOLD) {
             dropPlort(isFavorite);
         }
@@ -700,7 +710,8 @@ public class SplendidSlime extends SlimeEntityBase {
         ItemStack particleItem = getSlimePlort();
         DynamicHolder<SlimeBreed> slime = getSlime();
         if (slime.isBound() && slime.get().slimeAppearance().getItemWalkParticle().getItem() != Items.AIR) {
-            if (slime.get().slimeAppearance().getWalkParticle() != null) return slime.get().slimeAppearance().getWalkParticle();
+            if (slime.get().slimeAppearance().getWalkParticle() != null)
+                return slime.get().slimeAppearance().getWalkParticle();
             particleItem = slime.get().slimeAppearance().getItemWalkParticle();
         }
         if (slime.isBound() && slime.get().slimeAppearance().getWalkParticle() != null) {
@@ -715,7 +726,7 @@ public class SplendidSlime extends SlimeEntityBase {
         boolean atePlort = false;
         // TODO: Check Components
         if (this.getHappiness() > FURIOUS_THRESHOLD && item.getItem() == ModElements.Items.PLORT.value() && item.has(ModElements.Components.SLIME_BREED)) {
-            DynamicHolder<SlimeBreed> plortBreed  = item.get(ModElements.Components.SLIME_BREED);
+            DynamicHolder<SlimeBreed> plortBreed = item.get(ModElements.Components.SLIME_BREED);
             if (plortBreed != null && plortBreed.isBound()) {
                 atePlort = true;
                 if (this.getSlimeSecondaryBreed().isEmpty()) {
@@ -987,13 +998,7 @@ public class SplendidSlime extends SlimeEntityBase {
             List<EntityType<? extends LivingEntity>> hostileToMobs = getHostileToMobs();
             if (edibleMobs == null && hostileToMobs == null) return;
             List<EntityType<? extends LivingEntity>> finalHostileToMobs = hostileToMobs;
-            // What was I thinking a year ago
-            List<LivingEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(LivingEntity.class, this.mob.getBoundingBox().inflate(10), e ->
-                    (isHungry() && edibleMobs.contains(e.getType()))
-                            || finalHostileToMobs.contains(e.getType())
-                            || (hasTrait(SlimeTrait.FERAL) && e.getType() == EntityType.PLAYER)
-                            || (hasTrait(SlimeTrait.FRIENDLY) && e.getType() == EntityType.PLAYER)
-                            || (((SplendidSlime) this.mob).getHappiness() < FURIOUS_THRESHOLD && e.getType() == EntityType.PLAYER));
+            List<LivingEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(LivingEntity.class, this.mob.getBoundingBox().inflate(10), e -> slimeShouldTargetEntity(e, edibleMobs, finalHostileToMobs));
             if (!nearbyEntities.isEmpty()) {
                 LivingEntity targetEntity = nearbyEntities.get(0);
                 for (LivingEntity potentialTarget : nearbyEntities) {
@@ -1004,6 +1009,17 @@ public class SplendidSlime extends SlimeEntityBase {
                 if (hostileToMobs.contains(targetEntity.getType())) setTargetEntity(targetEntity.getUUID().toString());
                 this.target = targetEntity;
             }
+        }
+
+        // What was I thinking a year ago
+        private boolean slimeShouldTargetEntity(LivingEntity e, List<EntityType<? extends LivingEntity>> edibleMobs, List<EntityType<? extends LivingEntity>> finalHostileToMobs) {
+            return (isHungry() && edibleMobs.contains(e.getType()))
+                    || finalHostileToMobs.contains(e.getType())
+                    || (hasTrait(SlimeTrait.FERAL) && e.getType() == EntityType.PLAYER)
+                    || (hasTrait(SlimeTrait.HANGRY) && isHungry() && e.getType() == EntityType.PLAYER)
+                    || (hasTrait(SlimeTrait.BOISTEROUS) && isLargo() && e.getType() == EntityType.PLAYER)
+                    || (hasTrait(SlimeTrait.FRIENDLY) && e.getType() == EntityType.PLAYER)
+                    || (((SplendidSlime) this.mob).getHappiness() < FURIOUS_THRESHOLD && e.getType() == EntityType.PLAYER);
         }
 
         public boolean canUse() {
